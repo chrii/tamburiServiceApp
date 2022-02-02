@@ -2,8 +2,10 @@ package at.tamburi.tamburimontageservice
 
 import android.Manifest
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.view.LayoutInflater
+import android.view.View.inflate
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,22 +18,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.fragment.NavHostFragment
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginScreen
-import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginViewModel
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 import at.tamburi.tamburimontageservice.utils.isPermanentlyRevoked
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_main)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
+        val navController = navHostFragment.navController
+
         setContent {
             TamburiMontageServiceTheme {
                 // A surface container using the 'background' color from the theme
@@ -58,7 +66,9 @@ class MainActivity : ComponentActivity() {
                             when (perm.permission) {
                                 Manifest.permission.CAMERA -> {
                                     when {
-                                        perm.hasPermission -> LoginScreen()
+                                        perm.hasPermission -> LoginScreen(
+                                            navigation = navController,
+                                        )
                                         perm.shouldShowRationale -> Text(text = stringResource(R.string.camera_permission_declined))
                                         perm.isPermanentlyRevoked -> Text(text = stringResource(id = R.string.camera_permission_permanently_revoked))
                                     }
@@ -69,19 +79,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TamburiMontageServiceTheme {
-        Greeting("Android")
     }
 }
 
