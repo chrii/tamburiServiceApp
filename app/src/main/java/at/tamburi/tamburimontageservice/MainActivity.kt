@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginScreen
+import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginViewModel
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 import at.tamburi.tamburimontageservice.utils.isPermanentlyRevoked
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -56,7 +58,7 @@ class MainActivity : ComponentActivity() {
                             when (perm.permission) {
                                 Manifest.permission.CAMERA -> {
                                     when {
-                                        perm.hasPermission -> Text(text = stringResource(id = R.string.camera_permission_accepted))
+                                        perm.hasPermission -> LoginScreen()
                                         perm.shouldShowRationale -> Text(text = stringResource(R.string.camera_permission_declined))
                                         perm.isPermanentlyRevoked -> Text(text = stringResource(id = R.string.camera_permission_permanently_revoked))
                                     }
