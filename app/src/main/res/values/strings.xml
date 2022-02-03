@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Tamburi Montage Service</string>
+
+    <!-- Permission Fragment -->
     <string name="camera_permission_accepted">Kamera autorisierung erteilt</string>
     <string name="camera_permission_declined">Kamera autorisierung wird für den Scanner benötigt."</string>
     <string name="camera_permission_permanently_revoked">Autorisierung für Kamera wurde permanent abgelehnt. Um dies rückgängig zu machen, ändern Sie dieses in den Einstellungen unter App Einstellungen</string>
+
+    <!-- Login Fragment -->
+    <string name="username">Username</string>
+    <string name="password">Passwort</string>
+    <string name="login_error">Login fehlgeschlagen</string>
+
+    <!-- Custom Progress Indicator Text -->
+    <string name="progress_indicator_default_text">Überprüfe Daten</string>
 </resources>

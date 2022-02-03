@@ -7,6 +7,7 @@ data class MontageTask(
     val createdAt: Long,
     val remoteLocationId: Int,
     val remoteLocation: RemoteLocation,
+    val magazine: String,
     val ownerId: Int,
     val locationOwner: LocationOwner,
     val montageStatus: MontageStatus,
