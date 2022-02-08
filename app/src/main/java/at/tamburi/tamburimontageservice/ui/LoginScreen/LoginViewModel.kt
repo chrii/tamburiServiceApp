@@ -8,6 +8,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
+import at.tamburi.tamburimontageservice.services.database.entities.UserEntity
+import at.tamburi.tamburimontageservice.services.database.entities.toServiceUser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -42,8 +44,8 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
             if (entity.isNullOrEmpty()) {
                 changeState(LoginState.Ready)
             } else {
-                val lastLogin = entity.first().loginDate
-                val lastDate = getDate(Date(lastLogin))
+                val serviceUser = entity.first().toServiceUser
+                val lastDate = getDate(Date(serviceUser.loginDate))
                 val todayDate = getDate()
 
                 if (todayDate == lastDate) {
@@ -58,7 +60,7 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
     fun onSubmit(username: String, password: String, lifecycle: Lifecycle) {
         val lower = username.lowercase(Locale.getDefault())
 
-        //TODO: Hardcoded password
+        //TODO: Hardcoded user
         if (lower == "chris" && password == "1234") {
             changeState(LoginState.Loading)
             lifecycle.coroutineScope.launch {
