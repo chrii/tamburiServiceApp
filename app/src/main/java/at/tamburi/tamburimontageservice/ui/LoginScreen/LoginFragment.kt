@@ -41,4 +41,14 @@ class LoginFragment : Fragment() {
             }
         }
     }
+
+//    override fun onResume() {
+//        super.onResume()
+//        viewModel.checkUserState(lifecycle)
+//    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.checkUserState(lifecycle)
+    }
 }

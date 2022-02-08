@@ -14,7 +14,7 @@ import at.tamburi.tamburimontageservice.ui.theme.Orange
 import at.tamburi.tamburimontageservice.ui.theme.OrangeLight
 
 @Composable
-fun CustomLoadingIndicator(text: String = stringResource(id = R.string.progress_indicator_default_text)) {
+fun CustomLoadingIndicator(text: String? = null) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -25,9 +25,10 @@ fun CustomLoadingIndicator(text: String = stringResource(id = R.string.progress_
         ) {
             CircularProgressIndicator(color = Orange)
             Text(
-                modifier =Modifier.padding(top = 8.dp),
-                text = text,
-                color = OrangeLight)
+                modifier = Modifier.padding(top = 8.dp),
+                text = text ?: stringResource(id = R.string.progress_indicator_default_text),
+                color = OrangeLight
+            )
         }
     }
 }

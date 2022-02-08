@@ -1,6 +1,5 @@
 package at.tamburi.tamburimontageservice.ui.LoginScreen
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,7 +38,8 @@ fun LoginScreen(
     )
 
     when (viewModel.loginState.value) {
-        LoginState.Loading -> CustomLoadingIndicator()
+        LoginState.Loading ->
+            CustomLoadingIndicator(if (!viewModel.loadingMessageString.isNullOrEmpty()) viewModel.loadingMessageString else null)
         LoginState.Error -> {
             //TODO: Error handling
             Toast.makeText(

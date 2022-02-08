@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.services.database.entities.UserEntity
 import at.tamburi.tamburimontageservice.services.database.entities.toServiceUser
@@ -28,14 +30,15 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
 
     val loginState: MutableState<LoginState> = _loginState
-
-    fun changeState(state: LoginState) {
+    var loadingMessageString: String? = null
+    fun changeState(state: LoginState, loadingMessage: String? = null) {
+        if(!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
     }
 
 
     fun checkUserState(lifecycle: Lifecycle) {
-        changeState(LoginState.Loading)
+        changeState(LoginState.Loading, "Get User Data")
         lifecycle.coroutineScope.launch {
             //TODO: Imitates loading delay - Delete if not necessary anymore
             delay(2000)
@@ -62,7 +65,7 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
 
         //TODO: Hardcoded user
         if (lower == "chris" && password == "1234") {
-            changeState(LoginState.Loading)
+            changeState(LoginState.Loading, "Login...")
             lifecycle.coroutineScope.launch {
                 //TODO: Imitates loading delay - Delete of not necessary anymore
                 delay(2000)
