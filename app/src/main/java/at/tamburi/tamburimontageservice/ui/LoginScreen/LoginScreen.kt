@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ fun LoginScreen(
     navigation: NavController,
     viewModel: LoginViewModel
 ) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
     val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
         focusedBorderColor = Orange,
@@ -47,6 +49,7 @@ fun LoginScreen(
             ).show()
             viewModel.changeState(LoginState.Ready)
         }
+        LoginState.NEXT -> Toast.makeText(context, "Logged In", Toast.LENGTH_LONG).show()
         LoginState.Ready -> Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -80,13 +83,11 @@ fun LoginScreen(
                     .padding(8.dp)
                     .fillMaxWidth(),
                 onClick = {
-                    if (viewModel.onSubmit(userNameTextField, passwordTextField)) {
-                        //TODO: Navigation
-                        Toast.makeText(context, "Yay Logged in!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Log.d(TAG, "Error shown")
-                        viewModel.changeState(LoginState.Error)
-                    }
+                    viewModel.onSubmit(
+                        userNameTextField,
+                        passwordTextField,
+                        lifecycle
+                    )
                 }
             ) {
                 Text(text = "Login", color = White)
