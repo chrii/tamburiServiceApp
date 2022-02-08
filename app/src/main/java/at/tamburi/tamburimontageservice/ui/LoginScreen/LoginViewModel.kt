@@ -2,10 +2,12 @@ package at.tamburi.tamburimontageservice.ui.LoginScreen
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.Navigation
+import java.util.*
 
 enum class LoginState {
     Loading,
@@ -23,6 +25,7 @@ class LoginViewModel: ViewModel() {
     }
 
     fun onSubmit(username: String, password: String): Boolean {
-        return username == "Chris" && password == "1234"
+        val lower = username.lowercase(Locale.getDefault())
+        return lower == "chris" && password == "1234"
     }
 }

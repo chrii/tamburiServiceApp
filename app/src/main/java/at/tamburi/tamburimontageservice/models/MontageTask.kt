@@ -18,5 +18,5 @@ data class MontageTask(
     val lockerCount: Int,
     val lockerTypeList: List<LockerType>,
     val assignedMonteurs: List<ServiceUser>,
-    val scheduleInstallation: Int
+    val scheduledInstallation: Int
 )

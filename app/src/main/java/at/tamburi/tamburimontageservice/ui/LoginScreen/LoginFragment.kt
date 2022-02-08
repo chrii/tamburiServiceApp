@@ -19,7 +19,6 @@ private const val TAG = "LoginFragment"
 
 class LoginFragment : Fragment() {
     private val viewModel: LoginViewModel by viewModels()
-    private lateinit var dataStore: DataStore<Preferences>
 
     override fun onCreateView(
         inflater: LayoutInflater,
