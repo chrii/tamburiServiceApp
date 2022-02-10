@@ -49,7 +49,10 @@ fun LoginScreen(
             ).show()
             viewModel.changeState(LoginState.Ready)
         }
-        LoginState.NEXT -> Toast.makeText(context, "Logged In", Toast.LENGTH_LONG).show()
+        LoginState.NEXT -> {
+            Toast.makeText(context, "Logged In", Toast.LENGTH_LONG).show()
+            navigation.navigate(R.id.action_loginFragment_to_task_list_fragment)
+        }
         LoginState.Ready -> Column(
             modifier = Modifier
                 .fillMaxWidth()

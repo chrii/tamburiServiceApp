@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.IUserRepository
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 private const val TAG: String = "LoginViewModel"
 
+// TODO: REFACTOR STATENAME
 enum class LoginState {
     Loading,
     Error,
@@ -34,8 +36,10 @@ constructor(
     private val taskRepo: IMontageTaskRepository
 ) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
+    private val _tasks: MutableState<List<MontageTask>> = mutableStateOf(listOf())
 
     val loginState: MutableState<LoginState> = _loginState
+    val tasks: MutableState<List<MontageTask>> = _tasks
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     fun changeState(state: LoginState, loadingMessage: String? = null) {
@@ -61,10 +65,6 @@ constructor(
                 if (todayDate == lastDate) {
                     Log.d(TAG, "Last Date: $lastDate")
                     Log.d(TAG, "Today Date: $todayDate")
-                    taskRepo.saveMockMontageTask()
-                    val tasks = taskRepo.getAllTasks()
-                    Log.d(TAG, "Tasks: ${tasks.data}")
-                    Log.d(TAG, "Tasks: ${tasks.message}")
                     changeState(LoginState.NEXT)
                 } else {
                     changeState(LoginState.Ready)
@@ -102,6 +102,28 @@ constructor(
         } else {
             errorMessage = "Password or username not correct"
             changeState(LoginState.Error)
+        }
+    }
+
+    fun getTaskList(lifecycle: Lifecycle) {
+        changeState(LoginState.Loading, "Hole Aufträge")
+        lifecycle.coroutineScope.launch {
+            try {
+                //TODO: Put out the Mock Data
+                taskRepo.saveMockMontageTask()
+                val tasks = taskRepo.getAllTasks()
+                if (tasks.hasData) {
+                    Log.d(TAG, "${tasks.data}")
+                    _tasks.value = tasks.data!!
+                    changeState(LoginState.Ready)
+                } else {
+                    errorMessage = "Keine Auftragsdaten"
+                    changeState(LoginState.Error)
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Empty error message on getTasksList()"
+                changeState(LoginState.Error)
+            }
         }
     }
 
