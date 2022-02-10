@@ -7,10 +7,15 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 class MainActivity : AppCompatActivity() {
+    var DEBUG = false
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if(DEBUG) {
+
+        }
 
         setContentView(R.layout.activity_main)
         val navHostFragment =
