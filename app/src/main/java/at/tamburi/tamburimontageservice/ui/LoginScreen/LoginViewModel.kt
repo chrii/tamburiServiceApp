@@ -4,13 +4,10 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
-import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
-import at.tamburi.tamburimontageservice.services.database.entities.UserEntity
 import at.tamburi.tamburimontageservice.services.database.entities.toServiceUser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,7 +29,7 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
     val loginState: MutableState<LoginState> = _loginState
     var loadingMessageString: String? = null
     fun changeState(state: LoginState, loadingMessage: String? = null) {
-        if(!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
+        if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
     }
 
@@ -47,11 +44,15 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
             if (entity.isNullOrEmpty()) {
                 changeState(LoginState.Ready)
             } else {
+                val d = Date()
+                Log.d(TAG, d.toString())
                 val serviceUser = entity.first().toServiceUser
                 val lastDate = getDate(Date(serviceUser.loginDate))
                 val todayDate = getDate()
 
                 if (todayDate == lastDate) {
+                    Log.d(TAG, "Last Date: $lastDate")
+                    Log.d(TAG, "Today Date: $todayDate")
                     changeState(LoginState.NEXT)
                 } else {
                     changeState(LoginState.Ready)
@@ -82,6 +83,7 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
     @SuppressLint("SimpleDateFormat")
     fun getDate(mil: Date = Date()): Date {
         val simple = SimpleDateFormat("MM-dd")
+        Log.d(TAG, mil.time.toString())
         return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse today date")
     }
 }

@@ -11,5 +11,4 @@ interface UserDao {
 
     @Query("INSERT INTO user_history (username, userId, loginDate) VALUES (:username, :userId, :loginDate)")
     suspend fun saveUserEntry(username: String, userId: Int, loginDate: Long): Long
-
 }

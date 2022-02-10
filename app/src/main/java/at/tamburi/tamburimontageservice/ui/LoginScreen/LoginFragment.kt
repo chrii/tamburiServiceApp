@@ -31,7 +31,7 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel.checkUserState(lifecycle)
+//        viewModel.checkUserState(lifecycle)
         return ComposeView(requireContext()).apply {
             setContent {
                 LoginScreen(
