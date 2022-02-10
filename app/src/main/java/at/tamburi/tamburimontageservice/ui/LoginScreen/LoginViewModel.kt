@@ -9,8 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.IUserRepository
-import at.tamburi.tamburimontageservice.services.database.dao.UserDao
-import at.tamburi.tamburimontageservice.services.database.entities.toServiceUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

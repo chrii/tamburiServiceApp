@@ -3,9 +3,8 @@ package at.tamburi.tamburimontageservice.repositories.implementation
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.IUserRepository
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
-import at.tamburi.tamburimontageservice.services.database.entities.toServiceUser
+import at.tamburi.tamburimontageservice.services.database.toServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState
-import java.util.*
 
 class UserRepositoryImpl(
     private val userDao: UserDao
