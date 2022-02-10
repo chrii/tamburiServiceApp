@@ -14,6 +14,7 @@ val UserEntity.toServiceUser: ServiceUser
         loginDate = loginDate,
         magazineId = null,
         assignedMontageTaskId = null,
+
     )
 
 @Entity(tableName = "user_history")
@@ -26,10 +27,14 @@ data class UserEntity(
     val username: String,
 
     @NonNull
-    @ColumnInfo(name = "userId")
+    @ColumnInfo(name = "user_id")
     val userId: Int,
 
     @NonNull
-    @ColumnInfo(name = "loginDate")
-    val loginDate: Long
+    @ColumnInfo(name = "login_date")
+    val loginDate: Long,
+
+    @NonNull
+    @ColumnInfo(name = "assigned_task")
+    val assignedTask: Int
 )

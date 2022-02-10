@@ -16,15 +16,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.BaseApplication
+import at.tamburi.tamburimontageservice.repositories.IUserRepository
+import javax.inject.Inject
 
 private const val TAG = "LoginFragment"
 
 class LoginFragment : Fragment() {
-    private val viewModel: LoginViewModel by activityViewModels {
-        LoginViewModelFactory(
-            (activity?.application as BaseApplication).database.userDao()
-        )
-    }
+    private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

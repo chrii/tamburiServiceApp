@@ -44,7 +44,7 @@ fun LoginScreen(
             //TODO: Error handling
             Toast.makeText(
                 context,
-                stringResource(id = R.string.login_error),
+                stringResource(id = R.string.login_error, viewModel.errorMessage),
                 Toast.LENGTH_LONG
             ).show()
             viewModel.changeState(LoginState.Ready)

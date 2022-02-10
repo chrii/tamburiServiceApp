@@ -2,7 +2,7 @@ package at.tamburi.tamburimontageservice
 
 import android.app.Application
 import at.tamburi.tamburimontageservice.services.database.AppDatabase
+import dagger.hilt.android.HiltAndroidApp
 
-class BaseApplication : Application() {
-    val database: AppDatabase by lazy { AppDatabase.getDatabase(this) }
-}
+@HiltAndroidApp
+class BaseApplication : Application()

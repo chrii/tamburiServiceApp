@@ -7,12 +7,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import at.tamburi.tamburimontageservice.models.ServiceUser
+import at.tamburi.tamburimontageservice.repositories.IUserRepository
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.services.database.entities.toServiceUser
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 private const val TAG: String = "LoginViewModel"
 
@@ -23,16 +27,21 @@ enum class LoginState {
     NEXT
 }
 
-class LoginViewModel(private val userDao: UserDao) : ViewModel() {
+@HiltViewModel
+class LoginViewModel
+@Inject
+constructor(
+    private val userRepo: IUserRepository
+) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
 
     val loginState: MutableState<LoginState> = _loginState
     var loadingMessageString: String? = null
+    var errorMessage: String = ""
     fun changeState(state: LoginState, loadingMessage: String? = null) {
         if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
     }
-
 
     fun checkUserState(lifecycle: Lifecycle) {
         changeState(LoginState.Loading, "Get User Data")
@@ -40,14 +49,13 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
             //TODO: Imitates loading delay - Delete if not necessary anymore
             delay(2000)
 
-            val entity = userDao.getUserData()
-            if (entity.isNullOrEmpty()) {
+            val user = userRepo.getUser()
+            Log.d(TAG, "user: ${user.hasData}")
+            if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
-                val d = Date()
-                Log.d(TAG, d.toString())
-                val serviceUser = entity.first().toServiceUser
-                val lastDate = getDate(Date(serviceUser.loginDate))
+                val serviceUser = user.data
+                val lastDate = getDate(Date(serviceUser!!.loginDate))
                 val todayDate = getDate()
 
                 if (todayDate == lastDate) {
@@ -70,12 +78,25 @@ class LoginViewModel(private val userDao: UserDao) : ViewModel() {
             lifecycle.coroutineScope.launch {
                 //TODO: Imitates loading delay - Delete of not necessary anymore
                 delay(2000)
-                val cal = Calendar.getInstance().timeInMillis
-                val userState = userDao.saveUserEntry(lower, 1, cal)
-                Log.d(TAG, "$userState")
-                changeState(LoginState.NEXT)
+                try {
+                    val date = Date().time
+                    val serviceUser = ServiceUser(
+                        userId = 1,
+                        username = lower,
+                        assignedMontageTaskId = null,
+                        magazineId = null,
+                        loginDate = date
+                    )
+                    val result = userRepo.saveUser(serviceUser)
+                    Log.d(TAG, "${result.message}")
+                    if (!result.hasData) changeState(LoginState.Error) else changeState(LoginState.NEXT)
+                } catch (e: Exception) {
+                    e.stackTrace
+                    changeState(LoginState.Error)
+                }
             }
         } else {
+            errorMessage = "Password or username not correct"
             changeState(LoginState.Error)
         }
     }
