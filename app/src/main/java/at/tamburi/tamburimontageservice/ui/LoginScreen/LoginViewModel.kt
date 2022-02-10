@@ -62,6 +62,9 @@ constructor(
                     Log.d(TAG, "Last Date: $lastDate")
                     Log.d(TAG, "Today Date: $todayDate")
                     taskRepo.saveMockMontageTask()
+                    val tasks = taskRepo.getAllTasks()
+                    Log.d(TAG, "Tasks: ${tasks.data}")
+                    Log.d(TAG, "Tasks: ${tasks.message}")
                     changeState(LoginState.NEXT)
                 } else {
                     changeState(LoginState.Ready)
