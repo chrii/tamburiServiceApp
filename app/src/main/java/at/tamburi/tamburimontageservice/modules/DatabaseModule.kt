@@ -2,10 +2,13 @@ package at.tamburi.tamburimontageservice.modules
 
 import android.content.Context
 import androidx.room.Room
+import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.implementation.MontageTaskImpl
 import at.tamburi.tamburimontageservice.repositories.implementation.UserRepositoryImpl
 import at.tamburi.tamburimontageservice.services.database.AppDatabase
 import at.tamburi.tamburimontageservice.services.database.dao.LocationOwnerDao
+import at.tamburi.tamburimontageservice.services.database.dao.MontageTaskDao
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import dagger.Module
 import dagger.Provides
@@ -38,7 +41,17 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun providesTaskRepositoryDao(appDatabase: AppDatabase) = appDatabase.montageTaskDao()
+
+    @Provides
+    @Singleton
     fun provideUserRepository(userDao: UserDao): IUserRepository {
         return UserRepositoryImpl(userDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskRepository(montageTaskDao: MontageTaskDao): IMontageTaskRepository {
+        return MontageTaskImpl(montageTaskDao)
     }
 }

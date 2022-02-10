@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.models.ServiceUser
+import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.IUserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -29,7 +30,8 @@ enum class LoginState {
 class LoginViewModel
 @Inject
 constructor(
-    private val userRepo: IUserRepository
+    private val userRepo: IUserRepository,
+    private val taskRepo: IMontageTaskRepository
 ) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
 
@@ -59,6 +61,7 @@ constructor(
                 if (todayDate == lastDate) {
                     Log.d(TAG, "Last Date: $lastDate")
                     Log.d(TAG, "Today Date: $todayDate")
+                    taskRepo.saveMockMontageTask()
                     changeState(LoginState.NEXT)
                 } else {
                     changeState(LoginState.Ready)
@@ -102,7 +105,6 @@ constructor(
     @SuppressLint("SimpleDateFormat")
     fun getDate(mil: Date = Date()): Date {
         val simple = SimpleDateFormat("MM-dd")
-        Log.d(TAG, mil.time.toString())
-        return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse today date")
+        return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse date")
     }
 }

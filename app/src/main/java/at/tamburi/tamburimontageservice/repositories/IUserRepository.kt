@@ -1,7 +1,6 @@
 package at.tamburi.tamburimontageservice.repositories
 
 import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.utils.DataState
 
 interface IUserRepository {
