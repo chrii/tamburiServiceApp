@@ -1,6 +1,8 @@
 package at.tamburi.tamburimontageservice.services.database
 
+import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
+import at.tamburi.tamburimontageservice.services.database.entities.MontageTaskEntity
 import at.tamburi.tamburimontageservice.services.database.entities.UserEntity
 
 
@@ -13,3 +15,8 @@ val UserEntity.toServiceUser: ServiceUser
         magazineId = null,
         assignedMontageTaskId = assignedTask
     )
+
+//val MontageTaskEntity.toMontageTask: MontageTask
+//    get() = MontageTask(
+//
+//    )

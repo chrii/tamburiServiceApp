@@ -51,7 +51,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideTaskRepository(montageTaskDao: MontageTaskDao): IMontageTaskRepository {
-        return MontageTaskImpl(montageTaskDao)
+    fun provideTaskRepository(montageTaskDao: MontageTaskDao, ownerDao: LocationOwnerDao): IMontageTaskRepository {
+        return MontageTaskImpl(montageTaskDao, ownerDao)
     }
 }

@@ -2,12 +2,14 @@ package at.tamburi.tamburimontageservice.repositories.implementation
 
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
+import at.tamburi.tamburimontageservice.services.database.dao.LocationOwnerDao
 import at.tamburi.tamburimontageservice.services.database.dao.MontageTaskDao
 import at.tamburi.tamburimontageservice.utils.DataState
 import java.util.*
 
 class MontageTaskImpl(
-    private val montageTaskDao: MontageTaskDao
+    private val montageTaskDao: MontageTaskDao,
+    private val ownerDao: LocationOwnerDao
 ) : IMontageTaskRepository {
     override suspend fun getAllTasks(): DataState<List<MontageTask>> {
         return try {
@@ -110,26 +112,42 @@ class MontageTaskImpl(
         )
 
         try {
-            montageTaskDao.saveTask(
-                montageId = task.montageId,
-                createdAt = task.createdAt,
-                remoteLocationId = task.remoteLocationId,
-                magazine = "",
-                ownerId = task.ownerId,
-                montageStatus = task.montageStatus.ordinal,
-                locationDesc = task.locationDesc,
-                powerConnection = task.powerConnection.ordinal,
-                montageGround = task.montageGround.ordinal.toString(),
-                montageSketch = "",
-                lockerCount = 3,
-                lockerTypeList = task.lockerTypeList.map { it.typeID }
-                    .toString()
-                    .replace("[", "")
-                    .replace("]", "")
-                    .trim(),
-                assignedMonteurs = task.assignedMonteurs.toString(),
-                scheduledInstallation = task.scheduledInstallation
-            )
+            val ownerById = ownerDao.getOwnerById(1)
+            if (ownerById == null) {
+                ownerDao.saveOwner(
+                    id = 1,
+                    ownerId = 1,
+                    companyName = "GESIBA",
+                    address = "Gesiba Straße",
+                    streetNumber = "14",
+                    zipCode = "1140"
+                )
+            }
+
+            val taskById = montageTaskDao.getTaskByTaskId(task.montageId)
+            if (taskById == null) {
+                montageTaskDao.saveTask(
+                    id = task.montageId,
+                    montageId = task.montageId,
+                    createdAt = task.createdAt,
+                    remoteLocationId = task.remoteLocationId,
+                    magazine = "",
+                    ownerId = task.ownerId,
+                    montageStatus = task.montageStatus.ordinal,
+                    locationDesc = task.locationDesc,
+                    powerConnection = task.powerConnection.ordinal,
+                    montageGround = task.montageGround.ordinal.toString(),
+                    montageSketch = "",
+                    lockerCount = 3,
+                    lockerTypeList = task.lockerTypeList.map { it.typeID }
+                        .toString()
+                        .replace("[", "")
+                        .replace("]", "")
+                        .trim(),
+                    assignedMonteurs = task.assignedMonteurs.toString(),
+                    scheduledInstallation = task.scheduledInstallation
+                )
+            }
         } catch (e: Exception) {
             throw Exception(e.stackTraceToString())
         }

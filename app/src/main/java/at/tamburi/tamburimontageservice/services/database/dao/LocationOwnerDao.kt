@@ -6,14 +6,15 @@ import at.tamburi.tamburimontageservice.services.database.entities.LocationOwner
 
 @Dao
 interface LocationOwnerDao {
-    @Query("SELECT * FROM owner WHERE owner_id = :ownerId")
+    @Query("SELECT * FROM owner WHERE id = :ownerId")
     suspend fun getOwnerById(ownerId: Int): LocationOwnerEntity?
 
     @Query(
-        "INSERT INTO owner (owner_id, company_name, address, street_number, zip)" +
-                " VALUES (:ownerId, :companyName, :address, :streetNumber, :zipCode)"
+        "INSERT INTO owner (id, owner_id, company_name, address, street_number, zip)" +
+                " VALUES (:id, :ownerId, :companyName, :address, :streetNumber, :zipCode)"
     )
     suspend fun saveOwner(
+        id: Int,
         ownerId: Int,
         companyName: String,
         address: String,

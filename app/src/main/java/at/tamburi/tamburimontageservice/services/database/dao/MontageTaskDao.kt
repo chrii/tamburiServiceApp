@@ -9,14 +9,15 @@ interface MontageTaskDao {
     @Query("SELECT * FROM montage_task")
     suspend fun getAllTasks(): List<MontageTaskEntity>
 
-    @Query("SELECT * FROM montage_task WHERE montage_id = :montageId")
+    @Query("SELECT * FROM montage_task WHERE id = :montageId")
     suspend fun getTaskByTaskId(montageId: Int): MontageTaskEntity?
 
     @Query(
-        "INSERT INTO montage_task (montage_id, created_at, remoteLocation_id, magazine, owner_id, montage_status, location_desc, power_connection, montage_ground, montage_sketch, locker_count, locker_type_list, assigned_monteurs, scheduled_installation) " +
-                "VALUES (:montageId, :createdAt, :remoteLocationId, :magazine, :ownerId, :montageStatus, :locationDesc, :powerConnection, :montageGround, :montageSketch, :lockerCount, :lockerTypeList, :assignedMonteurs, :scheduledInstallation)"
+        "INSERT INTO montage_task (id, montage_id, created_at, remoteLocation_id, magazine, owner_id, montage_status, location_desc, power_connection, montage_ground, montage_sketch, locker_count, locker_type_list, assigned_monteurs, scheduled_installation) " +
+                "VALUES (:id, :montageId, :createdAt, :remoteLocationId, :magazine, :ownerId, :montageStatus, :locationDesc, :powerConnection, :montageGround, :montageSketch, :lockerCount, :lockerTypeList, :assignedMonteurs, :scheduledInstallation)"
     )
     suspend fun saveTask(
+        id: Int,
         montageId: Int,
         createdAt: Long,
         remoteLocationId: Int,
