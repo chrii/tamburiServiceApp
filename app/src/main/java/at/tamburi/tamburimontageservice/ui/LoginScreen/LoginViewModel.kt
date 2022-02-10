@@ -1,31 +1,89 @@
 package at.tamburi.tamburimontageservice.ui.LoginScreen
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.toLowerCase
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
-import androidx.navigation.Navigation
+import androidx.lifecycle.coroutineScope
+import at.tamburi.tamburimontageservice.services.database.dao.UserDao
+import at.tamburi.tamburimontageservice.services.database.entities.toServiceUser
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
+
+private const val TAG: String = "LoginViewModel"
 
 enum class LoginState {
     Loading,
     Error,
-    Ready
+    Ready,
+    NEXT
 }
 
-class LoginViewModel: ViewModel() {
+class LoginViewModel(private val userDao: UserDao) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
 
     val loginState: MutableState<LoginState> = _loginState
-
-    fun changeState(state: LoginState) {
+    var loadingMessageString: String? = null
+    fun changeState(state: LoginState, loadingMessage: String? = null) {
+        if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
     }
 
-    fun onSubmit(username: String, password: String): Boolean {
+
+    fun checkUserState(lifecycle: Lifecycle) {
+        changeState(LoginState.Loading, "Get User Data")
+        lifecycle.coroutineScope.launch {
+            //TODO: Imitates loading delay - Delete if not necessary anymore
+            delay(2000)
+
+            val entity = userDao.getUserData()
+            if (entity.isNullOrEmpty()) {
+                changeState(LoginState.Ready)
+            } else {
+                val d = Date()
+                Log.d(TAG, d.toString())
+                val serviceUser = entity.first().toServiceUser
+                val lastDate = getDate(Date(serviceUser.loginDate))
+                val todayDate = getDate()
+
+                if (todayDate == lastDate) {
+                    Log.d(TAG, "Last Date: $lastDate")
+                    Log.d(TAG, "Today Date: $todayDate")
+                    changeState(LoginState.NEXT)
+                } else {
+                    changeState(LoginState.Ready)
+                }
+            }
+        }
+    }
+
+    fun onSubmit(username: String, password: String, lifecycle: Lifecycle) {
         val lower = username.lowercase(Locale.getDefault())
-        return lower == "chris" && password == "1234"
+
+        //TODO: Hardcoded user
+        if (lower == "chris" && password == "1234") {
+            changeState(LoginState.Loading, "Login...")
+            lifecycle.coroutineScope.launch {
+                //TODO: Imitates loading delay - Delete of not necessary anymore
+                delay(2000)
+                val cal = Calendar.getInstance().timeInMillis
+                val userState = userDao.saveUserEntry(lower, 1, cal)
+                Log.d(TAG, "$userState")
+                changeState(LoginState.NEXT)
+            }
+        } else {
+            changeState(LoginState.Error)
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getDate(mil: Date = Date()): Date {
+        val simple = SimpleDateFormat("MM-dd")
+        Log.d(TAG, mil.time.toString())
+        return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse today date")
     }
 }
