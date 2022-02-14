@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -51,7 +52,7 @@ class MontageTaskFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colors.background
                     ) {
-//                        val lifecycle = LocalLifecycleOwner.current.lifecycle
+                        val lifecycleOwner = LocalLifecycleOwner.current
                         val context = LocalContext.current
                         when (viewModel.loginState.value) {
                             LoginState.Loading -> CustomLoadingIndicator()
@@ -68,45 +69,51 @@ class MontageTaskFragment : Fragment() {
                                     Text(text = stringResource(id = R.string.no_task_data))
                                 }
                             } else {
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .fillMaxHeight()
-                                ) {
-                                    val tasks = viewModel.tasks.value
-                                    items(tasks.size) { index ->
-                                        Column {
-                                            ListItem(
-                                                modifier = Modifier.padding(bottom = 8.dp),
-                                                text = {
-                                                    Text(text = "Auftragsnummer: ${tasks[index].montageId}")
-                                                },
-                                                secondaryText = {
-                                                    Column {
-                                                        Text(
-                                                            text = stringResource(
-                                                                R.string.owner_string,
-                                                                tasks[index].locationOwner.companyName
+                                Column {
+                                    LazyColumn(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .fillMaxHeight()
+                                    ) {
+                                        val tasks = viewModel.tasks.value
+                                        viewModel.hasActiveTask(context, lifecycleOwner.lifecycle)
+                                        items(tasks.size) { index ->
+                                            Column {
+                                                ListItem(
+                                                    modifier = Modifier.padding(bottom = 8.dp),
+                                                    text = {
+                                                        Text(text = "Auftragsnummer: ${tasks[index].montageId}")
+                                                    },
+                                                    secondaryText = {
+                                                        Column {
+                                                            Text(
+                                                                text = stringResource(
+                                                                    R.string.owner_string,
+                                                                    tasks[index].locationOwner.companyName
+                                                                )
                                                             )
-                                                        )
-                                                        Text(
-                                                            text = stringResource(
-                                                                R.string.adress_string,
-                                                                tasks[index].remoteLocation.streetName,
-                                                                tasks[index].remoteLocation.streetNumber
-                                                            ),
+                                                            Text(
+                                                                text = stringResource(
+                                                                    R.string.adress_string,
+                                                                    tasks[index].remoteLocation.streetName,
+                                                                    tasks[index].remoteLocation.streetNumber
+                                                                ),
+                                                            )
+                                                        }
+                                                    },
+                                                    trailing = {
+                                                        Icon(
+                                                            imageVector = Icons.Default.KeyboardArrowRight,
+                                                            contentDescription = "Pfeil nach rechts"
                                                         )
                                                     }
-                                                },
-                                                trailing = {
-                                                    Icon(
-                                                        imageVector = Icons.Default.KeyboardArrowRight,
-                                                        contentDescription = "Pfeil nach rechts"
-                                                    )
-                                                }
-                                            )
-                                            Divider()
+                                                )
+                                                Divider()
+                                            }
                                         }
+                                    }
+                                    if (viewModel.hasActiveTask.value) {
+                                        Text("Hello")
                                     }
                                 }
                             }

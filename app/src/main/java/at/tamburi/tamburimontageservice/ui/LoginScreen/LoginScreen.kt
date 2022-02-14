@@ -60,6 +60,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            viewModel.hasActiveTask(context, lifecycle)
             var userNameTextField by remember { mutableStateOf("") }
             var passwordTextField by remember { mutableStateOf("") }
             OutlinedTextField(
