@@ -14,9 +14,9 @@ data class MontageTask(
     val locationDesc: String,
     val powerConnection: PowerConnection,
     val montageGround: MontageGround,
-    val montageSketch: Bitmap,
+    val montageSketch: Bitmap?,
     val lockerCount: Int,
     val lockerTypeList: List<LockerType>,
-    val assignedMonteurs: List<ServiceUser>,
-    val scheduledInstallation: Int
+    val assignedMonteurs: List<Int>,
+    val scheduledInstallation: Long
 )

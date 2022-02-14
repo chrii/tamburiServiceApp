@@ -11,6 +11,12 @@
     <string name="password">Passwort</string>
     <string name="login_error">Login fehlgeschlagen</string>
 
+    <!-- Task List Fragment -->
+    <string name="no_task_data">Keine Aufträge vorhanden</string>
+    <string name="owner_string">Auftraggeber: %s</string>
+    <string name="adress_string">Adresse: %s %s</string>
+
     <!-- Custom Progress Indicator Text -->
     <string name="progress_indicator_default_text">Überprüfe Daten</string>
+    <string name="tasks">Aufträge</string>
 </resources>

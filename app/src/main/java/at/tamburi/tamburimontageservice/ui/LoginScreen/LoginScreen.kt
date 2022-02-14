@@ -44,12 +44,15 @@ fun LoginScreen(
             //TODO: Error handling
             Toast.makeText(
                 context,
-                stringResource(id = R.string.login_error),
+                stringResource(id = R.string.login_error, viewModel.errorMessage),
                 Toast.LENGTH_LONG
             ).show()
             viewModel.changeState(LoginState.Ready)
         }
-        LoginState.NEXT -> Toast.makeText(context, "Logged In", Toast.LENGTH_LONG).show()
+        LoginState.NEXT -> {
+            Toast.makeText(context, "Logged In", Toast.LENGTH_LONG).show()
+            navigation.navigate(R.id.action_loginFragment_to_task_list_fragment)
+        }
         LoginState.Ready -> Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -57,6 +60,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            viewModel.hasActiveTask(context, lifecycle)
             var userNameTextField by remember { mutableStateOf("") }
             var passwordTextField by remember { mutableStateOf("") }
             OutlinedTextField(
