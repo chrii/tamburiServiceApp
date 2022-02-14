@@ -34,7 +34,6 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        viewModel.checkUserState(lifecycle)
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
@@ -52,11 +51,6 @@ class LoginFragment : Fragment() {
             }
         }
     }
-
-//    override fun onResume() {
-//        super.onResume()
-//        viewModel.checkUserState(lifecycle)
-//    }
 
     override fun onStart() {
         super.onStart()

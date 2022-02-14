@@ -1,8 +1,12 @@
 package at.tamburi.tamburimontageservice
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -14,9 +18,7 @@ private const val TAG = "MainActivity"
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    var DEBUG = true
-
-//    private val db by lazy { (application as BaseApplication).database }
+    val dataStore: DataStore<Preferences> by preferencesDataStore(name = "activeTask")
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,27 +29,5 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
         val navController = navHostFragment.navController
         setupActionBarWithNavController(navController)
-    }
-
-//    private fun setOwner() {
-//        lifecycle.coroutineScope.launch {
-//            val owner = db.ownerDao().getOwnerById(1)
-//            if (owner == null) {
-//                val result = db.ownerDao().saveOwner(
-//                    ownerId = 1,
-//                    companyName = "GESIBA",
-//                    address = "Gesiba Straße",
-//                    streetNumber = "14",
-//                    zipCode = "1140"
-//                )
-//                Log.d(TAG, "Owner Saved state: $result")
-//            }
-//        }
-//    }
-
-    private fun setMontageTask() {
-        lifecycle.coroutineScope.launch {
-
-        }
     }
 }
