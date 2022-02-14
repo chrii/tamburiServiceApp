@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
@@ -27,7 +28,7 @@ import javax.inject.Inject
 
 private const val TAG: String = "LoginViewModel"
 
-// TODO: REFACTOR STATENAME
+// TODO: REFACTOR STATE NAMES
 enum class LoginState {
     Loading,
     Error,
@@ -45,14 +46,15 @@ constructor(
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
     private val _tasks: MutableState<List<MontageTask>> = mutableStateOf(listOf())
     private val _hasActiveTask: MutableState<Boolean> = mutableStateOf(false)
-    private var _activeTask: MontageTask? = null
+    private val _activeTask: MutableState<MontageTask?> = mutableStateOf(null)
 
     val loginState: MutableState<LoginState> = _loginState
     val tasks: MutableState<List<MontageTask>> = _tasks
-    val activeTask: MontageTask? = _activeTask
+    val activeTask: MutableState<MontageTask?> = _activeTask
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
     var loadingMessageString: String? = null
     var errorMessage: String = ""
+    var taskDetailId: Int = 0
     fun changeState(state: LoginState, loadingMessage: String? = null) {
         if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
@@ -135,7 +137,7 @@ constructor(
         }
     }
 
-    fun hasActiveTask(context: Context, lifecycle: Lifecycle) {
+    fun getActiveTask(context: Context, lifecycle: Lifecycle) {
         Log.d(TAG, "Has active task?")
         lifecycle.coroutineScope.launch {
             try {
@@ -153,18 +155,31 @@ constructor(
                         _tasks.value.find { it.montageId == activeTaskId }
 
                     if (activeTask != null) {
-                        _activeTask = activeTask
+                        _activeTask.value = activeTask
                         _hasActiveTask.value = true
                     } else {
-                        Toast.makeText(context, "No active Task found", Toast.LENGTH_SHORT).show()
                         _hasActiveTask.value = false
                     }
                 } else {
-                    Toast.makeText(context, "No active Task found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No active Task found1", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 throw Exception("Error getting DataStore values")
             }
+        }
+    }
+
+    fun onSubmitTask(context: Context, lifecycle: Lifecycle) {
+        setActiveTask(context, lifecycle)
+    }
+
+    fun setActiveTask(context: Context, lifecycle: Lifecycle) {
+        lifecycle.coroutineScope.launch {
+            context.dataStore.edit {
+                it[ACTIVE_TASK_ID] = taskDetailId
+                it[HAS_ACTIVE_TASK] = true
+            }
+            hasActiveTask.value = true
         }
     }
 

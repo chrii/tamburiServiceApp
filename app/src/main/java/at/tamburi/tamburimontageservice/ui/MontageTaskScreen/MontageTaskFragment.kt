@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginState
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginViewModel
@@ -69,18 +71,27 @@ class MontageTaskFragment : Fragment() {
                                     Text(text = stringResource(id = R.string.no_task_data))
                                 }
                             } else {
-                                Column {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.SpaceBetween
+                                ) {
                                     LazyColumn(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .fillMaxHeight()
+//                                        modifier = Modifier
+//                                            .fillMaxWidth()
+//                                            .fillMaxHeight()
                                     ) {
                                         val tasks = viewModel.tasks.value
-                                        viewModel.hasActiveTask(context, lifecycleOwner.lifecycle)
+                                        viewModel.getActiveTask(context, lifecycleOwner.lifecycle)
                                         items(tasks.size) { index ->
                                             Column {
                                                 ListItem(
-                                                    modifier = Modifier.padding(bottom = 8.dp),
+                                                    modifier = Modifier
+                                                        .padding(bottom = 8.dp)
+                                                        .clickable {
+                                                            viewModel.taskDetailId =
+                                                                tasks[index].montageId
+                                                            findNavController().navigate(R.id.action_task_list_to_details)
+                                                        },
                                                     text = {
                                                         Text(text = "Auftragsnummer: ${tasks[index].montageId}")
                                                     },
@@ -113,7 +124,9 @@ class MontageTaskFragment : Fragment() {
                                         }
                                     }
                                     if (viewModel.hasActiveTask.value) {
-                                        Text("Hello")
+                                        ListItem(
+                                            text = { Text(text = "ID : ${viewModel.activeTask.value?.montageId ?: "Not Found"}") }
+                                        )
                                     }
                                 }
                             }
