@@ -8,7 +8,14 @@
         android:id="@+id/workflow_landing_fragment"
         android:name="at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen.WorkflowLandingFragment"
         android:label="Auftrag">
-
+        <action
+            android:id="@+id/action_landing_fragment_to_qr_code_fragment"
+            app:destination="@+id/qr_code_fragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/qr_code_fragment"
+        android:name="at.tamburi.tamburimontageservice.ui.QrCodeScreen.QrCodeFragment"
+        android:label="Scanner" />
 
 </navigation>

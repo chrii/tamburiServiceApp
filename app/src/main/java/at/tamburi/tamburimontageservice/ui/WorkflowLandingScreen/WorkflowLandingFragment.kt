@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
+import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.State
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
@@ -38,8 +40,6 @@ class WorkflowLandingFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colors.background
                     ) {
-                        Log.d(TAG, "Task: ${viewModel.task.value}")
-
                         when (viewModel.state.value) {
                             State.Loading -> CustomLoadingIndicator()
                             State.Error -> Text(text = "Error View")
@@ -48,7 +48,9 @@ class WorkflowLandingFragment : Fragment() {
                             ) {
                                 viewModel.task.value?.let { saveTask ->
                                     Text(text = saveTask.locationDesc)
-                                    Button(onClick = { /*TODO*/ }) {
+                                    Button(onClick = {
+                                        findNavController().navigate(R.id.action_landing_fragment_to_qr_code_fragment)
+                                    }) {
                                         Text(text = "Scan QR Code")
                                     }
                                 }
