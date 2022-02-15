@@ -41,7 +41,7 @@ class UserRepositoryImpl(
                 user.assignedMontageTaskId ?: -1
             )
             Log.d(TAG, "$userState")
-            if (userState == -1L) {
+            if (userState < 1L) {
                 DataState(hasData = false, data = null, message = "Couldn't save ServiceUser")
             } else {
                 DataState(hasData = true, data = user)

@@ -28,14 +28,6 @@ fun LoginScreen(
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
-//    val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
-//        focusedBorderColor = Orange,
-//        focusedLabelColor = Orange,
-//        cursorColor = OrangeLight,
-//        unfocusedBorderColor = Orange,
-//        unfocusedLabelColor = Orange,
-//        textColor = White
-//    )
 
     when (viewModel.loginState.value) {
         LoginState.Loading ->
@@ -69,7 +61,6 @@ fun LoginScreen(
                 value = userNameTextField,
                 onValueChange = { userNameTextField = it },
                 label = { Text(context.getString(R.string.username)) },
-//                colors = textFieldColors
             )
             OutlinedTextField(
                 modifier = Modifier
@@ -79,7 +70,6 @@ fun LoginScreen(
                 onValueChange = { passwordTextField = it },
                 label = { Text(context.getString(R.string.password)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-//                colors = textFieldColors
             )
             Button(
                 modifier = Modifier

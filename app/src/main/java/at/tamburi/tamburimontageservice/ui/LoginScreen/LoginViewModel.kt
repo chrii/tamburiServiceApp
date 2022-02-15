@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import at.tamburi.tamburimontageservice.mockdata.taskListMockData
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
@@ -70,9 +71,12 @@ constructor(
             if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
+                Log.d(TAG, "userdata: ${user.hasData}")
                 val serviceUser = user.data
                 val lastDate = getDate(Date(serviceUser!!.loginDate))
                 val todayDate = getDate()
+                Log.d(TAG, "today: ${todayDate}")
+                Log.d(TAG, "last: ${lastDate}")
 
                 if (todayDate == lastDate) {
                     changeState(LoginState.NEXT)
@@ -120,7 +124,7 @@ constructor(
         lifecycle.coroutineScope.launch {
             try {
                 //TODO: Put out the Mock Data
-                taskRepo.saveMockMontageTask()
+                taskListMockData.map { taskRepo.saveMockMontageTask(it) }
                 val tasks = taskRepo.getAllTasks()
                 if (tasks.hasData) {
                     Log.d(TAG, "${tasks.data}")
@@ -160,8 +164,6 @@ constructor(
                     } else {
                         _hasActiveTask.value = false
                     }
-                } else {
-                    Toast.makeText(context, "No active Task found1", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 throw Exception("Error getting DataStore values")
@@ -170,7 +172,11 @@ constructor(
     }
 
     fun onSubmitTask(context: Context, lifecycle: Lifecycle) {
-        setActiveTask(context, lifecycle)
+        if (hasActiveTask.value) {
+            Toast.makeText(context, "Aktiver Auftrag existiert bereits", Toast.LENGTH_SHORT).show()
+        } else {
+            setActiveTask(context, lifecycle)
+        }
     }
 
     fun setActiveTask(context: Context, lifecycle: Lifecycle) {

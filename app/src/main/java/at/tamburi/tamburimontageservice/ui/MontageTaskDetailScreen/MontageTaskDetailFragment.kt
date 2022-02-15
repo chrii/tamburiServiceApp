@@ -81,7 +81,7 @@ class MontageTaskDetailFragment : Fragment() {
                                         .padding(8.dp)
                                         .fillMaxWidth(),
                                     onClick = {
-                                        viewModel.setActiveTask(requireContext(), lifecycle)
+                                        viewModel.onSubmitTask(requireContext(), lifecycle)
                                     }) {
                                     Text("Zuweisen")
                                 }
