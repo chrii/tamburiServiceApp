@@ -22,5 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MontageWorkflowActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat">
+        </activity>
     </application>
 </manifest>

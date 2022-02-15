@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/workflow_navigation"
+    app:startDestination="@id/workflow_navigation">
+
+    <fragment
+        android:id="@+id/workflow_landing_fragment"
+        android:name="at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen.WorkflowLandingFragment"
+        android:label="Auftrag">
+
+    </fragment>
+
+</navigation>
