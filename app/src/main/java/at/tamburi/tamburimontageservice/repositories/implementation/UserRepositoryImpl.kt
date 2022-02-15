@@ -1,10 +1,13 @@
 package at.tamburi.tamburimontageservice.repositories.implementation
 
+import android.util.Log
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.IUserRepository
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.services.database.toServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState
+
+private const val TAG = "UserRepositoryImpl"
 
 class UserRepositoryImpl(
     private val userDao: UserDao
@@ -37,7 +40,8 @@ class UserRepositoryImpl(
                 user.loginDate,
                 user.assignedMontageTaskId ?: -1
             )
-            if (userState != 1L) {
+            Log.d(TAG, "$userState")
+            if (userState == -1L) {
                 DataState(hasData = false, data = null, message = "Couldn't save ServiceUser")
             } else {
                 DataState(hasData = true, data = user)
