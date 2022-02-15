@@ -5,6 +5,5 @@ import at.tamburi.tamburimontageservice.utils.DataState
 
 interface IMontageTaskRepository {
     suspend fun getAllTasks(): DataState<List<MontageTask>>
-    suspend fun saveMockMontageTask()
-
+    suspend fun saveMockMontageTask(task: MontageTask)
 }

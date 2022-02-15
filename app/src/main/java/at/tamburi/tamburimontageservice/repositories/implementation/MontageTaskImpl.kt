@@ -1,5 +1,6 @@
 package at.tamburi.tamburimontageservice.repositories.implementation
 
+import at.tamburi.tamburimontageservice.mockdata.ownerMockList
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.services.database.dao.LocationOwnerDao
@@ -16,6 +17,12 @@ class MontageTaskImpl(
             val result = montageTaskDao.getAllTasks()
             if (!result.isNullOrEmpty()) {
                 val tasks = result.map {
+                    val ownerEntity = ownerDao.getOwnerById(it.ownerId)
+
+                    if (ownerEntity == null) {
+                        //This is the owner request if the owner is not local
+                        ownerMockList.find { i -> i.companyId == it.ownerId }
+                    }
                     MontageTask(
                         montageId = it.montageId,
                         createdAt = it.createdAt,
@@ -72,47 +79,9 @@ class MontageTaskImpl(
         }
     }
 
-    override suspend fun saveMockMontageTask() {
-        val task = MontageTask(
-            montageId = 1,
-            createdAt = Date().time,
-            remoteLocationId = 1,
-            remoteLocation = RemoteLocation(
-                locationId = 2,
-                countryId = 1,
-                cityId = 1,
-                zipCode = "1219",
-                streetName = "Floridusgasse",
-                streetNumber = "50",
-                qrCode = "a1b2",
-                minimumReservationTime = 5,
-                minimumPauseTime = 3
-            ),
-            magazine = "",
-            ownerId = 1,
-            locationOwner = LocationOwner(
-                companyId = 1,
-                companyName = "GESIBA",
-                address = "Gesiba Straße",
-                streetNumber = "14",
-                zipCode = "1140"
-            ),
-            montageStatus = MontageStatus.ASSIGNED,
-            locationDesc = "This is a test description",
-            powerConnection = PowerConnection.BATTERY,
-            montageGround = MontageGround.LAVA,
-            montageSketch = null,
-            lockerCount = 2,
-            lockerTypeList = listOf(
-                LockerType(1),
-                LockerType(1)
-            ),
-            assignedMonteurs = listOf(1),
-            scheduledInstallation = Date().time,
-        )
-
+    override suspend fun saveMockMontageTask(task: MontageTask) {
         try {
-            val ownerById = ownerDao.getOwnerById(1)
+            val ownerById = ownerDao.getOwnerById(task.ownerId)
             if (ownerById == null) {
                 ownerDao.saveOwner(
                     id = 1,
