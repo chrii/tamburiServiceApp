@@ -9,6 +9,9 @@ interface LockerDao {
     @Query("SELECT * FROM lockers WHERE locker_id = :lockerId")
     suspend fun getLockerById(lockerId: Int): LockerEntity?
 
+    @Query("UPDATE lockers SET qr_code = :qrCode WHERE locker_id = :lockerId")
+    suspend fun setQrCode(qrCode: String, lockerId: Int): Int
+
     @Query(
         "INSERT INTO lockers (locker_id, type_id, type_name, qr_code, gateway)" +
                 "VALUES (:lockerId, :typeId, :typeName, :qrCode, :gateway)"

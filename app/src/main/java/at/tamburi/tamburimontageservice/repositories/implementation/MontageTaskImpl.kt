@@ -86,6 +86,24 @@ class MontageTaskImpl(
         }
     }
 
+    override suspend fun setQrCode(qrCode: String, lockerId: Int): DataState<Boolean> {
+        return try {
+            lockerDao.setQrCode(qrCode, lockerId)
+            DataState(
+                hasData = true,
+                data = true,
+                message = "Success"
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(
+                hasData = false,
+                data = false,
+                message = "Error: Cant set QR Code for Locker"
+            )
+        }
+    }
+
     override suspend fun getAllTasks(): DataState<List<MontageTask>> {
         return try {
             val result = montageTaskDao.getAllTasks()

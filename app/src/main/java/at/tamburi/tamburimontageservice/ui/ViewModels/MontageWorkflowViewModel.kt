@@ -46,11 +46,14 @@ constructor(
         _state.value = s
     }
 
-    fun setQrCodeForLocker(lockerId: Int, qrCode: String) {
-        _task.value?.lockerList?.map {
-            if (it.lockerId == lockerId) {
-                it.qrCode = qrCode
-                Log.d(TAG, "Set QR CODE: $it")
+    fun setQrCodeForLocker(lifecycle: Lifecycle, lockerId: Int, qrCode: String) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            val result = montageTaskRepository.setQrCode(qrCode, lockerId)
+            if(result.hasData) {
+                changeState(State.Ready)
+            } else {
+                changeState(State.Error)
             }
         }
     }

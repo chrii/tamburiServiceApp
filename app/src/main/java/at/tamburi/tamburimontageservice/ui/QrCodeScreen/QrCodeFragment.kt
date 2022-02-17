@@ -113,6 +113,7 @@ class QrCodeFragment : Fragment() {
                             val formattedCode = code.split(":")
                             if (checkQrCode(formattedCode)) {
                                 viewModel.setQrCodeForLocker(
+                                    lifecycleOwner.lifecycle,
                                     viewModel.activeLocker?.lockerId!!,
                                     formattedCode[1]
                                 )
@@ -129,8 +130,7 @@ class QrCodeFragment : Fragment() {
                                 )
                             } else {
                                 Text(
-//                                text = "QR Code ungültig",
-                                    text = code,
+                                    text = "QR Code ungültig",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier
