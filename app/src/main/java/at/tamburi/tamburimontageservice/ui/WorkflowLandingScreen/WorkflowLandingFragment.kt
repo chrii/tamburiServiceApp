@@ -89,11 +89,6 @@ class WorkflowLandingFragment : Fragment() {
                                             Divider()
                                         }
                                     }
-                                    Button(onClick = {
-                                        findNavController().navigate(R.id.action_landing_fragment_to_qr_code_fragment)
-                                    }) {
-                                        Text(text = "Scan QR Code")
-                                    }
                                 }
                             }
                         }
