@@ -21,6 +21,19 @@ class MontageTaskImpl(
         return try {
             val result = montageTaskDao.getTaskByTaskId(id)
             if (result != null) {
+                val ownerEntity = ownerDao.getOwnerById(result.ownerId)
+
+                if (ownerEntity == null) {
+                    //This is the owner request if the owner is not local
+                    ownerMockList.find { i -> i.companyId == result.ownerId }
+                }
+
+                val lockerList = Locker.lockerIdList(result.lockerList).map { l ->
+                    val r = lockerDao.getLockerById(l)
+                    if (r != null) {
+                        Locker(r.lockerId, r.typeId, r.typeName, r.qrCode, r.gateway)
+                    } else throw Exception("One Locker not found")
+                }
                 val task = MontageTask(
                     montageId = result.montageId,
                     createdAt = result.createdAt,
@@ -48,7 +61,7 @@ class MontageTaskImpl(
                     powerConnection = PowerConnection.values()[result.powerConnection],
                     montageGround = MontageGround.values()[result.montageGround.toInt()],
                     montageSketch = null,
-                    lockerList = listOf(),
+                    lockerList = lockerList,
                     assignedMonteurs = listOf(1),
                     scheduledInstallation = result.scheduledInstallation,
                 )

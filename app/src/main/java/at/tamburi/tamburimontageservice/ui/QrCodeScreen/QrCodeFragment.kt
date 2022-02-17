@@ -8,6 +8,7 @@ import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -34,10 +35,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
+import at.tamburi.tamburimontageservice.R
+import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 
 @RequiresApi(Build.VERSION_CODES.M)
 class QrCodeFragment : Fragment() {
+    val viewModel: MontageWorkflowViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,6 +54,14 @@ class QrCodeFragment : Fragment() {
             setContent {
                 TamburiMontageServiceTheme() {
                     Surface(color = MaterialTheme.colors.background) {
+                        if (viewModel.activeLocker == null) {
+                            findNavController().navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+                            Toast.makeText(
+                                requireContext(),
+                                "No active Locker found",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                         var code by remember {
                             mutableStateOf("")
                         }
@@ -95,19 +110,43 @@ class QrCodeFragment : Fragment() {
                                 },
                                 modifier = Modifier.weight(1f)
                             )
-                            Text(
+                            val formattedCode = code.split(":")
+                            if (checkQrCode(formattedCode)) {
+                                viewModel.setQrCodeForLocker(
+                                    viewModel.activeLocker?.lockerId!!,
+                                    formattedCode[1]
+                                )
+                                findNavController().navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+                            } else if (code.isEmpty()) {
+                                Text(
 //                                text = "Halten Sie die Kamera über den QR Code",
-                                text = code,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(32.dp)
-                            )
+                                    text = code,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(32.dp)
+                                )
+                            } else {
+                                Text(
+//                                text = "QR Code ungültig",
+                                    text = code,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(32.dp)
+                                )
+                            }
+
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun checkQrCode(code: List<String>): Boolean {
+        return code.size == 2 && code[0] == "tamburi"
     }
 }

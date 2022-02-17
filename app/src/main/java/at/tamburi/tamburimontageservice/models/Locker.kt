@@ -4,7 +4,7 @@ data class Locker(
     val lockerId: Int,
     val typeId: Int,
     val typeName: String,
-    val qrCode: String,
+    var qrCode: String,
     val gateway: Boolean
 ) {
     companion object {

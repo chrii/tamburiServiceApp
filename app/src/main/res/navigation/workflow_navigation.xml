@@ -16,6 +16,11 @@
     <fragment
         android:id="@+id/qr_code_fragment"
         android:name="at.tamburi.tamburimontageservice.ui.QrCodeScreen.QrCodeFragment"
-        android:label="Scanner" />
+        android:label="Scanner">
+        <action android:id="@+id/action_qr_code_fragment_to_landing_fragment"
+            app:destination="@id/workflow_landing_fragment"
+            app:popUpTo="@id/workflow_landing_fragment"
+            app:popUpToInclusive="false"/>
+    </fragment>
 
 </navigation>

@@ -37,12 +37,22 @@ constructor(
 ) : ViewModel() {
     private val _state: MutableState<State> = mutableStateOf(State.Loading)
     private val _task: MutableState<MontageTask?> = mutableStateOf(null)
+    var activeLocker = _task.value?.lockerList?.first()
 
     val state: MutableState<State> = _state
     val task: MutableState<MontageTask?> = _task
 
     fun changeState(s: State) {
         _state.value = s
+    }
+
+    fun setQrCodeForLocker(lockerId: Int, qrCode: String) {
+        _task.value?.lockerList?.map {
+            if (it.lockerId == lockerId) {
+                it.qrCode = qrCode
+                Log.d(TAG, "Set QR CODE: $it")
+            }
+        }
     }
 
     fun getTask(context: Context, lifecycle: Lifecycle) {
