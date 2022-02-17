@@ -84,6 +84,15 @@ class MontageTaskImpl(
                         //This is the owner request if the owner is not local
                         ownerMockList.find { i -> i.companyId == it.ownerId }
                     }
+
+
+                    val lockerList = Locker.lockerIdList(it.lockerList).map { l ->
+                        val r = lockerDao.getLockerById(l)
+                        if (r != null) {
+                            Locker(r.lockerId, r.typeId, r.typeName, r.qrCode, r.gateway)
+                        } else throw Exception("One Locker not found")
+                    }
+                    Log.d("TAG", "LockerList: $lockerList")
                     MontageTask(
                         montageId = it.montageId,
                         createdAt = it.createdAt,
@@ -111,7 +120,7 @@ class MontageTaskImpl(
                         powerConnection = PowerConnection.values()[it.powerConnection],
                         montageGround = MontageGround.values()[it.montageGround.toInt()],
                         montageSketch = null,
-                        lockerList = listOf<Locker>(),
+                        lockerList = lockerList,
                         assignedMonteurs = listOf(1),
                         scheduledInstallation = it.scheduledInstallation,
                     )
@@ -129,6 +138,7 @@ class MontageTaskImpl(
                 )
             }
         } catch (e: Exception) {
+            Log.e(TAG, e.stackTraceToString())
             DataState(
                 hasData = false,
                 data = null,
@@ -142,10 +152,8 @@ class MontageTaskImpl(
             val ownerById = ownerDao.getOwnerById(task.locationOwner.companyId)
             val taskById = montageTaskDao.getTaskByTaskId(task.montageId)
             task.lockerList.map {
-                Log.d(TAG, "Locker: ${it.lockerId}")
                 val r = lockerDao.getLockerById(it.lockerId)
-                Log.d(TAG, "Locker result: ${r?.lockerId}")
-                if(r == null) {
+                if (r == null) {
                     val l = lockerDao.saveLocker(
                         it.lockerId,
                         it.typeId,
@@ -153,7 +161,6 @@ class MontageTaskImpl(
                         it.qrCode,
                         it.gateway
                     )
-                    Log.d(TAG, "Saved: $l")
                 }
             }
             if (ownerById == null) {

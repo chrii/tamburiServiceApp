@@ -15,6 +15,8 @@ data class Locker(
             .replace("[", "")
             .replace("]", "")
 
-        fun lockerIdList(ids: String): List<Int> = ids.split(",").map { it.toInt() }
+        fun lockerIdList(ids: String): List<Int> = ids
+            .split(",")
+            .map { it.trim().toInt() }
     }
 }
