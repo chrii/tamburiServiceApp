@@ -96,7 +96,8 @@ class QrCodeFragment : Fragment() {
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
-                                text = "Halten Sie die Kamera über den QR Code",
+//                                text = "Halten Sie die Kamera über den QR Code",
+                                text = code,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier
