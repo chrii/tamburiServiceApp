@@ -1,21 +1,23 @@
 package at.tamburi.tamburimontageservice.ui.MontageTaskScreen
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -24,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginState
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginViewModel
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
+import at.tamburi.tamburimontageservice.utils.Constants
 
 class MontageTaskFragment : Fragment() {
     val viewModel: LoginViewModel by activityViewModels()
@@ -41,6 +45,13 @@ class MontageTaskFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.getTaskList(lifecycle)
+    }
+
+    private fun navigateToActivity(taskId: Int) {
+        val intent = Intent(requireActivity(), MontageWorkflowActivity::class.java).apply {
+            putExtra(Constants.INTENT_MONTAGE_TASK_KEY, taskId)
+        }
+        startActivity(intent)
     }
 
     @OptIn(ExperimentalMaterialApi::class)
@@ -124,12 +135,15 @@ class MontageTaskFragment : Fragment() {
                                         }
                                     }
                                     if (viewModel.hasActiveTask.value) {
-                                        Column() {
+                                        Column(
+                                            modifier = Modifier
+                                                .clickable { navigateToActivity(viewModel.taskDetailId) }
+                                        ) {
                                             Divider(
                                                 thickness = 1.dp
                                             )
                                             ListItem(
-                                                modifier = Modifier.background(Color.Gray),
+                                                modifier = Modifier.background(MaterialTheme.colors.primaryVariant),
                                                 text = { Text(text = "Aktiver Auftrag") },
                                                 secondaryText = { Text(text = "Auftragsnummer: ${viewModel.activeTask.value?.montageId}") }
                                             )

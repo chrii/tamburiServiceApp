@@ -12,6 +12,65 @@ class MontageTaskImpl(
     private val montageTaskDao: MontageTaskDao,
     private val ownerDao: LocationOwnerDao
 ) : IMontageTaskRepository {
+    override suspend fun getTaskById(id: Int): DataState<MontageTask> {
+        return try {
+            val result = montageTaskDao.getTaskByTaskId(id)
+            if(result != null) {
+                val task = MontageTask(
+                    montageId = result.montageId,
+                    createdAt = result.createdAt,
+                    remoteLocationId = result.remoteLocationId,
+                    remoteLocation = RemoteLocation(
+                        locationId = 2,
+                        countryId = 1,
+                        cityId = 1,
+                        zipCode = "1219",
+                        streetName = "Floridusgasse",
+                        streetNumber = "50",
+                        qrCode = "a1b2",
+                        minimumReservationTime = 5,
+                        minimumPauseTime = 3
+                    ),
+                    magazine = result.magazine,
+                    ownerId = result.ownerId,
+                    locationOwner = LocationOwner(
+                        companyId = 1,
+                        companyName = "GESIBA",
+                        address = "Gesiba Straße",
+                        streetNumber = "14",
+                        zipCode = "1140"
+                    ),
+                    montageStatus = MontageStatus.values()[result.montageStatus],
+                    locationDesc = result.locationDesc,
+                    powerConnection = PowerConnection.values()[result.powerConnection],
+                    montageGround = MontageGround.values()[result.montageGround.toInt()],
+                    montageSketch = null,
+                    lockerCount = result.lockerCount,
+                    lockerTypeList = listOf(),
+                    assignedMonteurs = listOf(1),
+                    scheduledInstallation = result.scheduledInstallation,
+                )
+                DataState(
+                    hasData = true,
+                    data = task,
+                    message = "Got Task"
+                )
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "No task with this ID assigned"
+                )
+            }
+        } catch (e: Exception) {
+            DataState(
+                hasData = false,
+                data = null,
+                message = e.stackTraceToString()
+            )
+        }
+    }
+
     override suspend fun getAllTasks(): DataState<List<MontageTask>> {
         return try {
             val result = montageTaskDao.getAllTasks()
