@@ -19,7 +19,7 @@ data class MontageTaskEntity(
     val createdAt: Long,
 
     @NonNull
-    @ColumnInfo(name = "remoteLocation_id")
+    @ColumnInfo(name = "remote_location_id")
     val remoteLocationId: Int,
 
     @NonNull
@@ -51,12 +51,8 @@ data class MontageTaskEntity(
     val montageSketch: String,
 
     @NonNull
-    @ColumnInfo(name = "locker_count")
-    val lockerCount: Int,
-
-    @NonNull
-    @ColumnInfo(name = "locker_type_list")
-    val lockerTypeList: String,
+    @ColumnInfo(name = "locker_list")
+    val lockerList: String,
 
     @NonNull
     @ColumnInfo(name = "assigned_monteurs")

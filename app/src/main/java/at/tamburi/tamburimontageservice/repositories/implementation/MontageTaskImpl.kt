@@ -1,25 +1,29 @@
 package at.tamburi.tamburimontageservice.repositories.implementation
 
+import android.util.Log
 import at.tamburi.tamburimontageservice.mockdata.ownerMockList
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.services.database.dao.LocationOwnerDao
+import at.tamburi.tamburimontageservice.services.database.dao.LockerDao
 import at.tamburi.tamburimontageservice.services.database.dao.MontageTaskDao
 import at.tamburi.tamburimontageservice.utils.DataState
 import java.util.*
 
+private const val TAG = "MontageTaskImpl"
+
 class MontageTaskImpl(
     private val montageTaskDao: MontageTaskDao,
-    private val ownerDao: LocationOwnerDao
+    private val ownerDao: LocationOwnerDao,
+    private val lockerDao: LockerDao
 ) : IMontageTaskRepository {
     override suspend fun getTaskById(id: Int): DataState<MontageTask> {
         return try {
             val result = montageTaskDao.getTaskByTaskId(id)
-            if(result != null) {
+            if (result != null) {
                 val task = MontageTask(
                     montageId = result.montageId,
                     createdAt = result.createdAt,
-                    remoteLocationId = result.remoteLocationId,
                     remoteLocation = RemoteLocation(
                         locationId = 2,
                         countryId = 1,
@@ -32,7 +36,6 @@ class MontageTaskImpl(
                         minimumPauseTime = 3
                     ),
                     magazine = result.magazine,
-                    ownerId = result.ownerId,
                     locationOwner = LocationOwner(
                         companyId = 1,
                         companyName = "GESIBA",
@@ -45,8 +48,7 @@ class MontageTaskImpl(
                     powerConnection = PowerConnection.values()[result.powerConnection],
                     montageGround = MontageGround.values()[result.montageGround.toInt()],
                     montageSketch = null,
-                    lockerCount = result.lockerCount,
-                    lockerTypeList = listOf(),
+                    lockerList = listOf(),
                     assignedMonteurs = listOf(1),
                     scheduledInstallation = result.scheduledInstallation,
                 )
@@ -85,7 +87,6 @@ class MontageTaskImpl(
                     MontageTask(
                         montageId = it.montageId,
                         createdAt = it.createdAt,
-                        remoteLocationId = it.remoteLocationId,
                         remoteLocation = RemoteLocation(
                             locationId = 2,
                             countryId = 1,
@@ -98,7 +99,6 @@ class MontageTaskImpl(
                             minimumPauseTime = 3
                         ),
                         magazine = it.magazine,
-                        ownerId = it.ownerId,
                         locationOwner = LocationOwner(
                             companyId = 1,
                             companyName = "GESIBA",
@@ -111,8 +111,7 @@ class MontageTaskImpl(
                         powerConnection = PowerConnection.values()[it.powerConnection],
                         montageGround = MontageGround.values()[it.montageGround.toInt()],
                         montageSketch = null,
-                        lockerCount = it.lockerCount,
-                        lockerTypeList = listOf(),
+                        lockerList = listOf<Locker>(),
                         assignedMonteurs = listOf(1),
                         scheduledInstallation = it.scheduledInstallation,
                     )
@@ -140,40 +139,50 @@ class MontageTaskImpl(
 
     override suspend fun saveMockMontageTask(task: MontageTask) {
         try {
-            val ownerById = ownerDao.getOwnerById(task.ownerId)
+            val ownerById = ownerDao.getOwnerById(task.locationOwner.companyId)
+            val taskById = montageTaskDao.getTaskByTaskId(task.montageId)
+            task.lockerList.map {
+                Log.d(TAG, "Locker: ${it.lockerId}")
+                val r = lockerDao.getLockerById(it.lockerId)
+                Log.d(TAG, "Locker result: ${r?.lockerId}")
+                if(r == null) {
+                    val l = lockerDao.saveLocker(
+                        it.lockerId,
+                        it.typeId,
+                        it.typeName,
+                        it.qrCode,
+                        it.gateway
+                    )
+                    Log.d(TAG, "Saved: $l")
+                }
+            }
             if (ownerById == null) {
                 ownerDao.saveOwner(
-                    id = 1,
-                    ownerId = 1,
-                    companyName = "GESIBA",
-                    address = "Gesiba Straße",
-                    streetNumber = "14",
-                    zipCode = "1140"
+                    id = task.locationOwner.companyId,
+                    ownerId = task.locationOwner.companyId,
+                    zipCode = task.locationOwner.zipCode,
+                    streetNumber = task.locationOwner.streetNumber,
+                    address = task.locationOwner.address,
+                    companyName = task.locationOwner.companyName,
                 )
             }
 
-            val taskById = montageTaskDao.getTaskByTaskId(task.montageId)
             if (taskById == null) {
                 montageTaskDao.saveTask(
                     id = task.montageId,
                     montageId = task.montageId,
+                    ownerId = task.locationOwner.companyId,
+                    remoteLocationId = task.remoteLocation.locationId,
                     createdAt = task.createdAt,
-                    remoteLocationId = task.remoteLocationId,
                     magazine = "",
-                    ownerId = task.ownerId,
                     montageStatus = task.montageStatus.ordinal,
                     locationDesc = task.locationDesc,
                     powerConnection = task.powerConnection.ordinal,
                     montageGround = task.montageGround.ordinal.toString(),
                     montageSketch = "",
-                    lockerCount = 3,
-                    lockerTypeList = task.lockerTypeList.map { it.typeID }
-                        .toString()
-                        .replace("[", "")
-                        .replace("]", "")
-                        .trim(),
+                    lockerList = Locker.lockerIdToString(task.lockerList),
                     assignedMonteurs = task.assignedMonteurs.toString(),
-                    scheduledInstallation = task.scheduledInstallation
+                    scheduledInstallation = task.scheduledInstallation,
                 )
             }
         } catch (e: Exception) {

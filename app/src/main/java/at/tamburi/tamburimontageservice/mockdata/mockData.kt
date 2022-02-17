@@ -8,7 +8,6 @@ val taskListMockData = listOf(
     MontageTask(
         montageId = 1,
         createdAt = Date().time,
-        remoteLocationId = 1,
         remoteLocation = RemoteLocation(
             locationId = 2,
             countryId = 1,
@@ -21,7 +20,6 @@ val taskListMockData = listOf(
             minimumPauseTime = 3
         ),
         magazine = "",
-        ownerId = 1,
         locationOwner = LocationOwner(
             companyId = 1,
             companyName = "GESIBA",
@@ -34,10 +32,28 @@ val taskListMockData = listOf(
         powerConnection = PowerConnection.BATTERY,
         montageGround = MontageGround.GRAS,
         montageSketch = null,
-        lockerCount = 2,
-        lockerTypeList = listOf(
-            LockerType(1),
-            LockerType(1)
+        lockerList = listOf(
+            Locker(
+                lockerId = 1,
+                typeId = 1,
+                typeName = "18-er",
+                qrCode = "",
+                gateway = false
+            ),
+            Locker(
+                lockerId = 2,
+                typeId = 1,
+                typeName = "12-er",
+                qrCode = "",
+                gateway = false
+            ),
+            Locker(
+                lockerId = 3,
+                typeId = 1,
+                typeName = "18-er",
+                qrCode = "",
+                gateway = true
+            )
         ),
         assignedMonteurs = listOf(1),
         scheduledInstallation = Date().time,
@@ -45,7 +61,6 @@ val taskListMockData = listOf(
     MontageTask(
         montageId = 2,
         createdAt = Date().time,
-        remoteLocationId = 1,
         remoteLocation = RemoteLocation(
             locationId = 2,
             countryId = 1,
@@ -58,7 +73,6 @@ val taskListMockData = listOf(
             minimumPauseTime = 3
         ),
         magazine = "",
-        ownerId = 1,
         locationOwner = LocationOwner(
             companyId = 1,
             companyName = "GESIBA",
@@ -71,10 +85,28 @@ val taskListMockData = listOf(
         powerConnection = PowerConnection.STATIONARY,
         montageGround = MontageGround.LAVA,
         montageSketch = null,
-        lockerCount = 2,
-        lockerTypeList = listOf(
-            LockerType(1),
-            LockerType(1)
+        lockerList = listOf(
+            Locker(
+                lockerId = 4,
+                typeId = 1,
+                typeName = "18-er",
+                qrCode = "",
+                gateway = false
+            ),
+            Locker(
+                lockerId = 5,
+                typeId = 1,
+                typeName = "12-er",
+                qrCode = "",
+                gateway = false
+            ),
+            Locker(
+                lockerId = 6,
+                typeId = 1,
+                typeName = "18-er",
+                qrCode = "",
+                gateway = true
+            )
         ),
         assignedMonteurs = listOf(1),
         scheduledInstallation = Date().time,

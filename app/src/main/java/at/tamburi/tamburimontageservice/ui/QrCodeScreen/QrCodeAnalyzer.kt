@@ -1,15 +1,18 @@
 package at.tamburi.tamburimontageservice.ui.QrCodeScreen
 
 import android.graphics.ImageFormat
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import java.nio.ByteBuffer
 
+@RequiresApi(Build.VERSION_CODES.M)
 class QrCodeAnalyzer(
     private val onQrCodeScanned: (String) -> Unit
-): ImageAnalysis.Analyzer {
+) : ImageAnalysis.Analyzer {
 
     private val supportedImageFormats = listOf(
         ImageFormat.YUV_420_888,
@@ -18,7 +21,7 @@ class QrCodeAnalyzer(
     )
 
     override fun analyze(image: ImageProxy) {
-        if(image.format in supportedImageFormats) {
+        if (image.format in supportedImageFormats) {
             val bytes = image.planes.first().buffer.toByteArray()
             val source = PlanarYUVLuminanceSource(
                 bytes,
@@ -42,7 +45,7 @@ class QrCodeAnalyzer(
                     )
                 }.decode(binaryBmp)
                 onQrCodeScanned(result.text)
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 image.close()
