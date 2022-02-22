@@ -27,4 +27,21 @@
     <string name="ds_montage_status">Status:</string>
     <string name="ds_description">Standort Beschreibung</string>
     <string name="ds_montage_ground">Boden Beschaffenheit:</string>
+
+    <!-- Workflow Landing Page -->
+    <string name="wf_title">Auftragsdetails</string>
+    <!-- General-->
+    <string name="wf_task_id">Auftrags ID</string>
+    <string name="wf_address">Adresse</string>
+    <string name="wf_zip">Bezirk</string>
+    <string name="wf_power_connection">Art des Strom Anschluss</string>
+    <string name="wf_montage_ground">Art des Untergrunds</string>
+    <string name="wf_scheduled_date">Montage Tag</string>
+    <!-- Owner Tab -->
+    <string name="wf_owner_title">Auftraggeber</string>
+    <string name="wf_owner_name">Firmenname</string>
+    <string name="wf_owner_contact_person">Ansprechpartner</string>
+    <string name="wf_owner_contact_number">Telefonnummer</string>
+    <string name="wf_owner_address">Adresse</string>
+    <string name="wf_owner_zip">Bezirk</string>
 </resources>

@@ -9,11 +9,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -48,47 +50,49 @@ class WorkflowLandingFragment : Fragment() {
                         when (viewModel.state.value) {
                             State.Loading -> CustomLoadingIndicator()
                             State.Error -> Text(text = "Error View")
-                            State.Ready -> Column(
+                            State.Ready -> LazyColumn(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 viewModel.task.value?.let { safeTask ->
-                                    Text(text = safeTask.locationDesc)
-                                    Log.d(TAG, "$safeTask")
-                                    ExpandableCard(title = "Kästen", description = "") {
-                                        safeTask.lockerList.forEach { locker ->
-                                            ListItem(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        viewModel.activeLocker = locker
-                                                        findNavController().navigate(R.id.action_landing_fragment_to_qr_code_fragment)
-                                                    },
-                                                text = { Text(text = locker.typeName) },
-                                                secondaryText = {
-                                                    Column {
-                                                        Text("Kasten ID: ${locker.lockerId}")
-                                                        when (locker.gateway) {
-                                                            true -> Text("Benutzt Gateway")
-                                                            false -> Text("Ohne Gateway")
-                                                        }
-
-                                                        when (locker.qrCode.isEmpty()) {
-                                                            true -> Text(text = "QR Code nicht registriert")
-                                                            false -> Text(text = "QR Code registriert")
-                                                        }
-                                                    }
-                                                },
-                                                trailing = {
-                                                    IconButton(onClick = { /*TODO*/ }) {
-                                                        Icon(
-                                                            Icons.Outlined.Add,
-                                                            contentDescription = "Add"
-                                                        )
-                                                    }
-                                                }
+                                    item {
+                                        Column() {
+                                            Text(stringResource(id = R.string.wf_title))
+                                            TwoLineItem(
+                                                cell1 = stringResource(id = R.string.wf_task_id),
+                                                cell2 = safeTask.montageId.toString()
                                             )
-                                            Divider()
+                                            TwoLineItem(
+                                                cell1 = stringResource(id = R.string.wf_address),
+                                                cell2 = "${safeTask.remoteLocation.streetName} " +
+                                                        safeTask.remoteLocation.streetNumber
+                                            )
+                                            TwoLineItem(
+                                                cell1 = stringResource(id = R.string.wf_zip),
+                                                cell2 = safeTask.remoteLocation.zipCode
+                                            )
+                                            TwoLineItem(
+                                                cell1 = stringResource(id = R.string.wf_power_connection),
+                                                cell2 = safeTask.powerConnection.toString()
+                                            )
+                                            TwoLineItem(
+                                                cell1 = stringResource(id = R.string.wf_montage_ground),
+                                                cell2 = safeTask.montageGround.type
+                                            )
+                                            TwoLineItem(
+                                                cell1 = stringResource(id = R.string.wf_scheduled_date),
+                                                cell2 = safeTask.scheduledInstallation.toString()
+                                            )
                                         }
+                                    }
+                                    item {
+                                        CompOwnerExpandable(owner = safeTask.locationOwner)
+                                    }
+                                    item {
+                                        CompLockerExpandable(
+                                            safeTask = safeTask,
+                                            viewModel = viewModel,
+                                            navigation = findNavController()
+                                        )
                                     }
                                 }
                             }
