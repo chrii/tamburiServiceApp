@@ -63,7 +63,7 @@ constructor(
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             val result = montageTaskRepository.setQrCode(qrCode, lockerId)
-            if(result.hasData) {
+            if (result.hasData) {
                 Log.v(TAG, "QR Code successfully added to database")
                 changeState(State.Ready)
                 navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
@@ -93,5 +93,13 @@ constructor(
                 changeState(State.Error)
             }
         }
+    }
+
+    fun hasEmptyQrCode(): Boolean {
+        if(_task.value != null) {
+            val qrCodes = _task.value!!.lockerList.map { it.qrCode.isEmpty() }
+            return qrCodes.contains(true)
+        }
+        return true
     }
 }

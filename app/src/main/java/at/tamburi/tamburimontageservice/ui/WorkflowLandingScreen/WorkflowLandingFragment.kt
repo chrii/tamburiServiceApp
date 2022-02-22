@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -66,6 +68,18 @@ class WorkflowLandingFragment : Fragment() {
                                             viewModel = viewModel,
                                             navigation = findNavController()
                                         )
+                                    }
+                                    if (!viewModel.hasEmptyQrCode()) {
+                                        item {
+                                            Button(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(8.dp),
+                                                onClick = { /*TODO*/ }
+                                            ) {
+                                                Text(text = "Weiter")
+                                            }
+                                        }
                                     }
                                 }
                             }
