@@ -2,6 +2,7 @@ package at.tamburi.tamburimontageservice.ui.LoginScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
@@ -10,6 +11,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.mockdata.taskListMockData
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
@@ -176,6 +178,11 @@ constructor(
             Toast.makeText(context, "Aktiver Auftrag existiert bereits", Toast.LENGTH_SHORT).show()
         } else {
             setActiveTask(context, lifecycle)
+            val intent = Intent(
+                context,
+                MontageWorkflowActivity::class.java
+            )
+            context.startActivity(intent)
         }
     }
 

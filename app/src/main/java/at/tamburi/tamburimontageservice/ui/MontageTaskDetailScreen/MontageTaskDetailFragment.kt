@@ -1,5 +1,6 @@
 package at.tamburi.tamburimontageservice.ui.MontageTaskDetailScreen
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginViewModel
@@ -56,7 +58,8 @@ class MontageTaskDetailFragment : Fragment() {
                                         cell2 = t.montageId.toString()
                                     )
                                     TwoLineItem(
-                                        cell1 = stringResource(id = R.string.ds_street_name), cell2 =
+                                        cell1 = stringResource(id = R.string.ds_street_name),
+                                        cell2 =
                                         "${t.remoteLocation.streetName} ${t.remoteLocation.streetNumber}"
                                     )
                                     TwoLineItem(

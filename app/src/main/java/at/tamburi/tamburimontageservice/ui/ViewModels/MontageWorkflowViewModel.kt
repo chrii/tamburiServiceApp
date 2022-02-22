@@ -29,6 +29,11 @@ enum class State {
     Error
 }
 
+enum class QrCodeScannerState {
+    Locker,
+    Location
+}
+
 private const val TAG = "MontageWorkflow"
 
 @HiltViewModel
@@ -39,6 +44,7 @@ constructor(
 ) : ViewModel() {
     private val _state: MutableState<State> = mutableStateOf(State.Loading)
     private val _task: MutableState<MontageTask?> = mutableStateOf(null)
+    var qrCodeScannerState: QrCodeScannerState = QrCodeScannerState.Locker
     var activeLocker = _task.value?.lockerList?.first()
 
     val state: MutableState<State> = _state

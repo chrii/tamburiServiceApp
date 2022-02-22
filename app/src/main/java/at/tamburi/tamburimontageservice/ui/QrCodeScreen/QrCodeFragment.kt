@@ -39,6 +39,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
+import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 
 @RequiresApi(Build.VERSION_CODES.M)
@@ -52,7 +53,7 @@ class QrCodeFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                TamburiMontageServiceTheme() {
+                TamburiMontageServiceTheme {
                     Surface(color = MaterialTheme.colors.background) {
                         if (viewModel.activeLocker == null) {
                             findNavController().navigate(R.id.action_qr_code_fragment_to_landing_fragment)
@@ -74,6 +75,7 @@ class QrCodeFragment : Fragment() {
                             modifier = Modifier.fillMaxSize()
                         ) {
                             AndroidView(
+                                modifier = Modifier.weight(1f),
                                 factory = { context ->
                                     val previewView = PreviewView(context)
                                     val preview = Preview.Builder().build()
@@ -107,29 +109,41 @@ class QrCodeFragment : Fragment() {
                                         e.printStackTrace()
                                     }
                                     previewView
-                                },
-                                modifier = Modifier.weight(1f)
+                                }
                             )
                             if (code.isNotEmpty()) {
-                                //TODO: REvalidate for 15 digits
-                                val formattedCode = code.split(":")
-                                if (checkQrCode(formattedCode)) {
-                                    viewModel.setQrCodeForLocker(
-                                        lifecycle,
-                                        viewModel.activeLocker?.lockerId!!,
-                                        formattedCode[1],
-                                        findNavController()
-                                    )
-                                } else {
-                                    Text(
-                                        text = "QR-Code ungültig",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(32.dp)
-                                    )
+                                //TODO: Revalidate for 15 digits
+//                                val formattedCode = code.split(":")
+                                when (viewModel.qrCodeScannerState) {
+                                    QrCodeScannerState.Location -> {
+                                        val id = cutUrlForLocationId(code)
+                                        if(id.isEmpty()) {
+                                            Text(text = "Location QR-Code ungültig")
+                                        } else {
+                                            Text("QR-Code gültig - Platzhalter")
+                                        }
+                                    }
+                                    QrCodeScannerState.Locker -> {
+                                        if (checkQrCodeForLocker(code)) {
+                                            viewModel.setQrCodeForLocker(
+                                                lifecycle,
+                                                viewModel.activeLocker?.lockerId!!,
+                                                code,
+                                                findNavController()
+                                            )
+                                        } else {
+                                            Text(
+                                                text = "Locker QR-Code ungültig",
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(32.dp)
+                                            )
+                                        }
+                                    }
                                 }
+
                             } else {
                                 Text(
                                     text = "Halten Sie die Kamera über den QR-Code",
@@ -147,7 +161,20 @@ class QrCodeFragment : Fragment() {
         }
     }
 
-    private fun checkQrCode(code: List<String>): Boolean {
-        return code.size == 2 && code[0] == "tamburi"
+    private fun cutUrlForLocationId(code: String): String {
+        return try {
+            code.split("/").last()
+        } catch(e: Exception){
+            ""
+        }
+    }
+
+    private fun checkQrCodeForLocker(code: String): Boolean {
+        return try {
+            code.toLong()
+            code.length == 15
+        } catch (e: Exception) {
+            false
+        }
     }
 }
