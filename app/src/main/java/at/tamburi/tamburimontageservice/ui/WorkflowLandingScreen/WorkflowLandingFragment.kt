@@ -55,34 +55,7 @@ class WorkflowLandingFragment : Fragment() {
                             ) {
                                 viewModel.task.value?.let { safeTask ->
                                     item {
-                                        Column() {
-                                            Text(stringResource(id = R.string.wf_title))
-                                            TwoLineItem(
-                                                cell1 = stringResource(id = R.string.wf_task_id),
-                                                cell2 = safeTask.montageId.toString()
-                                            )
-                                            TwoLineItem(
-                                                cell1 = stringResource(id = R.string.wf_address),
-                                                cell2 = "${safeTask.remoteLocation.streetName} " +
-                                                        safeTask.remoteLocation.streetNumber
-                                            )
-                                            TwoLineItem(
-                                                cell1 = stringResource(id = R.string.wf_zip),
-                                                cell2 = safeTask.remoteLocation.zipCode
-                                            )
-                                            TwoLineItem(
-                                                cell1 = stringResource(id = R.string.wf_power_connection),
-                                                cell2 = safeTask.powerConnection.toString()
-                                            )
-                                            TwoLineItem(
-                                                cell1 = stringResource(id = R.string.wf_montage_ground),
-                                                cell2 = safeTask.montageGround.type
-                                            )
-                                            TwoLineItem(
-                                                cell1 = stringResource(id = R.string.wf_scheduled_date),
-                                                cell2 = safeTask.scheduledInstallation.toString()
-                                            )
-                                        }
+                                        CompTaskDetailsExpandable(task = safeTask)
                                     }
                                     item {
                                         CompOwnerExpandable(owner = safeTask.locationOwner)

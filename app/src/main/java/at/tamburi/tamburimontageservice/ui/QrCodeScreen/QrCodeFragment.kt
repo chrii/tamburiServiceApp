@@ -120,10 +120,19 @@ class QrCodeFragment : Fragment() {
                                         formattedCode[1],
                                         findNavController()
                                     )
+                                } else {
+                                    Text(
+                                        text = "QR-Code ungültig",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(32.dp)
+                                    )
                                 }
                             } else {
                                 Text(
-                                    text = "Halten Sie die Kamera über den QR Code",
+                                    text = "Halten Sie die Kamera über den QR-Code",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier

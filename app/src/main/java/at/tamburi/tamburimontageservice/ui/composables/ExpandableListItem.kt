@@ -35,9 +35,10 @@ fun ExpandableCard(
     descriptionFontWeight: FontWeight = FontWeight.Normal,
     descriptionMaxLines: Int = 4,
     padding: Dp = 12.dp,
+    expanded: Boolean = false,
     expandedContent: @Composable ()-> Unit
 ) {
-    var expandedState by remember { mutableStateOf(false) }
+    var expandedState by remember { mutableStateOf(expanded) }
     val rotationState by animateFloatAsState(
         targetValue = if (expandedState) 180f else 0f
     )
