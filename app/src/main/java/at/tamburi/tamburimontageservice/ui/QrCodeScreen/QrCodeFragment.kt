@@ -110,27 +110,20 @@ class QrCodeFragment : Fragment() {
                                 },
                                 modifier = Modifier.weight(1f)
                             )
-                            val formattedCode = code.split(":")
-                            if (checkQrCode(formattedCode)) {
-                                viewModel.setQrCodeForLocker(
-                                    lifecycleOwner.lifecycle,
-                                    viewModel.activeLocker?.lockerId!!,
-                                    formattedCode[1]
-                                )
-                                findNavController().navigate(R.id.action_qr_code_fragment_to_landing_fragment)
-                            } else if (code.isEmpty()) {
-                                Text(
-//                                text = "Halten Sie die Kamera über den QR Code",
-                                    text = code,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(32.dp)
-                                )
+                            if (code.isNotEmpty()) {
+                                //TODO: REvalidate for 15 digits
+                                val formattedCode = code.split(":")
+                                if (checkQrCode(formattedCode)) {
+                                    viewModel.setQrCodeForLocker(
+                                        lifecycle,
+                                        viewModel.activeLocker?.lockerId!!,
+                                        formattedCode[1],
+                                        findNavController()
+                                    )
+                                }
                             } else {
                                 Text(
-                                    text = "QR Code ungültig",
+                                    text = "Halten Sie die Kamera über den QR Code",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier
@@ -138,7 +131,6 @@ class QrCodeFragment : Fragment() {
                                         .padding(32.dp)
                                 )
                             }
-
                         }
                     }
                 }

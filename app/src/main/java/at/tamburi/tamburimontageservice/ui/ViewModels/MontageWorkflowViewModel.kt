@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.MainActivity
+import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.utils.ACTIVE_TASK_ID
@@ -46,12 +48,19 @@ constructor(
         _state.value = s
     }
 
-    fun setQrCodeForLocker(lifecycle: Lifecycle, lockerId: Int, qrCode: String) {
+    fun setQrCodeForLocker(
+        lifecycle: Lifecycle,
+        lockerId: Int,
+        qrCode: String,
+        navigation: NavController
+    ) {
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             val result = montageTaskRepository.setQrCode(qrCode, lockerId)
             if(result.hasData) {
+                Log.v(TAG, "QR Code successfully added to database")
                 changeState(State.Ready)
+                navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
             } else {
                 changeState(State.Error)
             }

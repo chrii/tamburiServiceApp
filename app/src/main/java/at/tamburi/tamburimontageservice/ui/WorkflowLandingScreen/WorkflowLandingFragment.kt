@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
@@ -70,10 +71,10 @@ class WorkflowLandingFragment : Fragment() {
                                                             true -> Text("Benutzt Gateway")
                                                             false -> Text("Ohne Gateway")
                                                         }
-                                                        if (locker.qrCode.isEmpty()) {
-                                                            Text(text = "QR Code nicht registriert")
-                                                        } else {
-                                                            Text(text = "QR Code registriert")
+
+                                                        when (locker.qrCode.isEmpty()) {
+                                                            true -> Text(text = "QR Code nicht registriert")
+                                                            false -> Text(text = "QR Code registriert")
                                                         }
                                                     }
                                                 },
