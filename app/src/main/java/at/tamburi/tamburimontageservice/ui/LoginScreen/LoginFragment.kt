@@ -17,7 +17,7 @@ import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 private const val TAG = "LoginFragment"
 
 class LoginFragment : Fragment() {
-    private val viewModel: LoginViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -9,7 +9,7 @@ val taskListMockData = listOf(
         montageId = 1,
         createdAt = Date().time,
         remoteLocation = RemoteLocation(
-            locationId = 2,
+            locationId = 1,
             countryId = 1,
             cityId = 1,
             zipCode = "1219",
@@ -29,7 +29,7 @@ val taskListMockData = listOf(
             zipCode = "1140"
         ),
         montageStatus = MontageStatus.ASSIGNED,
-        locationDesc = "This is a test description",
+        locationDesc = "This is a test description of Kärntner Straße",
         powerConnection = PowerConnection.BATTERY,
         montageGround = MontageGround.GRAS,
         montageSketch = null,
@@ -83,7 +83,7 @@ val taskListMockData = listOf(
             zipCode = "1140"
         ),
         montageStatus = MontageStatus.ASSIGNED,
-        locationDesc = "This is a test description",
+        locationDesc = "This is a test description of Floridusgasse",
         powerConnection = PowerConnection.STATIONARY,
         montageGround = MontageGround.LAVA,
         montageSketch = null,

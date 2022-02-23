@@ -29,13 +29,13 @@ import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginState
-import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginViewModel
+import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 import at.tamburi.tamburimontageservice.utils.Constants
 
 class MontageTaskFragment : Fragment() {
-    val viewModel: LoginViewModel by activityViewModels()
+    val viewModel: MainViewModel by activityViewModels()
 
     override fun onStart() {
         super.onStart()

@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
@@ -14,7 +15,7 @@ import at.tamburi.tamburimontageservice.MainActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
-import at.tamburi.tamburimontageservice.utils.ACTIVE_TASK_ID
+import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -78,7 +79,7 @@ constructor(
         lifecycle.coroutineScope.launch {
             delay(1000)
             val id = context.dataStore.data.map {
-                it[ACTIVE_TASK_ID] ?: -1
+                it[DataStoreConstants.ACTIVE_TASK_ID] ?: -1
             }.first()
             if (id != -1) {
                 val result = montageTaskRepository.getTaskById(id)
@@ -95,8 +96,19 @@ constructor(
         }
     }
 
+    fun revokeTask(context: Context, lifecycle: Lifecycle) {
+        lifecycle.coroutineScope.launch {
+            context.dataStore.edit {
+                it[DataStoreConstants.ACTIVE_TASK_ID] = -1
+                it[DataStoreConstants.HAS_ACTIVE_TASK] = false
+            }
+            val intent = Intent(context, MainActivity::class.java)
+            context.startActivity(intent)
+        }
+    }
+
     fun hasEmptyQrCode(): Boolean {
-        if(_task.value != null) {
+        if (_task.value != null) {
             val qrCodes = _task.value!!.lockerList.map { it.qrCode.isEmpty() }
             return qrCodes.contains(true)
         }

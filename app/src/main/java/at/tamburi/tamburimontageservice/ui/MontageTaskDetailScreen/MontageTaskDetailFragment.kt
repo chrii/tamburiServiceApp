@@ -1,6 +1,5 @@
 package at.tamburi.tamburimontageservice.ui.MontageTaskDetailScreen
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
@@ -20,15 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
-import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginViewModel
+import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 
 class MontageTaskDetailFragment : Fragment() {
-    val viewModel: LoginViewModel by activityViewModels()
+    val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,10 +58,6 @@ class MontageTaskDetailFragment : Fragment() {
                                         cell1 = stringResource(id = R.string.ds_street_name),
                                         cell2 =
                                         "${t.remoteLocation.streetName} ${t.remoteLocation.streetNumber}"
-                                    )
-                                    TwoLineItem(
-                                        cell1 = stringResource(id = R.string.ds_qr_code),
-                                        cell2 = t.remoteLocation.qrCode.toString()
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_status),

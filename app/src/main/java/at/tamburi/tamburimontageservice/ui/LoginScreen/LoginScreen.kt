@@ -15,8 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
-import at.tamburi.tamburimontageservice.ui.theme.Orange
-import at.tamburi.tamburimontageservice.ui.theme.OrangeLight
 import at.tamburi.tamburimontageservice.ui.theme.White
 
 private const val TAG = "LoginScreen"
@@ -24,7 +22,7 @@ private const val TAG = "LoginScreen"
 @Composable
 fun LoginScreen(
     navigation: NavController,
-    viewModel: LoginViewModel
+    viewModel: MainViewModel
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current

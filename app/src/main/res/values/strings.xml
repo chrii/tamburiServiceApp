@@ -44,6 +44,10 @@
     <string name="wf_owner_contact_number">Telefonnummer</string>
     <string name="wf_owner_address">Adresse</string>
     <string name="wf_owner_zip">Bezirk</string>
+    <!-- Top Menu -->
+    <string name="wf_top_menu_title">Optionen</string>
+    <string name="wf_top_menu_revoke_text">Auftrag annullieren</string>
+    <string name="wf_top_menu_revoke_toast_text">Erfolgreich annulliert</string>
 
     <!-- LocationProposalScreen -->
     <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>

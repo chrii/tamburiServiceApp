@@ -179,7 +179,7 @@ class MontageTaskImpl(
             task.lockerList.map {
                 val r = lockerDao.getLockerById(it.lockerId)
                 if (r == null) {
-                    val l = lockerDao.saveLocker(
+                    lockerDao.saveLocker(
                         it.lockerId,
                         it.typeId,
                         it.typeName,
