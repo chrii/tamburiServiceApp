@@ -125,3 +125,30 @@ val ownerMockList = listOf(
         zipCode = "1140"
     )
 )
+
+val remoteLocationMockList = listOf(
+    RemoteLocation(
+        locationId = 1,
+        countryId = 1,
+        cityId = 1,
+        zipCode = "1219",
+        streetName = "Kärntner Straße",
+        streetNumber = "23",
+        qrCode = "",
+        locationName = "",
+        minimumReservationTime = 5,
+        minimumPauseTime = 3
+    ),
+    RemoteLocation(
+        locationId = 2,
+        countryId = 1,
+        cityId = 1,
+        zipCode = "1219",
+        streetName = "Floridusgasse",
+        streetNumber = "50",
+        qrCode = "",
+        locationName = "",
+        minimumReservationTime = 5,
+        minimumPauseTime = 3
+    )
+)

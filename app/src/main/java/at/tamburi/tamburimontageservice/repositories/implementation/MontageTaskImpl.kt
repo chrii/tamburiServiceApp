@@ -2,11 +2,15 @@ package at.tamburi.tamburimontageservice.repositories.implementation
 
 import android.util.Log
 import at.tamburi.tamburimontageservice.mockdata.ownerMockList
+import at.tamburi.tamburimontageservice.mockdata.remoteLocationMockList
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.services.database.dao.LocationOwnerDao
 import at.tamburi.tamburimontageservice.services.database.dao.LockerDao
 import at.tamburi.tamburimontageservice.services.database.dao.MontageTaskDao
+import at.tamburi.tamburimontageservice.services.database.dao.RemoteLocationDao
+import at.tamburi.tamburimontageservice.services.database.toLocationOwner
+import at.tamburi.tamburimontageservice.services.database.toRemoteLocation
 import at.tamburi.tamburimontageservice.utils.DataState
 import java.util.*
 
@@ -15,7 +19,8 @@ private const val TAG = "MontageTaskImpl"
 class MontageTaskImpl(
     private val montageTaskDao: MontageTaskDao,
     private val ownerDao: LocationOwnerDao,
-    private val lockerDao: LockerDao
+    private val lockerDao: LockerDao,
+    private val locationDao: RemoteLocationDao
 ) : IMontageTaskRepository {
     override suspend fun getTaskById(id: Int): DataState<MontageTask> {
         return try {
@@ -110,13 +115,14 @@ class MontageTaskImpl(
             val result = montageTaskDao.getAllTasks()
             if (!result.isNullOrEmpty()) {
                 val tasks = result.map {
-                    val ownerEntity = ownerDao.getOwnerById(it.ownerId)
+                    val owner = ownerDao.getOwnerById(it.ownerId)?.toLocationOwner
+                        ?: ownerMockList.find { i -> i.companyId == it.ownerId }
+                        ?: throw Exception("Owner not found")
 
-                    if (ownerEntity == null) {
-                        //This is the owner request if the owner is not local
-                        ownerMockList.find { i -> i.companyId == it.ownerId }
-                    }
-
+                    val location =
+                        locationDao.getLocationById(it.remoteLocationId)?.toRemoteLocation
+                            ?: remoteLocationMockList.find { i -> it.remoteLocationId == i.locationId }
+                            ?: throw Exception("Remote Location not found")
 
                     val lockerList = Locker.lockerIdList(it.lockerList).map { l ->
                         val r = lockerDao.getLockerById(l)
@@ -124,30 +130,15 @@ class MontageTaskImpl(
                             Locker(r.lockerId, r.typeId, r.typeName, r.qrCode, r.gateway)
                         } else throw Exception("One Locker not found")
                     }
+                    Log.d("TAG", "Owner: $owner")
+                    Log.d("TAG", "Remote Location: $location")
                     Log.d("TAG", "LockerList: $lockerList")
                     MontageTask(
                         montageId = it.montageId,
                         createdAt = it.createdAt,
-                        remoteLocation = RemoteLocation(
-                            locationId = 2,
-                            countryId = 1,
-                            cityId = 1,
-                            zipCode = "1219",
-                            streetName = "Floridusgasse",
-                            streetNumber = "50",
-                            qrCode = "",
-                            locationName = "",
-                            minimumReservationTime = 5,
-                            minimumPauseTime = 3
-                        ),
+                        remoteLocation = location,
                         magazine = it.magazine,
-                        locationOwner = LocationOwner(
-                            companyId = 1,
-                            companyName = "GESIBA",
-                            address = "Gesiba Straße",
-                            streetNumber = "14",
-                            zipCode = "1140"
-                        ),
+                        locationOwner = owner,
                         montageStatus = MontageStatus.values()[it.montageStatus],
                         locationDesc = it.locationDesc,
                         powerConnection = PowerConnection.values()[it.powerConnection],
@@ -184,6 +175,7 @@ class MontageTaskImpl(
         try {
             val ownerById = ownerDao.getOwnerById(task.locationOwner.companyId)
             val taskById = montageTaskDao.getTaskByTaskId(task.montageId)
+            val locationById = locationDao.getLocationById(task.remoteLocation.locationId)
             task.lockerList.map {
                 val r = lockerDao.getLockerById(it.lockerId)
                 if (r == null) {
@@ -204,6 +196,21 @@ class MontageTaskImpl(
                     streetNumber = task.locationOwner.streetNumber,
                     address = task.locationOwner.address,
                     companyName = task.locationOwner.companyName,
+                )
+            }
+
+            if (locationById == null) {
+                locationDao.saveLocation(
+                    locationId = task.remoteLocation.locationId,
+                    locationName = task.remoteLocation.locationName,
+                    qrCode = task.remoteLocation.qrCode,
+                    streetName = task.remoteLocation.streetName,
+                    streetNumber = task.remoteLocation.streetNumber,
+                    zipCode = task.remoteLocation.zipCode,
+                    cityId = task.remoteLocation.cityId,
+                    countryId = task.remoteLocation.countryId,
+                    minimumReservationTime = task.remoteLocation.minimumReservationTime,
+                    minimumPauseTime = task.remoteLocation.minimumPauseTime
                 )
             }
 

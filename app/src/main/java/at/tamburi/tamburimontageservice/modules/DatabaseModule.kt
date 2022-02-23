@@ -7,10 +7,7 @@ import at.tamburi.tamburimontageservice.repositories.IUserRepository
 import at.tamburi.tamburimontageservice.repositories.implementation.MontageTaskImpl
 import at.tamburi.tamburimontageservice.repositories.implementation.UserRepositoryImpl
 import at.tamburi.tamburimontageservice.services.database.AppDatabase
-import at.tamburi.tamburimontageservice.services.database.dao.LocationOwnerDao
-import at.tamburi.tamburimontageservice.services.database.dao.LockerDao
-import at.tamburi.tamburimontageservice.services.database.dao.MontageTaskDao
-import at.tamburi.tamburimontageservice.services.database.dao.UserDao
+import at.tamburi.tamburimontageservice.services.database.dao.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,6 +43,11 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideRemoteLocationDao(appDatabase: AppDatabase): RemoteLocationDao =
+        appDatabase.remoteLocationDao()
+
+    @Provides
+    @Singleton
     fun providesTaskRepositoryDao(appDatabase: AppDatabase) = appDatabase.montageTaskDao()
 
     @Provides
@@ -59,8 +61,9 @@ object DatabaseModule {
     fun provideTaskRepository(
         montageTaskDao: MontageTaskDao,
         ownerDao: LocationOwnerDao,
-        lockerDao: LockerDao
+        lockerDao: LockerDao,
+        locationDao: RemoteLocationDao
     ): IMontageTaskRepository {
-        return MontageTaskImpl(montageTaskDao, ownerDao, lockerDao)
+        return MontageTaskImpl(montageTaskDao, ownerDao, lockerDao, locationDao)
     }
 }
