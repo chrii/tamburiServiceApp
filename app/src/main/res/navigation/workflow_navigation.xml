@@ -11,16 +11,30 @@
         <action
             android:id="@+id/action_landing_fragment_to_qr_code_fragment"
             app:destination="@+id/qr_code_fragment" />
+
+        <action
+            android:id="@+id/action_landing_fragment_to_proposal_fragment"
+            app:destination="@id/location_proposal_fragment" />
     </fragment>
 
     <fragment
         android:id="@+id/qr_code_fragment"
         android:name="at.tamburi.tamburimontageservice.ui.QrCodeScreen.QrCodeFragment"
         android:label="Scanner">
-        <action android:id="@+id/action_qr_code_fragment_to_landing_fragment"
+        <action
+            android:id="@+id/action_qr_code_fragment_to_landing_fragment"
             app:destination="@id/workflow_landing_fragment"
             app:popUpTo="@id/workflow_landing_fragment"
-            app:popUpToInclusive="false"/>
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/location_proposal_fragment"
+        android:name="at.tamburi.tamburimontageservice.ui.LocationProposalScreen.LocationProposalFragment"
+        android:label="Verbinden">
+        <action
+            android:id="@+id/action_proposal_fragment_to_qr_code_fragment"
+            app:destination="@id/qr_code_fragment" />
     </fragment>
 
 </navigation>

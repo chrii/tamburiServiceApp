@@ -15,7 +15,8 @@ val taskListMockData = listOf(
             zipCode = "1219",
             streetName = "Kärntner Straße",
             streetNumber = "23",
-            qrCode = "a1b2",
+            qrCode = "",
+            locationName = "",
             minimumReservationTime = 5,
             minimumPauseTime = 3
         ),
@@ -68,7 +69,8 @@ val taskListMockData = listOf(
             zipCode = "1219",
             streetName = "Floridusgasse",
             streetNumber = "50",
-            qrCode = "a1b2",
+            qrCode = "",
+            locationName = "",
             minimumReservationTime = 5,
             minimumPauseTime = 3
         ),

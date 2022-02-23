@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
+import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
 import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -21,6 +22,7 @@ fun CompLockerExpandable(
     viewModel: MontageWorkflowViewModel,
     navigation: NavController
 ) {
+    viewModel.qrCodeScannerState = QrCodeScannerState.Locker
     ExpandableCard(title = "Kästen", description = "") {
         safeTask.lockerList.forEach { locker ->
             ListItem(

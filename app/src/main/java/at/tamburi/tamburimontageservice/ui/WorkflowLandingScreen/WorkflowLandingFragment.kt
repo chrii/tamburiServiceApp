@@ -69,13 +69,16 @@ class WorkflowLandingFragment : Fragment() {
                                             navigation = findNavController()
                                         )
                                     }
+                                    //TODO: Sketch Expandable
                                     if (!viewModel.hasEmptyQrCode()) {
                                         item {
                                             Button(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(8.dp),
-                                                onClick = { /*TODO*/ }
+                                                onClick = {
+                                                    findNavController().navigate(R.id.action_landing_fragment_to_proposal_fragment)
+                                                }
                                             ) {
                                                 Text(text = "Weiter")
                                             }

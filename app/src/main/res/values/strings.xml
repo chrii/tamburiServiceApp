@@ -44,4 +44,8 @@
     <string name="wf_owner_contact_number">Telefonnummer</string>
     <string name="wf_owner_address">Adresse</string>
     <string name="wf_owner_zip">Bezirk</string>
+
+    <!-- LocationProposalScreen -->
+    <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>
+    <string name="prop_scan_qr_code">QR-Code Scannen</string>
 </resources>

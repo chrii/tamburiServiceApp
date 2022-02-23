@@ -1,16 +1,14 @@
 package at.tamburi.tamburimontageservice.ui.QrCodeScreen
 
-import android.Manifest
-import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -37,10 +35,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
+import at.tamburi.tamburimontageservice.utils.Constants
+
+private const val TAG = "QrCodeFragment"
 
 @RequiresApi(Build.VERSION_CODES.M)
 class QrCodeFragment : Fragment() {
@@ -55,14 +57,6 @@ class QrCodeFragment : Fragment() {
             setContent {
                 TamburiMontageServiceTheme {
                     Surface(color = MaterialTheme.colors.background) {
-                        if (viewModel.activeLocker == null) {
-                            findNavController().navigate(R.id.action_qr_code_fragment_to_landing_fragment)
-                            Toast.makeText(
-                                requireContext(),
-                                "No active Locker found",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
                         var code by remember {
                             mutableStateOf("")
                         }
@@ -112,38 +106,15 @@ class QrCodeFragment : Fragment() {
                                 }
                             )
                             if (code.isNotEmpty()) {
-                                //TODO: Revalidate for 15 digits
-//                                val formattedCode = code.split(":")
+                                //TODO: Refactor Composables to avoid Warnings
                                 when (viewModel.qrCodeScannerState) {
                                     QrCodeScannerState.Location -> {
-                                        val id = cutUrlForLocationId(code)
-                                        if(id.isEmpty()) {
-                                            Text(text = "Location QR-Code ungültig")
-                                        } else {
-                                            Text("QR-Code gültig - Platzhalter")
-                                        }
+                                        locationFormatter(code = code)
                                     }
                                     QrCodeScannerState.Locker -> {
-                                        if (checkQrCodeForLocker(code)) {
-                                            viewModel.setQrCodeForLocker(
-                                                lifecycle,
-                                                viewModel.activeLocker?.lockerId!!,
-                                                code,
-                                                findNavController()
-                                            )
-                                        } else {
-                                            Text(
-                                                text = "Locker QR-Code ungültig",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(32.dp)
-                                            )
-                                        }
+                                        lockerFormatter(code = code)
                                     }
                                 }
-
                             } else {
                                 Text(
                                     text = "Halten Sie die Kamera über den QR-Code",
@@ -161,10 +132,62 @@ class QrCodeFragment : Fragment() {
         }
     }
 
+    @Composable
+    fun lockerFormatter(code: String) {
+        if (viewModel.activeLocker == null) {
+            findNavController(this).navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+            Toast.makeText(
+                requireContext(),
+                "No active Locker found",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            if (checkQrCodeForLocker(code)) {
+                viewModel.setQrCodeForLocker(
+                    lifecycle,
+                    viewModel.activeLocker?.lockerId!!,
+                    code,
+                    findNavController(this)
+                )
+            } else {
+                Text(
+                    text = "Locker QR-Code ungültig",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp)
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun locationFormatter(code: String) {
+        val id = cutUrlForLocationId(code)
+        if (id.isEmpty()) {
+            Text(
+                text = "Location QR-Code ungültig",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp)
+            )
+        } else {
+            Text("QR-Code gültig - Platzhalter")
+        }
+    }
+
     private fun cutUrlForLocationId(code: String): String {
         return try {
-            code.split("/").last()
-        } catch(e: Exception){
+            val uri = Uri.parse(code)
+            Log.v(TAG, "Queryparam: ${uri.getQueryParameter("qr")}")
+            Log.v(TAG, "authority: ${uri.authority}")
+            Log.v(TAG, "Path: ${uri.path}")
+            if (uri.authority != Constants.LOCATION_SCANNER_FLAG) "" else uri.getQueryParameter("qr")
+                ?: ""
+        } catch (e: Exception) {
             ""
         }
     }
