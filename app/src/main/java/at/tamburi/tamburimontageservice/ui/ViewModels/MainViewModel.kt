@@ -117,11 +117,13 @@ constructor(
                 try {
                     val date = Date().time
                     val serviceUser = ServiceUser(
-                        userId = 1,
+                        servicemanId = 1,
                         username = lower,
-                        assignedMontageTaskId = null,
-                        magazineId = null,
-                        loginDate = date
+                        firstname = "Chris",
+                        surname = "Pintarich",
+                        phone = "1234",
+                        email = "c@c",
+                        loginDate = date,
                     )
                     val result = userRepo.saveUser(serviceUser)
                     Log.d(TAG, "${result.message}")

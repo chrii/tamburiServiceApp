@@ -1,9 +1,11 @@
 package at.tamburi.tamburimontageservice.models
 
 data class ServiceUser(
-    val userId: Int,
+    val servicemanId: Int,
     val username: String,
-    val loginDate: Long,
-    val magazineId: Int?,
-    val assignedMontageTaskId: Int?
-    )
+    val firstname: String,
+    val surname: String,
+    val phone: String,
+    val email: String,
+    val loginDate: Long
+)

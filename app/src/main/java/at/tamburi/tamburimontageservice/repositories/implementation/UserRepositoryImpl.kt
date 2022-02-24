@@ -35,10 +35,13 @@ class UserRepositoryImpl(
     override suspend fun saveUser(user: ServiceUser): DataState<ServiceUser> {
         return try {
             val userState = userDao.saveUserEntry(
+                user.servicemanId,
                 user.username,
-                user.userId,
-                user.loginDate,
-                user.assignedMontageTaskId ?: -1
+                user.firstname,
+                user.surname,
+                user.phone,
+                user.email,
+                user.loginDate
             )
             Log.d(TAG, "$userState")
             if (userState < 1L) {

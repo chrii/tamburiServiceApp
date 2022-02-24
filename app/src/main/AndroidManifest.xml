@@ -3,6 +3,9 @@
     package="at.tamburi.tamburimontageservice">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        android:required="true" />
 
     <application
         android:name=".BaseApplication"

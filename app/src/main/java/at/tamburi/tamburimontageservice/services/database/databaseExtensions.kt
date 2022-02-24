@@ -13,11 +13,13 @@ import at.tamburi.tamburimontageservice.services.database.entities.UserEntity
 //TODO: Do not forget to add magazine id if its here
 val UserEntity.toServiceUser: ServiceUser
     get() = ServiceUser(
-        userId = userId,
+        servicemanId = servicemanId,
         username = username,
+        firstname = firstname,
+        surname = surname,
+        phone = phone,
+        email = email,
         loginDate = loginDate,
-        magazineId = null,
-        assignedMontageTaskId = assignedTask
     )
 
 val LocationOwnerEntity.toLocationOwner: LocationOwner

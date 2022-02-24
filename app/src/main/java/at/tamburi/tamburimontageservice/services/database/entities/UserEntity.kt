@@ -9,21 +9,31 @@ import at.tamburi.tamburimontageservice.models.ServiceUser
 @Entity(tableName = "user_history")
 data class UserEntity(
     @PrimaryKey
-    val id: Int,
+    @NonNull
+    @ColumnInfo(name = "serviceman_id")
+    val servicemanId: Int,
 
     @NonNull
     @ColumnInfo(name = "username")
     val username: String,
 
     @NonNull
-    @ColumnInfo(name = "user_id")
-    val userId: Int,
+    @ColumnInfo(name = "firstname")
+    val firstname: String,
+
+    @NonNull
+    @ColumnInfo(name = "surname")
+    val surname : String,
+
+    @NonNull
+    @ColumnInfo(name = "phone")
+    val phone: String,
+
+    @NonNull
+    @ColumnInfo(name= "email")
+    val email: String,
 
     @NonNull
     @ColumnInfo(name = "login_date")
-    val loginDate: Long,
-
-    @NonNull
-    @ColumnInfo(name = "assigned_task")
-    val assignedTask: Int
+    val loginDate: Long
 )
