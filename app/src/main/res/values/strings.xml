@@ -27,4 +27,29 @@
     <string name="ds_montage_status">Status:</string>
     <string name="ds_description">Standort Beschreibung</string>
     <string name="ds_montage_ground">Boden Beschaffenheit:</string>
+
+    <!-- Workflow Landing Page -->
+    <string name="wf_title">Auftragsdetails</string>
+    <!-- General-->
+    <string name="wf_task_id">Auftrags ID</string>
+    <string name="wf_address">Adresse</string>
+    <string name="wf_zip">Bezirk</string>
+    <string name="wf_power_connection">Art des Strom Anschluss</string>
+    <string name="wf_montage_ground">Art des Untergrunds</string>
+    <string name="wf_scheduled_date">Datum der Montage</string>
+    <!-- Owner Tab -->
+    <string name="wf_owner_title">Auftraggeber</string>
+    <string name="wf_owner_name">Firmenname</string>
+    <string name="wf_owner_contact_person">Ansprechpartner</string>
+    <string name="wf_owner_contact_number">Telefonnummer</string>
+    <string name="wf_owner_address">Adresse</string>
+    <string name="wf_owner_zip">Bezirk</string>
+    <!-- Top Menu -->
+    <string name="wf_top_menu_title">Optionen</string>
+    <string name="wf_top_menu_revoke_text">Auftrag annullieren</string>
+    <string name="wf_top_menu_revoke_toast_text">Erfolgreich annulliert</string>
+
+    <!-- LocationProposalScreen -->
+    <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>
+    <string name="prop_scan_qr_code">QR-Code Scannen</string>
 </resources>

@@ -2,6 +2,7 @@ package at.tamburi.tamburimontageservice.ui.LoginScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
@@ -10,13 +11,13 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.mockdata.taskListMockData
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.IUserRepository
-import at.tamburi.tamburimontageservice.utils.ACTIVE_TASK_ID
-import at.tamburi.tamburimontageservice.utils.HAS_ACTIVE_TASK
+import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -38,7 +39,7 @@ enum class LoginState {
 }
 
 @HiltViewModel
-class LoginViewModel
+class MainViewModel
 @Inject
 constructor(
     private val userRepo: IUserRepository,
@@ -146,12 +147,12 @@ constructor(
         lifecycle.coroutineScope.launch {
             try {
                 val hasData: Boolean = context.dataStore.data.map {
-                    it[HAS_ACTIVE_TASK] ?: false
+                    it[DataStoreConstants.HAS_ACTIVE_TASK] ?: false
                 }.first()
 
                 if (hasData) {
                     val activeTaskId: Int = context.dataStore.data.map {
-                        it[ACTIVE_TASK_ID] ?: -1
+                        it[DataStoreConstants.ACTIVE_TASK_ID] ?: -1
                     }.first()
 
                     Log.d(TAG, "activeTaskId: $activeTaskId")
@@ -176,14 +177,19 @@ constructor(
             Toast.makeText(context, "Aktiver Auftrag existiert bereits", Toast.LENGTH_SHORT).show()
         } else {
             setActiveTask(context, lifecycle)
+            val intent = Intent(
+                context,
+                MontageWorkflowActivity::class.java
+            )
+            context.startActivity(intent)
         }
     }
 
     fun setActiveTask(context: Context, lifecycle: Lifecycle) {
         lifecycle.coroutineScope.launch {
             context.dataStore.edit {
-                it[ACTIVE_TASK_ID] = taskDetailId
-                it[HAS_ACTIVE_TASK] = true
+                it[DataStoreConstants.ACTIVE_TASK_ID] = taskDetailId
+                it[DataStoreConstants.HAS_ACTIVE_TASK] = true
             }
             hasActiveTask.value = true
         }
