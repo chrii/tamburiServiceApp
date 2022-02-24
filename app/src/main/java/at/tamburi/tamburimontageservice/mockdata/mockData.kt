@@ -20,7 +20,7 @@ val taskListMockData = listOf(
             minimumReservationTime = 5,
             minimumPauseTime = 3
         ),
-        magazine = "",
+        magazine = "Döblerhof Straße",
         locationOwner = LocationOwner(
             companyId = 1,
             companyName = "GESIBA",
@@ -74,7 +74,7 @@ val taskListMockData = listOf(
             minimumReservationTime = 5,
             minimumPauseTime = 3
         ),
-        magazine = "",
+        magazine = "Floridusgasse",
         locationOwner = LocationOwner(
             companyId = 1,
             companyName = "GESIBA",

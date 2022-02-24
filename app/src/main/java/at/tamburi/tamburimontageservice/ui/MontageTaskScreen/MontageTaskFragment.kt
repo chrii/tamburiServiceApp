@@ -2,9 +2,7 @@ package at.tamburi.tamburimontageservice.ui.MontageTaskScreen
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -54,12 +52,36 @@ class MontageTaskFragment : Fragment() {
         startActivity(intent)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.magazine_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_item_doebler -> {
+                viewModel.toggleTaskList("Döblerhof Straße")
+                true
+            }
+            R.id.menu_item_flo -> {
+                viewModel.toggleTaskList("Floridusgasse")
+                true
+            }
+            R.id.menu_item_all -> {
+                viewModel.toggleTaskList("all")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
@@ -76,7 +98,7 @@ class MontageTaskFragment : Fragment() {
                                 Toast.makeText(context, viewModel.errorMessage, Toast.LENGTH_LONG)
                                     .show()
                             }
-                            LoginState.Ready -> if (viewModel.tasks.value.isEmpty()) {
+                            LoginState.Ready -> if (viewModel.filteredTasks.value.isEmpty()) {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
                                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,7 +113,7 @@ class MontageTaskFragment : Fragment() {
                                 ) {
                                     LazyColumn(
                                     ) {
-                                        val tasks = viewModel.tasks.value
+                                        val tasks = viewModel.filteredTasks.value
                                         viewModel.getActiveTask(context, lifecycleOwner.lifecycle)
                                         items(tasks.size) { index ->
                                             Column {

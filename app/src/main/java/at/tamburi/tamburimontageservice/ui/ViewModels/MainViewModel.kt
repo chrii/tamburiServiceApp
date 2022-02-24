@@ -38,6 +38,12 @@ enum class LoginState {
     NEXT
 }
 
+enum class TaskListToggle {
+    Doeb,
+    Flo,
+    All
+}
+
 @HiltViewModel
 class MainViewModel
 @Inject
@@ -49,9 +55,10 @@ constructor(
     private val _tasks: MutableState<List<MontageTask>> = mutableStateOf(listOf())
     private val _hasActiveTask: MutableState<Boolean> = mutableStateOf(false)
     private val _activeTask: MutableState<MontageTask?> = mutableStateOf(null)
+    private val _filteredTasks: MutableState<List<MontageTask>> = mutableStateOf(_tasks.value)
 
     val loginState: MutableState<LoginState> = _loginState
-    val tasks: MutableState<List<MontageTask>> = _tasks
+    val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
     val activeTask: MutableState<MontageTask?> = _activeTask
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
     var loadingMessageString: String? = null
@@ -60,6 +67,16 @@ constructor(
     fun changeState(state: LoginState, loadingMessage: String? = null) {
         if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
+    }
+
+    fun toggleTaskList(magazine: String) {
+        Log.d(TAG, "Magazine: ${_tasks.value.first().magazine}")
+        if (magazine != "all") {
+            val filtered = _tasks.value.filter { it.magazine == magazine }
+            _filteredTasks.value = filtered
+        } else {
+            _filteredTasks.value = _tasks.value
+        }
     }
 
     fun checkUserState(lifecycle: Lifecycle) {
@@ -130,6 +147,7 @@ constructor(
                 if (tasks.hasData) {
                     Log.d(TAG, "${tasks.data}")
                     _tasks.value = tasks.data!!
+                    _filteredTasks.value = tasks.data!!
                     changeState(LoginState.Ready)
                 } else {
                     errorMessage = "Keine Auftragsdaten"

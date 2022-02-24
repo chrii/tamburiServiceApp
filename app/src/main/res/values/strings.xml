@@ -15,6 +15,10 @@
     <string name="no_task_data">Keine Aufträge vorhanden</string>
     <string name="owner_string">Auftraggeber: %s</string>
     <string name="adress_string">Adresse: %s %s</string>
+    <!-- Task List Options Menu -->
+    <string name="menu_item_doebler">Döblerhof Straße</string>
+    <string name="menu_item_flo">Floridusgasse</string>
+    <string name="menu_item_all">Alle</string>
 
     <!-- Custom Progress Indicator Text -->
     <string name="progress_indicator_default_text">Überprüfe Daten</string>

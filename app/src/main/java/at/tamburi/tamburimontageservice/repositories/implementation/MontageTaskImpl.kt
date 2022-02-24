@@ -12,7 +12,6 @@ import at.tamburi.tamburimontageservice.services.database.dao.RemoteLocationDao
 import at.tamburi.tamburimontageservice.services.database.toLocationOwner
 import at.tamburi.tamburimontageservice.services.database.toRemoteLocation
 import at.tamburi.tamburimontageservice.utils.DataState
-import java.util.*
 
 private const val TAG = "MontageTaskImpl"
 
@@ -221,7 +220,7 @@ class MontageTaskImpl(
                     ownerId = task.locationOwner.companyId,
                     remoteLocationId = task.remoteLocation.locationId,
                     createdAt = task.createdAt,
-                    magazine = "",
+                    magazine = task.magazine,
                     montageStatus = task.montageStatus.ordinal,
                     locationDesc = task.locationDesc,
                     powerConnection = task.powerConnection.ordinal,

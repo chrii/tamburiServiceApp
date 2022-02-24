@@ -32,7 +32,7 @@ class MontageTaskDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val task = viewModel.tasks.value.find { it.montageId == viewModel.taskDetailId }
+        val task = viewModel.filteredTasks.value.find { it.montageId == viewModel.taskDetailId }
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
