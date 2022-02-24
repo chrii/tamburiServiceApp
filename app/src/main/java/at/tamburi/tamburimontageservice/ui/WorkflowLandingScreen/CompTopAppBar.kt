@@ -24,7 +24,7 @@ fun CompTopAppBar(
             ) { Icon(Icons.Default.MoreVert, "3 Punkte für Gryffindor") }
             DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                 DropdownMenuItem(onClick = { /*TODO*/ }) {
-                    Text(text = stringResource(id = R.string.wf_top_menu_revoke_task))
+                    Text(text = stringResource(id = R.string.wf_top_menu_revoke_toast_text))
                 }
             }
         }
