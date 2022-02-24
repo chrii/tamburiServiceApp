@@ -85,14 +85,10 @@ constructor(
         changeState(LoginState.Loading, "Get User Data")
         lifecycle.coroutineScope.launch {
             //TODO: Imitates loading delay - Delete if not necessary anymore
-            delay(2000)
-
             val user = userRepo.getUser()
             if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
-                val u = authRepo.getUser("chris", "passwd")
-                Log.d(TAG, "Userdata form Network: ${u.hasData}")
                 Log.d(TAG, "userdata: ${user.hasData}")
                 val serviceUser = user.data
                 val lastDate = getDate(Date(serviceUser!!.loginDate))
@@ -111,14 +107,12 @@ constructor(
 
     fun onSubmit(username: String, password: String, lifecycle: Lifecycle) {
         val lower = username.lowercase(Locale.getDefault())
-
-        //TODO: Hardcoded user
         changeState(LoginState.Loading, "Login...")
         lifecycle.coroutineScope.launch {
             //TODO: Imitates loading delay - Delete of not necessary anymore
             delay(2000)
             try {
-                val networkUser = authRepo.getUser(username, password)
+                val networkUser = authRepo.getUser(lower, password)
                 if (networkUser.hasData) {
                     val result = userRepo.saveUser(networkUser.data!!)
                     if (!result.hasData) {
