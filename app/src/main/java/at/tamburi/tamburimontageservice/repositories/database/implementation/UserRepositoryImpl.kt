@@ -1,8 +1,8 @@
-package at.tamburi.tamburimontageservice.repositories.implementation
+package at.tamburi.tamburimontageservice.repositories.database.implementation
 
 import android.util.Log
 import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.repositories.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.services.database.toServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState
@@ -35,10 +35,13 @@ class UserRepositoryImpl(
     override suspend fun saveUser(user: ServiceUser): DataState<ServiceUser> {
         return try {
             val userState = userDao.saveUserEntry(
+                user.servicemanId,
                 user.username,
-                user.userId,
-                user.loginDate,
-                user.assignedMontageTaskId ?: -1
+                user.firstname,
+                user.surname,
+                user.phone,
+                user.email,
+                user.loginDate
             )
             Log.d(TAG, "$userState")
             if (userState < 1L) {

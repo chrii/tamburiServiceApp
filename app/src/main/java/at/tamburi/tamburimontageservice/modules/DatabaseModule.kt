@@ -2,10 +2,10 @@ package at.tamburi.tamburimontageservice.modules
 
 import android.content.Context
 import androidx.room.Room
-import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
-import at.tamburi.tamburimontageservice.repositories.IUserRepository
-import at.tamburi.tamburimontageservice.repositories.implementation.MontageTaskImpl
-import at.tamburi.tamburimontageservice.repositories.implementation.UserRepositoryImpl
+import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.implementation.MontageTaskImpl
+import at.tamburi.tamburimontageservice.repositories.database.implementation.UserRepositoryImpl
 import at.tamburi.tamburimontageservice.services.database.AppDatabase
 import at.tamburi.tamburimontageservice.services.database.dao.*
 import dagger.Module

@@ -14,7 +14,7 @@ import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.MainActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
-import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
