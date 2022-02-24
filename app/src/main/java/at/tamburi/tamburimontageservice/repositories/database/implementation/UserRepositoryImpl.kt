@@ -1,8 +1,8 @@
-package at.tamburi.tamburimontageservice.repositories.implementation
+package at.tamburi.tamburimontageservice.repositories.database.implementation
 
 import android.util.Log
 import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.repositories.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.services.database.toServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState

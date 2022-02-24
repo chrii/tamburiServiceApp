@@ -15,8 +15,9 @@ import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.mockdata.taskListMockData
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
-import at.tamburi.tamburimontageservice.repositories.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,7 +50,8 @@ class MainViewModel
 @Inject
 constructor(
     private val userRepo: IUserRepository,
-    private val taskRepo: IMontageTaskRepository
+    private val taskRepo: IMontageTaskRepository,
+    private val authRepo: IAuthenticationRepository
 ) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
     private val _tasks: MutableState<List<MontageTask>> = mutableStateOf(listOf())
@@ -89,6 +91,8 @@ constructor(
             if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
+                val u = authRepo.getUser("chris", "passwd")
+                Log.d(TAG, "Userdata form Network: ${u.hasData}")
                 Log.d(TAG, "userdata: ${user.hasData}")
                 val serviceUser = user.data
                 val lastDate = getDate(Date(serviceUser!!.loginDate))
@@ -109,33 +113,27 @@ constructor(
         val lower = username.lowercase(Locale.getDefault())
 
         //TODO: Hardcoded user
-        if (lower == "chris" && password == "1234") {
-            changeState(LoginState.Loading, "Login...")
-            lifecycle.coroutineScope.launch {
-                //TODO: Imitates loading delay - Delete of not necessary anymore
-                delay(2000)
-                try {
-                    val date = Date().time
-                    val serviceUser = ServiceUser(
-                        servicemanId = 1,
-                        username = lower,
-                        firstname = "Chris",
-                        surname = "Pintarich",
-                        phone = "1234",
-                        email = "c@c",
-                        loginDate = date,
-                    )
-                    val result = userRepo.saveUser(serviceUser)
-                    Log.d(TAG, "${result.message}")
-                    if (!result.hasData) changeState(LoginState.Error) else changeState(LoginState.NEXT)
-                } catch (e: Exception) {
-                    e.stackTrace
-                    changeState(LoginState.Error)
+        changeState(LoginState.Loading, "Login...")
+        lifecycle.coroutineScope.launch {
+            //TODO: Imitates loading delay - Delete of not necessary anymore
+            delay(2000)
+            try {
+                val networkUser = authRepo.getUser(username, password)
+                if (networkUser.hasData) {
+                    val result = userRepo.saveUser(networkUser.data!!)
+                    if (!result.hasData) {
+                        changeState(LoginState.Error, result.message)
+                    } else {
+                        Log.d(TAG, "Got Service User: ${networkUser.data!!.username}")
+                        changeState(LoginState.NEXT)
+                    }
+                } else {
+                    changeState(LoginState.Error, networkUser.message)
                 }
+            } catch (e: Exception) {
+                e.stackTrace
+                changeState(LoginState.Error)
             }
-        } else {
-            errorMessage = "Password or username not correct"
-            changeState(LoginState.Error)
         }
     }
 

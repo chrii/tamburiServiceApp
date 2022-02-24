@@ -1,10 +1,10 @@
-package at.tamburi.tamburimontageservice.repositories.implementation
+package at.tamburi.tamburimontageservice.repositories.database.implementation
 
 import android.util.Log
 import at.tamburi.tamburimontageservice.mockdata.ownerMockList
 import at.tamburi.tamburimontageservice.mockdata.remoteLocationMockList
 import at.tamburi.tamburimontageservice.models.*
-import at.tamburi.tamburimontageservice.repositories.IMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.services.database.dao.LocationOwnerDao
 import at.tamburi.tamburimontageservice.services.database.dao.LockerDao
 import at.tamburi.tamburimontageservice.services.database.dao.MontageTaskDao

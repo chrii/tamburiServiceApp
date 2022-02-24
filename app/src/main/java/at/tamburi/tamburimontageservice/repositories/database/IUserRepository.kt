@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.repositories
+package at.tamburi.tamburimontageservice.repositories.database
 
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState
