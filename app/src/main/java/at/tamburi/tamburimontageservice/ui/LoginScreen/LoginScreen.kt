@@ -82,7 +82,8 @@ fun LoginScreen(
                         viewModel.onSubmit(
                             userNameTextField,
                             passwordTextField,
-                            lifecycle
+                            lifecycle,
+                            context
                         )
                     }
                 ) {

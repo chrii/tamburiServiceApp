@@ -95,7 +95,7 @@ constructor(
         }
     }
 
-    fun onSubmit(username: String, password: String, lifecycle: Lifecycle) {
+    fun onSubmit(username: String, password: String, lifecycle: Lifecycle, context: Context) {
         val lower = username.lowercase(Locale.getDefault())
         changeState(LoginState.Loading, "Login...")
         lifecycle.coroutineScope.launch {
@@ -108,6 +108,9 @@ constructor(
                     if (!result.hasData) {
                         changeState(LoginState.Error, result.message)
                     } else {
+                        context.dataStore.edit {
+                            it[DataStoreConstants.ACTIVE_USER_ID] = networkUser.data!!.servicemanId
+                        }
                         Log.d(TAG, "Got Service User: ${networkUser.data!!.username}")
                         changeState(LoginState.NEXT)
                     }
@@ -121,11 +124,14 @@ constructor(
         }
     }
 
-    fun getTaskList(lifecycle: Lifecycle) {
+    fun getTaskList(lifecycle: Lifecycle, context: Context) {
         changeState(LoginState.Loading, "Hole Aufträge")
         lifecycle.coroutineScope.launch {
             try {
-                val t = taskNetworkRepo.getMontageTaskList(3)
+                val userId = context.dataStore.data.map {
+                    it[DataStoreConstants.ACTIVE_USER_ID]
+                }.first() ?: throw Exception("No active user")
+                val t = taskNetworkRepo.getMontageTaskList(userId)
                 //TODO: save task list to database
 //                val tasks = taskRepo.getAllTasks()
                 if (t.hasData) {

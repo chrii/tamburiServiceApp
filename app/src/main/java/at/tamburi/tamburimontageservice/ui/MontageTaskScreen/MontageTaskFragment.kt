@@ -37,7 +37,7 @@ class MontageTaskFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getTaskList(lifecycle)
+        viewModel.getTaskList(lifecycle, requireContext())
     }
 
     private fun navigateToActivity(taskId: Int) {
