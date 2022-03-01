@@ -3,7 +3,7 @@ package at.tamburi.tamburimontageservice.repositories.network.implementation
 import android.util.Log
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
-import at.tamburi.tamburimontageservice.services.network.services.AuthenticationService
+import at.tamburi.tamburimontageservice.services.network.services.IAuthenticationService
 import at.tamburi.tamburimontageservice.services.network.toServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState
 import java.util.*
@@ -11,7 +11,7 @@ import java.util.*
 private const val TAG = "AuthRepoImpl"
 
 class AuthenticationRepositoryImpl(
-    private val service: AuthenticationService
+    private val service: IAuthenticationService
 ) : IAuthenticationRepository {
     override suspend fun getUser(username: String, password: String): DataState<ServiceUser> {
         return try {

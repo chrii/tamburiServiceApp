@@ -82,7 +82,7 @@ class WorkflowLandingFragment : Fragment() {
                                         CompTaskDetailsExpandable(task = safeTask)
                                     }
                                     item {
-                                        CompOwnerExpandable(owner = safeTask.locationOwner)
+                                        safeTask.locationOwner?.let { CompOwnerExpandable(owner = it) }
                                     }
                                     item {
                                         CompLockerExpandable(

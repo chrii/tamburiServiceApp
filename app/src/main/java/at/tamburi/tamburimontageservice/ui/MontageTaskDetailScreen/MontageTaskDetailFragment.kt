@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
+import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
@@ -32,7 +33,7 @@ class MontageTaskDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val task = viewModel.filteredTasks.value.find { it.montageId == viewModel.taskDetailId }
+        val task: MontageTask? = null
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
@@ -52,12 +53,12 @@ class MontageTaskDetailFragment : Fragment() {
                                 item {
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_id),
-                                        cell2 = t.montageId.toString()
+                                        cell2 = t.montageTaskId.toString()
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_street_name),
                                         cell2 =
-                                        "${t.remoteLocation.streetName} ${t.remoteLocation.streetNumber}"
+                                        "${t.location.street} ${t.location.number}"
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_status),
@@ -71,11 +72,11 @@ class MontageTaskDetailFragment : Fragment() {
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_description),
-                                        cell2 = t.locationDesc
+                                        cell2 = t.locationDescription
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_ground),
-                                        cell2 = t.montageGround.type
+                                        cell2 = t.montageGroundName
                                     )
                                 }
                                 item {

@@ -12,12 +12,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
-import at.tamburi.tamburimontageservice.mockdata.taskListMockData
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
+import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +51,8 @@ class MainViewModel
 constructor(
     private val userRepo: IUserRepository,
     private val taskRepo: IMontageTaskRepository,
-    private val authRepo: IAuthenticationRepository
+    private val authRepo: IAuthenticationRepository,
+    private val taskNetworkRepo: INetworkMontageTaskRepository
 ) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
     private val _tasks: MutableState<List<MontageTask>> = mutableStateOf(listOf())
@@ -72,13 +73,13 @@ constructor(
     }
 
     fun toggleTaskList(magazine: String) {
-        Log.d(TAG, "Magazine: ${_tasks.value.first().magazine}")
-        if (magazine != "all") {
-            val filtered = _tasks.value.filter { it.magazine == magazine }
-            _filteredTasks.value = filtered
-        } else {
-            _filteredTasks.value = _tasks.value
-        }
+//        Log.d(TAG, "Magazine: ${_tasks.value.first().magazine}")
+//        if (magazine != "all") {
+//            val filtered = _tasks.value.filter { it.magazine == magazine }
+//            _filteredTasks.value = filtered
+//        } else {
+//            _filteredTasks.value = _tasks.value
+//        }
     }
 
     fun checkUserState(lifecycle: Lifecycle) {
@@ -136,7 +137,9 @@ constructor(
         lifecycle.coroutineScope.launch {
             try {
                 //TODO: Put out the Mock Data
-                taskListMockData.map { taskRepo.saveMockMontageTask(it) }
+//                taskListMockData.map { taskRepo.saveMockMontageTask(it) }
+                val t = taskNetworkRepo.getMontageTaskList(3)
+                Log.d(TAG, "getTaskList: $t")
                 val tasks = taskRepo.getAllTasks()
                 if (tasks.hasData) {
                     Log.d(TAG, "${tasks.data}")
@@ -169,7 +172,7 @@ constructor(
 
                     Log.d(TAG, "activeTaskId: $activeTaskId")
                     val activeTask: MontageTask? =
-                        _tasks.value.find { it.montageId == activeTaskId }
+                        _tasks.value.find { it.montageTaskId == activeTaskId }
 
                     if (activeTask != null) {
                         _activeTask.value = activeTask

@@ -12,9 +12,3 @@ enum class PowerConnection {
     STATIONARY,
     BATTERY
 }
-
-enum class MontageGround(val type: String) {
-    GRAS("Gras"),
-    CONCRETE("Concrete"),
-    LAVA("Lava")
-}

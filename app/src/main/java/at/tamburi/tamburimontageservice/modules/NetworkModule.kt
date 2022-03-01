@@ -1,8 +1,11 @@
 package at.tamburi.tamburimontageservice.modules
 
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
+import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.network.implementation.AuthenticationRepositoryImpl
-import at.tamburi.tamburimontageservice.services.network.services.AuthenticationService
+import at.tamburi.tamburimontageservice.repositories.network.implementation.NetworkMontageTaskRepositoryImpl
+import at.tamburi.tamburimontageservice.services.network.services.IAuthenticationService
+import at.tamburi.tamburimontageservice.services.network.services.INetworkMontageTaskService
 import at.tamburi.tamburimontageservice.utils.Constants
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -24,11 +27,21 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun authService(): AuthenticationService =
-        retrofitBuilder.build().create(AuthenticationService::class.java)
+    fun authService(): IAuthenticationService =
+        retrofitBuilder.build().create(IAuthenticationService::class.java)
 
     @Provides
     @Singleton
-    fun provideAuthRepository(service: AuthenticationService): IAuthenticationRepository =
+    fun provideAuthRepository(service: IAuthenticationService): IAuthenticationRepository =
         AuthenticationRepositoryImpl(service)
+
+    @Provides
+    @Singleton
+    fun montageTaskService() =
+        retrofitBuilder.build().create(INetworkMontageTaskService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMontageTaskRepository(serviceNetwork: INetworkMontageTaskService): INetworkMontageTaskRepository =
+        NetworkMontageTaskRepositoryImpl(serviceNetwork)
 }

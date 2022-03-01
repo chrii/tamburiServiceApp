@@ -5,6 +5,6 @@ data class ServiceUserDto(
     var username: String,
     var name: String,
     var surname: String,
-    var phone: String,
-    var email: String
+    var phone: String?,
+    var email: String?
 )

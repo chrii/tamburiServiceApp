@@ -35,7 +35,7 @@ fun CompOwnerExpandable(
         )
         TwoLineItem(
             cell1 = stringResource(id = R.string.wf_owner_address),
-            cell2 = "${owner.address} ${owner.streetNumber}"
+            cell2 = "${owner.address} ${owner.address}"
         )
         TwoLineItem(
             cell1 = stringResource(id = R.string.wf_owner_zip),

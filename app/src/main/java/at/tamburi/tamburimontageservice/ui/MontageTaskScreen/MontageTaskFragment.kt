@@ -122,25 +122,25 @@ class MontageTaskFragment : Fragment() {
                                                         .padding(bottom = 8.dp)
                                                         .clickable {
                                                             viewModel.taskDetailId =
-                                                                tasks[index].montageId
+                                                                tasks[index].montageTaskId
                                                             findNavController().navigate(R.id.action_task_list_to_details)
                                                         },
                                                     text = {
-                                                        Text(text = "Auftragsnummer: ${tasks[index].montageId}")
+                                                        Text(text = "Auftragsnummer: ${tasks[index].montageTaskId}")
                                                     },
                                                     secondaryText = {
                                                         Column {
                                                             Text(
                                                                 text = stringResource(
                                                                     R.string.owner_string,
-                                                                    tasks[index].locationOwner.companyName
+                                                                    tasks[index].locationOwner?.companyName ?: "Empty..."
                                                                 )
                                                             )
                                                             Text(
                                                                 text = stringResource(
                                                                     R.string.adress_string,
-                                                                    tasks[index].remoteLocation.streetName,
-                                                                    tasks[index].remoteLocation.streetNumber
+                                                                    tasks[index].location.street,
+                                                                    tasks[index].location.number
                                                                 ),
                                                             )
                                                         }
@@ -167,7 +167,7 @@ class MontageTaskFragment : Fragment() {
                                             ListItem(
                                                 modifier = Modifier.background(MaterialTheme.colors.primaryVariant),
                                                 text = { Text(text = "Aktiver Auftrag") },
-                                                secondaryText = { Text(text = "Auftragsnummer: ${viewModel.activeTask.value?.montageId}") }
+                                                secondaryText = { Text(text = "Auftragsnummer: ${viewModel.activeTask.value?.montageTaskId}") }
                                             )
                                         }
                                     }
