@@ -6,6 +6,7 @@ import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.services.database.toServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState
+import java.util.*
 
 private const val TAG = "UserRepositoryImpl"
 
@@ -14,7 +15,7 @@ class UserRepositoryImpl(
 ) : IUserRepository {
     override suspend fun getUser(): DataState<ServiceUser> {
         try {
-            val result = userDao.getUserData()
+            val result = userDao.getLastLogin()
             return if (!result.isNullOrEmpty()) {
                 DataState(
                     hasData = true,
@@ -34,20 +35,35 @@ class UserRepositoryImpl(
 
     override suspend fun saveUser(user: ServiceUser): DataState<ServiceUser> {
         return try {
-            val userState = userDao.saveUserEntry(
-                user.servicemanId,
-                user.username,
-                user.firstname,
-                user.surname,
-                user.phone,
-                user.email,
-                user.loginDate
-            )
-            Log.d(TAG, "$userState")
-            if (userState < 1L) {
-                DataState(hasData = false, data = null, message = "Couldn't save ServiceUser")
+            val dBuser = userDao.getUserById(user.servicemanId)
+            if (dBuser == null) {
+                val userState = userDao.saveUserEntry(
+                    user.servicemanId,
+                    user.username,
+                    user.firstname,
+                    user.surname,
+                    user.phone,
+                    user.email,
+                    user.loginDate
+                )
+                Log.d(TAG, "$userState")
+                if (userState < 1L) {
+                    DataState(hasData = false, data = null, message = "Couldn't save ServiceUser")
+                } else {
+                    DataState(hasData = true, data = user)
+                }
             } else {
-                DataState(hasData = true, data = user)
+                val changedDate = userDao.updateDate(user.servicemanId, Date().time)
+                Log.d(TAG, "Changed Date State after SQL: $changedDate")
+                if (changedDate <= 0) {
+                    DataState(
+                        hasData = false,
+                        data = null,
+                        message = "Couldn't update ServiceUsers Login Date"
+                    )
+                } else {
+                    DataState(hasData = true, data = user)
+                }
             }
         } catch (e: Exception) {
             DataState(hasData = false, message = e.localizedMessage)
