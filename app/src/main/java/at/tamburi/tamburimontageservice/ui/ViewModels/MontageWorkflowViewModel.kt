@@ -14,7 +14,7 @@ import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.MainActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
-import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,7 +41,7 @@ private const val TAG = "MontageWorkflow"
 class MontageWorkflowViewModel
 @Inject
 constructor(
-    private val montageTaskRepository: IMontageTaskRepository
+    private val databaseMontageTaskRepository: IDatabaseMontageTaskRepository
 ) : ViewModel() {
     private val _state: MutableState<State> = mutableStateOf(State.Loading)
     private val _task: MutableState<MontageTask?> = mutableStateOf(null)
@@ -63,7 +63,7 @@ constructor(
     ) {
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
-            val result = montageTaskRepository.setQrCode(qrCode, lockerId)
+            val result = databaseMontageTaskRepository.setQrCode(qrCode, lockerId)
             if (result.hasData) {
                 Log.v(TAG, "QR Code successfully added to database")
                 changeState(State.Ready)
@@ -82,7 +82,7 @@ constructor(
                 it[DataStoreConstants.ACTIVE_TASK_ID] ?: -1
             }.first()
             if (id != -1) {
-                val result = montageTaskRepository.getTaskById(id)
+                val result = databaseMontageTaskRepository.getTaskById(id)
                 if (result.hasData) {
                     _task.value = result.data!!
                     changeState(State.Ready)

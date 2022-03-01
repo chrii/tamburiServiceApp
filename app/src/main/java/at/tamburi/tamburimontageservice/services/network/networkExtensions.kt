@@ -26,7 +26,7 @@ fun MontageTaskDto.toMontageTask(): MontageTask {
         creationDate = crDate,
         location = location.toRemoteLocation(),
         locationOwner = locationOwner?.toLocationOwner(),
-        montageStatus = MontageStatus.CREATED,
+        montageStatus = "MontageStatus.CREATED",
         locationDescription = locationDescription,
         powerConnection = powerConnection,
         montageGroundName = montageGroundName,

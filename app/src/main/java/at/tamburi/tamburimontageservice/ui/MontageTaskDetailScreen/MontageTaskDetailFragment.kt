@@ -33,7 +33,7 @@ class MontageTaskDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val task: MontageTask? = null
+        val task = viewModel.filteredTasks.value.find { it.montageTaskId == viewModel.taskDetailId }
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
@@ -62,13 +62,7 @@ class MontageTaskDetailFragment : Fragment() {
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_status),
-                                        cell2 = when (t.montageStatus) {
-                                            MontageStatus.ASSIGNED -> "Zugewiesen"
-                                            MontageStatus.CREATED -> "Erstellt"
-                                            MontageStatus.ACTIVE -> "Aktiv"
-                                            MontageStatus.CLOSED -> "Beendet"
-                                            MontageStatus.MAINTENANCE -> "Wartungsauftrag"
-                                        }
+                                        cell2 = t.montageStatus
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_description),

@@ -11,17 +11,19 @@ data class Locker(
     val gateway: Boolean,
     val gatewaySerialnumber: Int,
     val qrCode: String
-)
-//    companion object {
-//        fun lockerIdToString(lockerList: List<Locker>): String = lockerList
-//            .map { it.lockerId }
-//            .toString()
-//            .trim()
-//            .replace("[", "")
-//            .replace("]", "")
-//
-//        fun lockerIdList(ids: String): List<Int> = ids
-//            .split(",")
-//            .map { it.trim().toInt() }
-//    }
+) {
+        companion object {
+        fun lockerIdToString(lockerList: List<Locker>): String = lockerList
+            .map { it.lockerId }
+            .toString()
+            .trim()
+            .replace("[", "")
+            .replace("]", "")
+
+        fun lockerIdList(ids: String): List<Int> = ids
+            .split(",")
+            .map { it.trim().toInt() }
+    }
+}
+
 

@@ -13,9 +13,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.models.MontageTask
-import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
-import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
@@ -29,7 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-private const val TAG: String = "LoginViewModel"
+private const val TAG: String = "MainViewModel"
 
 // TODO: REFACTOR STATE NAMES
 enum class LoginState {
@@ -49,8 +48,8 @@ enum class TaskListToggle {
 class MainViewModel
 @Inject
 constructor(
-    private val userRepo: IUserRepository,
-    private val taskRepo: IMontageTaskRepository,
+    private val databaseUserRepo: IDatabaseUserRepository,
+    private val taskRepoDatabase: IDatabaseMontageTaskRepository,
     private val authRepo: IAuthenticationRepository,
     private val taskNetworkRepo: INetworkMontageTaskRepository
 ) : ViewModel() {
@@ -72,21 +71,11 @@ constructor(
         _loginState.value = state
     }
 
-    fun toggleTaskList(magazine: String) {
-//        Log.d(TAG, "Magazine: ${_tasks.value.first().magazine}")
-//        if (magazine != "all") {
-//            val filtered = _tasks.value.filter { it.magazine == magazine }
-//            _filteredTasks.value = filtered
-//        } else {
-//            _filteredTasks.value = _tasks.value
-//        }
-    }
-
     fun checkUserState(lifecycle: Lifecycle) {
         changeState(LoginState.Loading, "Get User Data")
         lifecycle.coroutineScope.launch {
             //TODO: Imitates loading delay - Delete if not necessary anymore
-            val user = userRepo.getUser()
+            val user = databaseUserRepo.getUser()
             if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
@@ -115,7 +104,7 @@ constructor(
             try {
                 val networkUser = authRepo.getUser(lower, password)
                 if (networkUser.hasData) {
-                    val result = userRepo.saveUser(networkUser.data!!)
+                    val result = databaseUserRepo.saveUser(networkUser.data!!)
                     if (!result.hasData) {
                         changeState(LoginState.Error, result.message)
                     } else {
@@ -136,21 +125,20 @@ constructor(
         changeState(LoginState.Loading, "Hole Aufträge")
         lifecycle.coroutineScope.launch {
             try {
-                //TODO: Put out the Mock Data
-//                taskListMockData.map { taskRepo.saveMockMontageTask(it) }
                 val t = taskNetworkRepo.getMontageTaskList(3)
-                Log.d(TAG, "getTaskList: $t")
-                val tasks = taskRepo.getAllTasks()
-                if (tasks.hasData) {
-                    Log.d(TAG, "${tasks.data}")
-                    _tasks.value = tasks.data!!
-                    _filteredTasks.value = tasks.data!!
+                //TODO: save task list to database
+//                val tasks = taskRepo.getAllTasks()
+                if (t.hasData) {
+                    Log.d(TAG, "${t.data}")
+                    _tasks.value = t.data!!
+                    _filteredTasks.value = t.data!!
                     changeState(LoginState.Ready)
                 } else {
                     errorMessage = "Keine Auftragsdaten"
                     changeState(LoginState.Error)
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 errorMessage = e.message ?: "Empty error message on getTasksList()"
                 changeState(LoginState.Error)
             }
@@ -158,12 +146,12 @@ constructor(
     }
 
     fun getActiveTask(context: Context, lifecycle: Lifecycle) {
-        Log.d(TAG, "Has active task?")
         lifecycle.coroutineScope.launch {
             try {
                 val hasData: Boolean = context.dataStore.data.map {
                     it[DataStoreConstants.HAS_ACTIVE_TASK] ?: false
                 }.first()
+                Log.d(TAG, "Has active task? - $hasData")
 
                 if (hasData) {
                     val activeTaskId: Int = context.dataStore.data.map {
@@ -171,6 +159,7 @@ constructor(
                     }.first()
 
                     Log.d(TAG, "activeTaskId: $activeTaskId")
+
                     val activeTask: MontageTask? =
                         _tasks.value.find { it.montageTaskId == activeTaskId }
 
@@ -200,7 +189,7 @@ constructor(
         }
     }
 
-    fun setActiveTask(context: Context, lifecycle: Lifecycle) {
+    private fun setActiveTask(context: Context, lifecycle: Lifecycle) {
         lifecycle.coroutineScope.launch {
             context.dataStore.edit {
                 it[DataStoreConstants.ACTIVE_TASK_ID] = taskDetailId

@@ -8,4 +8,13 @@ data class ServiceUser(
     val phone: String,
     val email: String,
     val loginDate: Long
-)
+) {
+    companion object {
+        fun toIdList(serviceUserList: List<ServiceUser>): String =
+            serviceUserList.map { it.servicemanId }
+                .toString()
+                .trim()
+                .replace("[", "")
+                .replace("]", "")
+    }
+}

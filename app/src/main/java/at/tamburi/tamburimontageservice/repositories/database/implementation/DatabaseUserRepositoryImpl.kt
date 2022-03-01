@@ -2,7 +2,7 @@ package at.tamburi.tamburimontageservice.repositories.database.implementation
 
 import android.util.Log
 import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.services.database.dao.UserDao
 import at.tamburi.tamburimontageservice.services.database.toServiceUser
 import at.tamburi.tamburimontageservice.utils.DataState
@@ -10,9 +10,9 @@ import java.util.*
 
 private const val TAG = "UserRepositoryImpl"
 
-class UserRepositoryImpl(
+class DatabaseUserRepositoryImpl(
     private val userDao: UserDao
-) : IUserRepository {
+) : IDatabaseUserRepository {
     override suspend fun getUser(): DataState<ServiceUser> {
         try {
             val result = userDao.getLastLogin()
@@ -29,7 +29,8 @@ class UserRepositoryImpl(
                 )
             }
         } catch (e: Exception) {
-            throw Exception("Error getting user data")
+            e.stackTrace
+            throw Exception("Error getting user data - ${e.message}")
         }
     }
 

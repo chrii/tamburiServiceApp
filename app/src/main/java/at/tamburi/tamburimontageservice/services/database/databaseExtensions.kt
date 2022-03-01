@@ -1,9 +1,6 @@
 package at.tamburi.tamburimontageservice.services.database
 
-import at.tamburi.tamburimontageservice.models.LocationOwner
-import at.tamburi.tamburimontageservice.models.MontageTask
-import at.tamburi.tamburimontageservice.models.RemoteLocation
-import at.tamburi.tamburimontageservice.models.ServiceUser
+import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.services.database.entities.LocationOwnerEntity
 import at.tamburi.tamburimontageservice.services.database.entities.MontageTaskEntity
 import at.tamburi.tamburimontageservice.services.database.entities.RemoteLocationEntity
@@ -14,21 +11,26 @@ import at.tamburi.tamburimontageservice.services.database.entities.UserEntity
 val UserEntity.toServiceUser: ServiceUser
     get() = ServiceUser(
         servicemanId = servicemanId,
-                username = username,
-                firstname = firstname,
-                surname = surname,
-                phone = phone,
-                email = email,
-                loginDate = loginDate
+        username = username,
+        firstname = firstname,
+        surname = surname,
+        phone = phone,
+        email = email,
+        loginDate = loginDate
     )
 
 //val LocationOwnerEntity.toLocationOwner: LocationOwner
 //    get() = LocationOwner(
-//        companyId = id,
+//        buildingOwnerId = buildingOwnerId,
 //        companyName = companyName,
+//        name = name,
+//        surname = surname,
 //        address = address,
-//        streetNumber = streetNumber,
-//        zipCode = zipCode
+//        address2 = address2,
+//        city = city,
+//        zipCode = zipCode,
+//        email = email,
+//        phoneNumber = phoneNumber,
 //    )
 //
 //val RemoteLocationEntity.toRemoteLocation: RemoteLocation
@@ -44,7 +46,7 @@ val UserEntity.toServiceUser: ServiceUser
 //        minimumReservationTime = minimumReservationTime,
 //        minimumPauseTime = minimumPauseTime,
 //    )
-
+//
 //val MontageTaskEntity.toMontageTask: MontageTask
 //    get() = MontageTask(
 //

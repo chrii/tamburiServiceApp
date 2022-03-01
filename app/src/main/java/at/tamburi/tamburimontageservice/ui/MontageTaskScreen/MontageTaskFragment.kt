@@ -35,11 +35,6 @@ import at.tamburi.tamburimontageservice.utils.Constants
 class MontageTaskFragment : Fragment() {
     val viewModel: MainViewModel by activityViewModels()
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.getTaskList(lifecycle)
-    }
-
     override fun onResume() {
         super.onResume()
         viewModel.getTaskList(lifecycle)
@@ -57,23 +52,23 @@ class MontageTaskFragment : Fragment() {
         inflater.inflate(R.menu.magazine_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_item_doebler -> {
-                viewModel.toggleTaskList("Döblerhof Straße")
-                true
-            }
-            R.id.menu_item_flo -> {
-                viewModel.toggleTaskList("Floridusgasse")
-                true
-            }
-            R.id.menu_item_all -> {
-                viewModel.toggleTaskList("all")
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.menu_item_doebler -> {
+//                viewModel.toggleTaskList("Döblerhof Straße")
+//                true
+//            }
+//            R.id.menu_item_flo -> {
+//                viewModel.toggleTaskList("Floridusgasse")
+//                true
+//            }
+//            R.id.menu_item_all -> {
+//                viewModel.toggleTaskList("all")
+//                true
+//            }
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
@@ -115,6 +110,7 @@ class MontageTaskFragment : Fragment() {
                                     ) {
                                         val tasks = viewModel.filteredTasks.value
                                         viewModel.getActiveTask(context, lifecycleOwner.lifecycle)
+
                                         items(tasks.size) { index ->
                                             Column {
                                                 ListItem(
