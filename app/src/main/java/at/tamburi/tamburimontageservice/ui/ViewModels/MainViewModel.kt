@@ -13,10 +13,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.models.MontageTask
+import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
+import at.tamburi.tamburimontageservice.utils.Constants
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,6 +65,7 @@ constructor(
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
     val activeTask: MutableState<MontageTask?> = _activeTask
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
+    var activeUser: ServiceUser? = null
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     var taskDetailId: Int = 0
@@ -71,15 +74,19 @@ constructor(
         _loginState.value = state
     }
 
-    fun checkUserState(lifecycle: Lifecycle) {
+    fun checkUserState(lifecycle: Lifecycle, context: Context) {
         changeState(LoginState.Loading, "Get User Data")
         lifecycle.coroutineScope.launch {
             //TODO: Imitates loading delay - Delete if not necessary anymore
-            val user = databaseUserRepo.getUser()
+            val userId = context.dataStore.data.map {
+                it[DataStoreConstants.ACTIVE_USER_ID]
+            }.first() ?: throw Exception("No active user")
+            val user = databaseUserRepo.getUser(userId)
             if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
                 Log.d(TAG, "userdata: ${user.hasData}")
+                Log.d(TAG, "userdata: ${user.data?.username}")
                 val serviceUser = user.data
                 val lastDate = getDate(Date(serviceUser!!.loginDate))
                 val todayDate = getDate()
@@ -87,6 +94,7 @@ constructor(
                 Log.d(TAG, "last: ${lastDate}")
 
                 if (todayDate == lastDate) {
+                    activeUser = user.data
                     changeState(LoginState.NEXT)
                 } else {
                     changeState(LoginState.Ready)
@@ -138,7 +146,7 @@ constructor(
                 if (t.hasData) {
                     Log.d(TAG, "${t.data}")
                     val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
-                    if (dbTasks) {
+                    if (dbTasks.hasData) {
                         _tasks.value = t.data!!
                         _filteredTasks.value = t.data!!
                         changeState(LoginState.Ready)

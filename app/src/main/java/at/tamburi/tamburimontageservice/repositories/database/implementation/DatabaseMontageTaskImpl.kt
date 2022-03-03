@@ -55,11 +55,11 @@ class DatabaseMontageTaskImpl(
         }
     }
 
-    override suspend fun saveTasks(tasks: List<MontageTask>): Boolean {
+    override suspend fun saveTasks(tasks: List<MontageTask>): DataState<List<MontageTask>> {
         try {
-            val tasksToEntity = tasks.map {
+            val result = tasks.map {
                 val task = getTaskById(it.montageTaskId)
-                if (it.locationOwner != null) saveOwner(it.locationOwner) else null
+                if (it.locationOwner != null) saveOwner(it.locationOwner)
                 saveLocation(it.location)
                 it.servicemanList.map { user -> saveUser(user) }
                 it.lockerList.map { locker -> saveLocker(locker) }
@@ -67,7 +67,7 @@ class DatabaseMontageTaskImpl(
                 Log.d(TAG, "Result has data: ${task.hasData}")
                 Log.d(TAG, "DATA: ${task.data}")
                 if (!task.hasData) {
-                    montageTaskDao.saveTask(
+                    val saveResult = montageTaskDao.saveTask(
                         montageTaskId = it.montageTaskId,
                         creationDate = it.creationDate.time,
                         locationId = it.location.locationId,
@@ -82,12 +82,19 @@ class DatabaseMontageTaskImpl(
                         servicemanList = ServiceUser.toIdList(it.servicemanList),
                         scheduledInstallationDate = it.scheduledInstallationDate.time,
                     )
+                    if (saveResult > -1) {
+                        DataState(hasData = true, data = it, message = "Saved Task successfully")
+                    } else throw Exception("Couldn't save Montage Task")
                 } else {
-                    task.data?.montageTaskId!!
+                    DataState(hasData = true, data = it, message = "Data already exists")
                 }
             }
-            Log.d(TAG, "TASKSTOENTITY: ${tasksToEntity.contains(-1)}")
-            return tasksToEntity.contains(-1)
+            val taskListSavingResult = result.map { it.hasData }.contains(false)
+            return if(taskListSavingResult) {
+                DataState(hasData = false, data = null, message = "Error saving Tasks")
+            } else {
+                DataState(hasData = true, data = tasks, message = "Saved Tasks successfully")
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             throw Exception("Saving Tasks was not successful - Stacktrace")

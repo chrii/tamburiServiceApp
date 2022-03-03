@@ -13,13 +13,13 @@ private const val TAG = "UserRepositoryImpl"
 class DatabaseUserRepositoryImpl(
     private val userDao: UserDao
 ) : IDatabaseUserRepository {
-    override suspend fun getUser(): DataState<ServiceUser> {
-        try {
-            val result = userDao.getLastLogin()
-            return if (!result.isNullOrEmpty()) {
+    override suspend fun getUser(userId: Int): DataState<ServiceUser> {
+        return try {
+            val result = userDao.getUserById(userId)
+            if (result != null) {
                 DataState(
                     hasData = true,
-                    data = result.first().toServiceUser,
+                    data = result.toServiceUser,
                     message = "Got User"
                 )
             } else {

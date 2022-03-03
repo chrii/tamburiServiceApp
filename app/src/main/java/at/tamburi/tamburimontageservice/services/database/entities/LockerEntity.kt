@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "lockers")
 data class LockerEntity(
+    @PrimaryKey
     @NonNull
     @ColumnInfo(name = "locker_id")
     val lockerId: Int,

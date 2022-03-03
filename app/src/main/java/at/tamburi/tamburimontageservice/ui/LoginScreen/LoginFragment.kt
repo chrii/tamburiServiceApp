@@ -44,6 +44,6 @@ class LoginFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.checkUserState(lifecycle)
+        viewModel.checkUserState(lifecycle, requireContext())
     }
 }

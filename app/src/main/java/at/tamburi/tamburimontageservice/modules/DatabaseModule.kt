@@ -62,8 +62,9 @@ object DatabaseModule {
         montageTaskDao: MontageTaskDao,
         ownerDao: LocationOwnerDao,
         lockerDao: LockerDao,
-        locationDao: RemoteLocationDao
+        locationDao: RemoteLocationDao,
+        userDao: UserDao
     ): IDatabaseMontageTaskRepository {
-        return DatabaseMontageTaskImpl(montageTaskDao, ownerDao, lockerDao, locationDao)
+        return DatabaseMontageTaskImpl(montageTaskDao, ownerDao, lockerDao, locationDao, userDao)
     }
 }
