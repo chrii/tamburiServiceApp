@@ -106,6 +106,7 @@ constructor(
                 if (networkUser.hasData) {
                     val result = databaseUserRepo.saveUser(networkUser.data!!)
                     if (!result.hasData) {
+                        Log.d(TAG, "Login has no data")
                         changeState(LoginState.Error, result.message)
                     } else {
                         context.dataStore.edit {
@@ -115,6 +116,7 @@ constructor(
                         changeState(LoginState.NEXT)
                     }
                 } else {
+                    Log.d(TAG, "")
                     changeState(LoginState.Error, networkUser.message)
                 }
             } catch (e: Exception) {
@@ -133,12 +135,16 @@ constructor(
                 }.first() ?: throw Exception("No active user")
                 val t = taskNetworkRepo.getMontageTaskList(userId)
                 //TODO: save task list to database
-//                val tasks = taskRepo.getAllTasks()
                 if (t.hasData) {
                     Log.d(TAG, "${t.data}")
-                    _tasks.value = t.data!!
-                    _filteredTasks.value = t.data!!
-                    changeState(LoginState.Ready)
+                    val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
+                    if (dbTasks) {
+                        _tasks.value = t.data!!
+                        _filteredTasks.value = t.data!!
+                        changeState(LoginState.Ready)
+                    } else {
+                        changeState(LoginState.Error, "Couldn't write Tasks to Database")
+                    }
                 } else {
                     errorMessage = "Keine Auftragsdaten"
                     changeState(LoginState.Error)

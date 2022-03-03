@@ -8,25 +8,34 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "owner")
 data class LocationOwnerEntity(
     @PrimaryKey
-    val id: Int,
-
     @NonNull
-    @ColumnInfo(name = "owner_id")
-    val ownerId: Int,
-
+    @ColumnInfo(name = "building_owner_id")
+    val buildingOwnerId: Int,
     @NonNull
     @ColumnInfo(name = "company_name")
     val companyName: String,
-
+    @NonNull
+    @ColumnInfo(name = "name")
+    val name: String,
+    @NonNull
+    @ColumnInfo(name = "surname")
+    val surname: String,
     @NonNull
     @ColumnInfo(name = "address")
     val address: String,
-
     @NonNull
-    @ColumnInfo(name = "street_number")
-    val streetNumber: String,
-
+    @ColumnInfo(name = "address2")
+    val address2: String,
     @NonNull
-    @ColumnInfo(name = "zip")
-    val zipCode: String
+    @ColumnInfo(name = "city")
+    val city: String,
+    @NonNull
+    @ColumnInfo(name = "zip_code")
+    val zipCode: String,
+    @NonNull
+    @ColumnInfo(name = "email")
+    val email: String,
+    @NonNull
+    @ColumnInfo(name = "phone_number")
+    val phoneNumber: String
 )

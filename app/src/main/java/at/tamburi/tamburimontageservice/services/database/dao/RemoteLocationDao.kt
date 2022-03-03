@@ -10,19 +10,18 @@ interface RemoteLocationDao {
     suspend fun getLocationById(locationId: Int): RemoteLocationEntity?
 
     @Query(
-        "INSERT INTO remote_location (location_id,qr_code,location_name,country_id,city_id,zip,street_name,street_number,minimum_reservation_time,minimum_pause_time) " +
-                "VALUES (:locationId,:qrCode,:locationName,:countryId,:cityId,:zipCode,:streetName,:streetNumber,:minimumReservationTime,:minimumPauseTime)"
+        "INSERT INTO remote_location (location_id, country_id, city_id, zip_code, street, number, qr_code, country_name) " +
+                "VALUES (:locationId,:countryId,:cityId,:zipCode,:street,:number,:qrCode,:cityName,:countryName)"
     )
     suspend fun saveLocation(
         locationId: Int,
-        qrCode: String?,
-        locationName: String?,
         countryId: Int,
         cityId: Int,
         zipCode: String,
-        streetName: String,
-        streetNumber: String,
-        minimumReservationTime: Int,
-        minimumPauseTime: Int
-    )
+        street: String,
+        number: String,
+        qrCode: String,
+        cityName: String,
+        countryName: String
+    ): Int
 }

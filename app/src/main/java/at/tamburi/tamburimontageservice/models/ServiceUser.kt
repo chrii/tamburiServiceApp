@@ -16,5 +16,9 @@ data class ServiceUser(
                 .trim()
                 .replace("[", "")
                 .replace("]", "")
+
+        fun serviceUserIdList(ids: String): List<Int> = ids
+            .split(",")
+            .map { it.trim().toInt() }
     }
 }

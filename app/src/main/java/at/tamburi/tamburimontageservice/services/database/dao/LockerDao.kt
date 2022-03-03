@@ -13,14 +13,19 @@ interface LockerDao {
     suspend fun setQrCode(qrCode: String, lockerId: Int): Int
 
     @Query(
-        "INSERT INTO lockers (locker_id, type_id, type_name, qr_code, gateway)" +
-                "VALUES (:lockerId, :typeId, :typeName, :qrCode, :gateway)"
+        "INSERT INTO lockers (locker_id, location_id, locker_name, locker_type, column_number, montage_task_id, type_name, gateway, gateway_serial_number, qr_code)" +
+                "VALUES (:lockerId,:locationId,:lockerName,:lockerType,:columnNumber,:montageTaskId,:typeName,:gateway,:gatewaySerialnumber,:qrCode)"
     )
     suspend fun saveLocker(
         lockerId: Int,
-        typeId: Int,
+        locationId: Int,
+        lockerName: String,
+        lockerType: Int,
+        columnNumber: Int,
+        montageTaskId: Int,
         typeName: String,
-        qrCode: String,
-        gateway: Boolean
+        gateway: Boolean,
+        gatewaySerialnumber: Int,
+        qrCode: String
     ): Long
 }
