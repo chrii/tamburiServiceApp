@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -105,31 +106,41 @@ class QrCodeFragment : Fragment() {
                                     previewView
                                 }
                             )
-                            if (code.isNotEmpty()) {
-                                //TODO: Refactor Composables to avoid Warnings
-                                when (viewModel.qrCodeScannerState) {
-                                    QrCodeScannerState.Location -> {
-                                        locationFormatter(code = code)
-                                    }
-                                    QrCodeScannerState.Locker -> {
-                                        lockerFormatter(code = code)
-                                    }
+                            //TODO: Refactor Composables to avoid Warnings
+                            when (viewModel.qrCodeScannerState) {
+                                QrCodeScannerState.Location -> if (code.isNotEmpty()) {
+                                    locationFormatter(code = code)
+                                } else {
+                                    ScannerText(stringResource(R.string.qrs_scan_location_text))
                                 }
-                            } else {
-                                Text(
-                                    text = "Halten Sie die Kamera über den QR-Code",
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(32.dp)
-                                )
+                                QrCodeScannerState.Locker -> if (code.isNotEmpty()) {
+                                    lockerFormatter(code = code)
+                                } else {
+                                    ScannerText(stringResource(R.string.qrs_scan_locker_text))
+                                }
+                                QrCodeScannerState.Gateway -> if (code.isNotEmpty()) {
+                                    gatewayFormatter(code = code)
+                                } else {
+                                    ScannerText(stringResource(R.string.qrs_scan_gateway_text))
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    fun ScannerText(t: String) {
+        Text(
+            text = t,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp)
+        )
     }
 
     @Composable
@@ -163,6 +174,27 @@ class QrCodeFragment : Fragment() {
     }
 
     @Composable
+    private fun gatewayFormatter(code: String) {
+        if(viewModel.activeLocker == null) {
+            findNavController(this).navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+            Toast.makeText(
+                requireContext(),
+                "No active Locker found",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            // TODO: Validation for gateway Qr-Codes
+            // It should not be possible to scan a locker qr code for a gateway like in dev test
+            viewModel.setGatewayForLocker(
+                lifecycle,
+                viewModel.activeLocker?.lockerId!!,
+                code,
+                findNavController(this)
+            )
+        }
+    }
+
+    @Composable
     private fun locationFormatter(code: String) {
         val id = cutUrlForLocationId(code)
         if (id.isEmpty()) {
@@ -180,6 +212,7 @@ class QrCodeFragment : Fragment() {
     }
 
     private fun cutUrlForLocationId(code: String): String {
+        //TODO: Errorhandling
         return try {
             val uri = Uri.parse(code)
             Log.v(TAG, "Queryparam: ${uri.getQueryParameter("qr")}")

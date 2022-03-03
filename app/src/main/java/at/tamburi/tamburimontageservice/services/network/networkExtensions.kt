@@ -75,4 +75,5 @@ fun LockerDto.toLocker(): Locker = Locker(
     gateway = gateway,
     gatewaySerialnumber = gatewaySerialnumber ?: "",
     qrCode = qrCode ?: "",
+    busSlot = 0
 )

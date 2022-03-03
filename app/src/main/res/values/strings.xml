@@ -52,8 +52,20 @@
     <string name="wf_top_menu_title">Optionen</string>
     <string name="wf_top_menu_revoke_text">Auftrag annullieren</string>
     <string name="wf_top_menu_revoke_toast_text">Erfolgreich annulliert</string>
+    <!-- Locker Expandable -->
+    <string name="wf_exp_title">Kästen</string>
+    <string name="wf_exp_uses_gateway">Benutzt Gateway</string>
+    <string name="wf_exp_not_uses_gate">Ohne Gateway</string>
+    <string name="wf_exp_qr_code_registered">QR Code nicht registriert</string>
+    <string name="wf_exp_qr_code_not_registered">QR Code registriert</string>
+    <string name="wf_exp_no_registered_gateway">Registrieren Sie zuerst ein Gateway</string>
 
     <!-- LocationProposalScreen -->
     <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>
     <string name="prop_scan_qr_code">QR-Code Scannen</string>
+
+    <!-- Qr-Code Screen -->
+    <string name="qrs_scan_location_text">Kleben Sie den Standort Sticker auf den Kasten und scannen Sie den Qr-Code</string>
+    <string name="qrs_scan_locker_text">Kleben Sie Kasten Sticker in den Kasten und scannen Sie den Qr-Code</string>
+    <string name="qrs_scan_gateway_text">Scannen Sie den Qr-Code auf dem Gateway</string>
 </resources>

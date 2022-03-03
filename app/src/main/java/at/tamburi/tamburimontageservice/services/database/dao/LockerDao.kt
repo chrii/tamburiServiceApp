@@ -12,9 +12,12 @@ interface LockerDao {
     @Query("UPDATE lockers SET qr_code = :qrCode WHERE locker_id = :lockerId")
     suspend fun setQrCode(qrCode: String, lockerId: Int): Int
 
+    @Query("UPDATE lockers SET gateway_serial_number = :gatewaySerialnumber WHERE locker_id = :lockerId")
+    suspend fun setGatewaySerialNumber(gatewaySerialnumber: String, lockerId: Int)
+
     @Query(
-        "INSERT INTO lockers (locker_id, location_id, locker_name, locker_type, column_number, montage_task_id, type_name, gateway, gateway_serial_number, qr_code)" +
-                "VALUES (:lockerId,:locationId,:lockerName,:lockerType,:columnNumber,:montageTaskId,:typeName,:gateway,:gatewaySerialnumber,:qrCode)"
+        "INSERT INTO lockers (locker_id, location_id, locker_name, locker_type, column_number, montage_task_id, type_name, gateway, gateway_serial_number, qr_code, bus_slot)" +
+                "VALUES (:lockerId,:locationId,:lockerName,:lockerType,:columnNumber,:montageTaskId,:typeName,:gateway,:gatewaySerialnumber,:qrCode,:busSlot)"
     )
     suspend fun saveLocker(
         lockerId: Int,
@@ -26,6 +29,7 @@ interface LockerDao {
         typeName: String,
         gateway: Boolean,
         gatewaySerialnumber: String,
-        qrCode: String
+        qrCode: String,
+        busSlot: Int
     ): Long
 }

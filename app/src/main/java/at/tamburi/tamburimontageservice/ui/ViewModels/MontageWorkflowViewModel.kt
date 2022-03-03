@@ -32,7 +32,8 @@ enum class State {
 
 enum class QrCodeScannerState {
     Locker,
-    Location
+    Location,
+    Gateway
 }
 
 private const val TAG = "MontageWorkflow"
@@ -47,9 +48,11 @@ constructor(
     private val _task: MutableState<MontageTask?> = mutableStateOf(null)
     var qrCodeScannerState: QrCodeScannerState = QrCodeScannerState.Locker
     var activeLocker = _task.value?.lockerList?.first()
+    var gatewaySerialnumber: MutableList<String> = mutableListOf()
 
     val state: MutableState<State> = _state
     val task: MutableState<MontageTask?> = _task
+    val hasRegisteredGateway: Boolean = gatewaySerialnumber.isNotEmpty()
 
     fun changeState(s: State) {
         _state.value = s
@@ -68,6 +71,31 @@ constructor(
                 Log.v(TAG, "QR Code successfully added to database")
                 changeState(State.Ready)
                 navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+            } else {
+                changeState(State.Error)
+            }
+        }
+    }
+
+    fun setGatewayForLocker(
+        lifecycle: Lifecycle,
+        lockerId: Int,
+        serialnumber: String,
+        navigation: NavController
+    ) {
+        // TODO: We need a QR Code validation for gateway QR codes
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            delay(1000)
+            val result =
+                databaseMontageTaskRepository.setGatewaySerialnumber(serialnumber, lockerId)
+            if (result.hasData) {
+                gatewaySerialnumber.add(serialnumber)
+                qrCodeScannerState = QrCodeScannerState.Locker
+                Log.d(TAG, "$gatewaySerialnumber")
+                Log.d(TAG, "$hasRegisteredGateway")
+                changeState(State.Ready)
+                navigation.navigate(R.id.action_qr_code_next_handler)
             } else {
                 changeState(State.Error)
             }
@@ -114,4 +142,6 @@ constructor(
         }
         return true
     }
+
+
 }

@@ -90,7 +90,7 @@ class DatabaseMontageTaskImpl(
                 }
             }
             val taskListSavingResult = result.map { it.hasData }.contains(false)
-            return if(taskListSavingResult) {
+            return if (taskListSavingResult) {
                 DataState(hasData = false, data = null, message = "Error saving Tasks")
             } else {
                 DataState(hasData = true, data = tasks, message = "Saved Tasks successfully")
@@ -184,7 +184,8 @@ class DatabaseMontageTaskImpl(
                     typeName = locker.typeName,
                     gateway = locker.gateway,
                     gatewaySerialnumber = locker.gatewaySerialnumber,
-                    qrCode = locker.qrCode
+                    qrCode = locker.qrCode,
+                    busSlot = locker.busSlot ?: 0
                 )
                 if (saveResult > -1) {
                     DataState(hasData = true, data = locker, message = "Locker saved successfully ")
@@ -244,6 +245,19 @@ class DatabaseMontageTaskImpl(
                 data = false,
                 message = "Error: Cant set QR Code for Locker"
             )
+        }
+    }
+
+    override suspend fun setGatewaySerialnumber(
+        serialnumber: String,
+        lockerId: Int
+    ): DataState<Boolean> {
+        return try {
+            lockerDao.setGatewaySerialNumber(serialnumber, lockerId)
+            DataState(hasData = true, data = true, message = "Successful")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, data = false, message = "Setting Serialnumber failed")
         }
     }
 

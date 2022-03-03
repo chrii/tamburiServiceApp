@@ -58,6 +58,7 @@ val LockerEntity.toLocker: Locker
         gateway = gateway,
         gatewaySerialnumber = gatewaySerialnumber,
         qrCode = qrCode,
+        busSlot = busSlot
     )
 
 fun MontageTaskEntity.toMontageTask(

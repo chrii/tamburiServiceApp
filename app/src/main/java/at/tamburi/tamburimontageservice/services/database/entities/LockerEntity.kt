@@ -37,5 +37,8 @@ data class LockerEntity(
     val gatewaySerialnumber: String,
     @NonNull
     @ColumnInfo(name = "qr_code")
-    val qrCode: String
+    val qrCode: String,
+    @NonNull
+    @ColumnInfo(name = "bus_slot")
+    val busSlot: Int
 )

@@ -26,6 +26,12 @@
             app:destination="@id/workflow_landing_fragment"
             app:popUpTo="@id/workflow_landing_fragment"
             app:popUpToInclusive="false" />
+
+        <action
+            android:id="@+id/action_qr_code_next_handler"
+            app:destination="@id/qr_code_fragment"
+            app:popUpTo="@id/qr_code_fragment"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment

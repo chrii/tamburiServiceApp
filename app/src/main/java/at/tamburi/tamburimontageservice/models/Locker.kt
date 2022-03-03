@@ -10,7 +10,8 @@ data class Locker(
     val typeName: String,
     val gateway: Boolean,
     val gatewaySerialnumber: String,
-    val qrCode: String
+    val qrCode: String,
+    val busSlot: Int?
 ) {
         companion object {
         fun lockerIdToString(lockerList: List<Locker>): String = lockerList
