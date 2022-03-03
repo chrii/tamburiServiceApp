@@ -25,7 +25,7 @@ interface LockerDao {
         montageTaskId: Int,
         typeName: String,
         gateway: Boolean,
-        gatewaySerialnumber: Int,
+        gatewaySerialnumber: String,
         qrCode: String
     ): Long
 }

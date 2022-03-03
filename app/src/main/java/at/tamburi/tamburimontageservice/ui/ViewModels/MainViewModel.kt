@@ -80,18 +80,14 @@ constructor(
             //TODO: Imitates loading delay - Delete if not necessary anymore
             val userId = context.dataStore.data.map {
                 it[DataStoreConstants.ACTIVE_USER_ID]
-            }.first() ?: throw Exception("No active user")
+            }.first() ?: 0
             val user = databaseUserRepo.getUser(userId)
             if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
-                Log.d(TAG, "userdata: ${user.hasData}")
-                Log.d(TAG, "userdata: ${user.data?.username}")
                 val serviceUser = user.data
                 val lastDate = getDate(Date(serviceUser!!.loginDate))
                 val todayDate = getDate()
-                Log.d(TAG, "today: ${todayDate}")
-                Log.d(TAG, "last: ${lastDate}")
 
                 if (todayDate == lastDate) {
                     activeUser = user.data

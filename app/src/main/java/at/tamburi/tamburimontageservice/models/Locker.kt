@@ -9,7 +9,7 @@ data class Locker(
     val montageTaskId: Int,
     val typeName: String,
     val gateway: Boolean,
-    val gatewaySerialnumber: Int,
+    val gatewaySerialnumber: String,
     val qrCode: String
 ) {
         companion object {

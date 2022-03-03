@@ -73,6 +73,6 @@ fun LockerDto.toLocker(): Locker = Locker(
     montageTaskId = montageTaskId,
     typeName = typeName,
     gateway = gateway,
-    gatewaySerialnumber = gatewaySerialnumber,
-    qrCode = qrCode ?: "No Qr Code",
+    gatewaySerialnumber = gatewaySerialnumber ?: "",
+    qrCode = qrCode ?: "",
 )

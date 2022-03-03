@@ -9,6 +9,6 @@ data class LockerDto(
     var montageTaskId: Int,
     var typeName: String,
     var gateway: Boolean,
-    var gatewaySerialnumber: Int,
+    var gatewaySerialnumber: String?,
     var qrCode: String?
 )
