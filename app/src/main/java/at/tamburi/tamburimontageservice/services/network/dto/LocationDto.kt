@@ -7,7 +7,7 @@ data class LocationDto(
     var zipCode: String,
     var street: String,
     var number: String,
-    var qrCode: String,
+    var qrCode: String?,
     var cityName: String,
     var countryName: String
 )

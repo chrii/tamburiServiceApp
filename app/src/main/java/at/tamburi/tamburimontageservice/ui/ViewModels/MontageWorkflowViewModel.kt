@@ -11,13 +11,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import at.tamburi.tamburimontageservice.MainActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.network.implementation.NetworkMontageTaskRepositoryImpl
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -42,7 +46,8 @@ private const val TAG = "MontageWorkflow"
 class MontageWorkflowViewModel
 @Inject
 constructor(
-    private val databaseMontageTaskRepository: IDatabaseMontageTaskRepository
+    private val databaseMontageTaskRepository: IDatabaseMontageTaskRepository,
+    private val networkMontageTaskRepository: INetworkMontageTaskRepository
 ) : ViewModel() {
     private val _state: MutableState<State> = mutableStateOf(State.Loading)
     private val _task: MutableState<MontageTask?> = mutableStateOf(null)
@@ -81,12 +86,11 @@ constructor(
         lifecycle: Lifecycle,
         lockerId: Int,
         serialnumber: String,
-        navigation: NavController
+        navigation: NavController? = null
     ) {
         // TODO: We need a QR Code validation for gateway QR codes
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
-            delay(1000)
             val result =
                 databaseMontageTaskRepository.setGatewaySerialnumber(serialnumber, lockerId)
             if (result.hasData) {
@@ -95,10 +99,40 @@ constructor(
                 Log.d(TAG, "$gatewaySerialnumber")
                 Log.d(TAG, "$hasRegisteredGateway")
                 changeState(State.Ready)
-                navigation.navigate(R.id.action_qr_code_next_handler)
+                navigation?.navigate(R.id.action_qr_code_next_handler)
             } else {
                 changeState(State.Error)
             }
+        }
+    }
+
+    fun setDataForLocker(
+        lifecycle: Lifecycle,
+        lockerId: Int,
+        serialnumber: String,
+        qrCode: String,
+        navigation: NavController
+    ) {
+        setGatewayForLocker(
+            lifecycle,
+            lockerId,
+            gatewaySerialnumber.first()
+        )
+        setQrCodeForLocker(
+            lifecycle,
+            lockerId,
+            qrCode,
+            navigation
+        )
+    }
+
+    fun setBusSlotForLocker(
+        busSlot: Int,
+        lockerId: Int,
+        lifecycle: Lifecycle
+    ) {
+        lifecycle.coroutineScope.launch {
+            databaseMontageTaskRepository.setBusSlot(lockerId, busSlot)
         }
     }
 
@@ -143,5 +177,28 @@ constructor(
         return true
     }
 
-
+    fun registerLockers(lifecycle: Lifecycle, context: Context, navigation: NavController) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            try {
+                val locationId = task.value?.location?.locationId
+                    ?: throw Exception("registerLockers - Location ID not found")
+                val lockers = databaseMontageTaskRepository.getLockersByLocationId(locationId)
+                if (lockers.hasData) {
+                    val networkResponse =
+                        networkMontageTaskRepository.registerLockers(lockers.data!!)
+                    if (networkResponse.hasData) {
+                        changeState(State.Ready)
+                        navigation.navigate(R.id.action_landing_fragment_to_proposal_fragment)
+                    } else {
+                        Toast.makeText(context, networkResponse.message, Toast.LENGTH_SHORT).show()
+                        changeState(State.Error)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                changeState(State.Error)
+            }
+        }
+    }
 }

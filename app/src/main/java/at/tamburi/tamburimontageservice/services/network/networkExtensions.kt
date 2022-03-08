@@ -46,7 +46,7 @@ fun LocationDto.toRemoteLocation(): RemoteLocation = RemoteLocation(
     zipCode = zipCode,
     street = street,
     number = number,
-    qrCode = qrCode,
+    qrCode = qrCode ?: "",
     cityName = cityName,
     countryName = countryName
 )
@@ -76,4 +76,12 @@ fun LockerDto.toLocker(): Locker = Locker(
     gatewaySerialnumber = gatewaySerialnumber ?: "",
     qrCode = qrCode ?: "",
     busSlot = 0
+)
+
+fun Locker.toLockerRegistrationDto(): LockerRegistrationDto = LockerRegistrationDto(
+    lockerId = lockerId,
+    qrCode = qrCode,
+    gatewaySerialNumber = gatewaySerialnumber,
+    busSlot = busSlot
+        ?: throw Exception("Cannot transform Locker to Locker Registration - Bus Slot is null")
 )

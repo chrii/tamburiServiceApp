@@ -261,7 +261,40 @@ class DatabaseMontageTaskImpl(
         }
     }
 
+    override suspend fun setBusSlot(lockerId: Int, busSlot: Int): DataState<Boolean> {
+        return try {
+            val result = lockerDao.setBusSlot(lockerId, busSlot)
+            if (result >= 0) {
+                DataState(hasData = true, data = true, message = "Successful")
+            } else {
+                DataState(hasData = false, data = false, message = "Error saving Bus Slot Number")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, data = false, message = "Cannot save Bus Slot Number")
+        }
+    }
+
     override suspend fun getAllTasks(): DataState<List<MontageTask>> {
         return DataState(hasData = false, data = null, message = "getAllTasks")
+    }
+
+    override suspend fun getLockersByLocationId(locationId: Int): DataState<List<Locker>> {
+        return try {
+            val response = lockerDao.getLockersByLocationId(locationId)
+            if (response.isNotEmpty()) {
+                val lockerList = response.map { it.toLocker }
+                DataState(hasData = true, data = lockerList, message = "Request Successful")
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "No Lockers with this location id "
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, data = null, message = "Error getting Data from Database")
+        }
     }
 }

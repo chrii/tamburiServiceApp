@@ -154,9 +154,11 @@ class QrCodeFragment : Fragment() {
             ).show()
         } else {
             if (checkQrCodeForLocker(code)) {
-                viewModel.setQrCodeForLocker(
+                Log.d(TAG, viewModel.gatewaySerialnumber.toString())
+                viewModel.setDataForLocker(
                     lifecycle,
                     viewModel.activeLocker?.lockerId!!,
+                    viewModel.gatewaySerialnumber.first(),
                     code,
                     findNavController(this)
                 )
@@ -175,7 +177,7 @@ class QrCodeFragment : Fragment() {
 
     @Composable
     private fun gatewayFormatter(code: String) {
-        if(viewModel.activeLocker == null) {
+        if (viewModel.activeLocker == null) {
             findNavController(this).navigate(R.id.action_qr_code_fragment_to_landing_fragment)
             Toast.makeText(
                 requireContext(),

@@ -99,7 +99,11 @@ class WorkflowLandingFragment : Fragment() {
                                                     .fillMaxWidth()
                                                     .padding(8.dp),
                                                 onClick = {
-                                                    findNavController().navigate(R.id.action_landing_fragment_to_proposal_fragment)
+                                                    viewModel.registerLockers(
+                                                        lifecycle,
+                                                        requireContext(),
+                                                        findNavController()
+                                                    )
                                                 }
                                             ) {
                                                 Text(text = "Weiter")
