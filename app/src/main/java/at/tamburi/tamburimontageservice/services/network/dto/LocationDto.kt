@@ -2,6 +2,7 @@ package at.tamburi.tamburimontageservice.services.network.dto
 
 data class LocationDto(
     var locationId: Int,
+    var locationName: String,
     var countryId: Int,
     var cityId: Int,
     var zipCode: String,

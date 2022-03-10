@@ -139,6 +139,7 @@ class DatabaseMontageTaskImpl(
             } else {
                 val savingResult = locationDao.saveLocation(
                     locationId = location.locationId,
+                    locationName = location.locationName,
                     countryId = location.countryId,
                     cityId = location.cityId,
                     zipCode = location.zipCode,
@@ -230,7 +231,7 @@ class DatabaseMontageTaskImpl(
         }
     }
 
-    override suspend fun setQrCode(qrCode: String, lockerId: Int): DataState<Boolean> {
+    override suspend fun setLockerQrCode(qrCode: String, lockerId: Int): DataState<Boolean> {
         return try {
             lockerDao.setQrCode(qrCode, lockerId)
             DataState(
@@ -244,6 +245,33 @@ class DatabaseMontageTaskImpl(
                 hasData = false,
                 data = false,
                 message = "Error: Cant set QR Code for Locker"
+            )
+        }
+    }
+
+    override suspend fun setLocationQrCode(locationId: Int, qrCode: String): DataState<Boolean> {
+        return try {
+            val result = locationDao.setQrCodeForLocation(locationId, qrCode)
+            Log.d(TAG, "Location QR Code response: $result")
+            if (result > 0) {
+                DataState(
+                    hasData = true,
+                    data = true,
+                    message = "Location QR Code Successful written"
+                )
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "Failed to set Location QR Code"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(
+                hasData = false,
+                data = null,
+                message = "setLocationQrCode - failed to reach Database"
             )
         }
     }

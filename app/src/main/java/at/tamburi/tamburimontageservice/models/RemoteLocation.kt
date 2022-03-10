@@ -4,6 +4,7 @@ import android.os.Parcelable
 
 data class RemoteLocation(
     val locationId: Int,
+    val locationName: String,
     val countryId: Int,
     val cityId: Int,
     val zipCode: String,

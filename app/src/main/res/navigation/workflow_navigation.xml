@@ -29,9 +29,11 @@
 
         <action
             android:id="@+id/action_qr_code_next_handler"
-            app:destination="@id/qr_code_fragment"
-            app:popUpTo="@id/qr_code_fragment"
-            app:popUpToInclusive="false" />
+            app:destination="@id/qr_code_fragment" />
+
+        <action
+            android:id="@+id/action_qr_code_fragment_to_proposal_fragment"
+            app:destination="@+id/location_proposal_fragment" />
     </fragment>
 
     <fragment

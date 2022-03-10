@@ -41,6 +41,7 @@ fun MontageTaskDto.toMontageTask(): MontageTask {
 
 fun LocationDto.toRemoteLocation(): RemoteLocation = RemoteLocation(
     locationId = locationId,
+    locationName = locationName,
     countryId = countryId,
     cityId = cityId,
     zipCode = zipCode,

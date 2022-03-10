@@ -63,7 +63,7 @@ constructor(
         _state.value = s
     }
 
-    fun setQrCodeForLocker(
+    private fun setQrCodeForLocker(
         lifecycle: Lifecycle,
         lockerId: Int,
         qrCode: String,
@@ -71,12 +71,30 @@ constructor(
     ) {
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
-            val result = databaseMontageTaskRepository.setQrCode(qrCode, lockerId)
+            val result = databaseMontageTaskRepository.setLockerQrCode(qrCode, lockerId)
             if (result.hasData) {
                 Log.v(TAG, "QR Code successfully added to database")
                 changeState(State.Ready)
                 navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
             } else {
+                changeState(State.Error)
+            }
+        }
+    }
+
+    fun setLocationQrCode(lifecycle: Lifecycle, locationId: Int, qrCode: String, navigation: NavController) {
+        navigation.navigate(R.id.action_qr_code_fragment_to_proposal_fragment)
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            try {
+                val result = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
+                if(result.hasData) {
+                    changeState(State.Ready)
+                } else {
+                    changeState(State.Error)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
                 changeState(State.Error)
             }
         }

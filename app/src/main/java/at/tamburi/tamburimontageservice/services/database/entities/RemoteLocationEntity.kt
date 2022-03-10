@@ -12,6 +12,9 @@ data class RemoteLocationEntity(
     @ColumnInfo(name = "location_id")
     val locationId: Int,
     @NonNull
+    @ColumnInfo(name ="location_name")
+    val locationName: String,
+    @NonNull
     @ColumnInfo(name = "country_id")
     val countryId: Int,
     @NonNull

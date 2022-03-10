@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Surface
@@ -20,6 +21,8 @@ import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
+import at.tamburi.tamburimontageservice.ui.ViewModels.State
+import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 
 private const val TAG = "LocationPropFragment"
@@ -40,21 +43,40 @@ class LocationProposalFragment : Fragment() {
                     Surface(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        Column(
-                            modifier = Modifier.padding(8.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = stringResource(id = R.string.prop_information_text))
-                            Button(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                onClick = {
-                                    findNavController().navigate(R.id.action_proposal_fragment_to_qr_code_fragment)
+                        when (viewModel.state.value) {
+                            State.Loading -> CustomLoadingIndicator("Loading...")
+                            State.Error -> {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Something went wrong",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                viewModel.changeState(State.Ready)
+                            }
+                            State.Ready -> {
+                                val safeTask = viewModel.task.value ?: throw Exception("No Task found")
+                                Log.d(TAG, "QRCODE: ${safeTask.location.qrCode}")
+                                if (safeTask.location.qrCode.isNotEmpty()) {
+                                    MontageTaskOverview(viewModel)
+                                } else {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(text = stringResource(id = R.string.prop_information_text))
+                                        Button(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(8.dp),
+                                            onClick = {
+                                                findNavController().navigate(R.id.action_proposal_fragment_to_qr_code_fragment)
+                                            }
+                                        ) {
+                                            Text(stringResource(id = R.string.prop_scan_qr_code))
+                                        }
+                                    }
                                 }
-                            ) {
-                                Text(stringResource(id = R.string.prop_scan_qr_code))
                             }
                         }
                     }

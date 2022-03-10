@@ -37,6 +37,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.navigation.fragment.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
@@ -209,7 +210,9 @@ class QrCodeFragment : Fragment() {
                     .padding(32.dp)
             )
         } else {
-            Text("QR-Code gültig - Platzhalter")
+            viewModel.setLocationQrCode(
+                lifecycle, viewModel.task.value?.location?.locationId!!, code, this.findNavController()
+            )
         }
     }
 

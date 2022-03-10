@@ -36,6 +36,7 @@ val LocationOwnerEntity.toLocationOwner: LocationOwner
 val RemoteLocationEntity.toRemoteLocation: RemoteLocation
     get() = RemoteLocation(
         locationId = locationId,
+        locationName = locationName,
         countryId = countryId,
         cityId = cityId,
         zipCode = zipCode,
