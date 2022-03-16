@@ -67,7 +67,7 @@ fun CompLockerExpandable(
                             }
                         }
                     },
-                text = { Text(text = locker.typeName) },
+                text = { Text(text = locker.typeName ?: "") },
                 secondaryText = {
                     Column(
                         modifier = Modifier.fillMaxWidth(),

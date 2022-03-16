@@ -1,9 +1,11 @@
 package at.tamburi.tamburimontageservice.repositories.network.implementation
 
+import android.location.Location
 import android.util.Log
 import at.tamburi.tamburimontageservice.models.Locker
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
+import at.tamburi.tamburimontageservice.services.network.dto.LocationRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.dto.LockerRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.services.INetworkMontageTaskService
 import at.tamburi.tamburimontageservice.services.network.toLockerRegistrationDto
@@ -38,6 +40,38 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         } catch (e: Exception) {
             e.printStackTrace()
             throw Exception("Network Request Error")
+        }
+    }
+
+    override suspend fun registerLocation(locationId: Int, qrCode: String): DataState<Boolean> {
+        val locationRegistrationObject = LocationRegistrationDto(locationId, qrCode)
+        return try {
+            val response = networkMontageTaskService.registerLocation(locationRegistrationObject)
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("Body is null")
+                when (response.code()) {
+                    200 -> DataState(hasData = true, data = body, message = "Request successful")
+                    500 -> DataState(
+                        hasData = false,
+                        data = null,
+                        message = "Server not available - Code: ${response.code()}"
+                    )
+                    else -> DataState(
+                        hasData = false,
+                        data = null,
+                        message = "Error - Code: ${response.code()}"
+                    )
+                }
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "Network Request was not successful - Code: ${response.code()}"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, data = null, message = "Network Request Error")
         }
     }
 

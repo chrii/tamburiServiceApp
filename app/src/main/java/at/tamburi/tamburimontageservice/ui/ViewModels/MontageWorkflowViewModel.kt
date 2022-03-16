@@ -82,13 +82,20 @@ constructor(
         }
     }
 
-    fun setLocationQrCode(lifecycle: Lifecycle, locationId: Int, qrCode: String, navigation: NavController) {
+    fun setLocationQrCode(
+        lifecycle: Lifecycle,
+        locationId: Int,
+        qrCode: String,
+        navigation: NavController
+    ) {
         navigation.navigate(R.id.action_qr_code_fragment_to_proposal_fragment)
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
                 val result = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
-                if(result.hasData) {
+                val networkResult =
+                    networkMontageTaskRepository.registerLocation(locationId, qrCode)
+                if (result.hasData && networkResult.hasData) {
                     changeState(State.Ready)
                 } else {
                     changeState(State.Error)

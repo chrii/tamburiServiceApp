@@ -178,11 +178,11 @@ class DatabaseMontageTaskImpl(
                 val saveResult = lockerDao.saveLocker(
                     lockerId = locker.lockerId,
                     locationId = locker.locationId,
-                    lockerName = locker.lockerName,
+                    lockerName = locker.lockerName ?:"",
                     lockerType = locker.lockerType,
                     columnNumber = locker.columnNumber,
                     montageTaskId = locker.montageTaskId,
-                    typeName = locker.typeName,
+                    typeName = locker.typeName ?: "",
                     gateway = locker.gateway,
                     gatewaySerialnumber = locker.gatewaySerialnumber,
                     qrCode = locker.qrCode,

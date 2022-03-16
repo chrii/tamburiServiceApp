@@ -59,7 +59,7 @@ fun MontageTaskOverview(
                 TwoLineItem(cell1 = "QR Code: ", cell2 = safeTask.location.qrCode)
 
                 safeTask.lockerList.forEachIndexed { index, item ->
-                    DetailExpandable(title = item.lockerName) {
+                    DetailExpandable(title = item.lockerName ?: "") {
                         TwoLineItem(cell1 = "Kasten ID:", cell2 = item.lockerId.toString())
                         TwoLineItem(cell1 = "QR Code:", cell2 = item.qrCode)
                         TwoLineItem(cell1 = "Bus Slot:", cell2 = item.busSlot.toString())

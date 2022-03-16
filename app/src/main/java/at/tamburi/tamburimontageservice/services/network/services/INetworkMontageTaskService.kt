@@ -1,5 +1,6 @@
 package at.tamburi.tamburimontageservice.services.network.services
 
+import at.tamburi.tamburimontageservice.services.network.dto.LocationRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.dto.LockerRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.dto.MontageTaskDto
 import retrofit2.Response
@@ -14,5 +15,10 @@ interface INetworkMontageTaskService {
     @POST("remote_montage/mobile/register_locker")
     suspend fun registerLockers(
         @Body lockerList: List<LockerRegistrationDto>
+    ): Response<Boolean>
+
+    @POST("remote_montage/mobile/register_location")
+    suspend fun registerLocation(
+        @Body locationRegistrationObject: LocationRegistrationDto
     ): Response<Boolean>
 }

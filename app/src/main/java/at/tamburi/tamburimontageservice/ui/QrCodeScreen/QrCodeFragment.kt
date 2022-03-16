@@ -210,6 +210,7 @@ class QrCodeFragment : Fragment() {
                     .padding(32.dp)
             )
         } else {
+
             viewModel.setLocationQrCode(
                 lifecycle, viewModel.task.value?.location?.locationId!!, code, this.findNavController()
             )
