@@ -13,6 +13,7 @@ private const val TAG = "AuthRepoImpl"
 class AuthenticationRepositoryImpl(
     private val service: IAuthenticationService
 ) : IAuthenticationRepository {
+    var retryCount = 0
     override suspend fun getUser(username: String, password: String): DataState<ServiceUser> {
         return try {
             val result = service.getServiceUser(username, password)
@@ -21,11 +22,25 @@ class AuthenticationRepositoryImpl(
                 val body = result.body() ?: throw Exception("Empty Body")
                 Log.d(TAG, "Got Body: $body")
                 when (result.code()) {
-                    200 -> DataState(
-                        hasData = true,
-                        data = body.toServiceUser(date),
-                        message = "Hello: ${body.name}"
-                    )
+                    200 -> {
+                        retryCount = 0
+                        DataState(
+                            hasData = true,
+                            data = body.toServiceUser(date),
+                            message = "Hello: ${body.name}"
+                        )
+                    }
+                    500 -> {
+                        if (retryCount <= 2) {
+                            retryCount++
+                            getUser(username, password)
+                        }
+                        DataState(
+                            hasData = false,
+                            data = null,
+                            message = "No Connection to Server"
+                        )
+                    }
                     //TODO: Add common Network Errors
                     else -> DataState(
                         hasData = false,

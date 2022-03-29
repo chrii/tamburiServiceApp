@@ -9,8 +9,8 @@ interface LockerDao {
     @Query("SELECT * FROM lockers WHERE locker_id = :lockerId")
     suspend fun getLockerById(lockerId: Int): LockerEntity?
 
-    @Query("SELECT * FROM lockers WHERE location_id = :locationId")
-    suspend fun getLockersByLocationId(locationId: Int): List<LockerEntity>
+    @Query("SELECT * FROM lockers WHERE montage_task_id = :montageTaskId")
+    suspend fun getLockersByLocationId(montageTaskId: Int): List<LockerEntity>
 
     @Query("UPDATE lockers SET qr_code = :qrCode WHERE locker_id = :lockerId")
     suspend fun setQrCode(qrCode: String, lockerId: Int): Int

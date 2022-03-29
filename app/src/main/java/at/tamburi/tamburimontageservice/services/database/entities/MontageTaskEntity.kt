@@ -26,8 +26,8 @@ data class MontageTaskEntity(
 
     //TODO Maybe Pitfall? How to save an enum in kotlin.
     @NonNull
-    @ColumnInfo(name = "montage_status")
-    val montageStatus: String,
+    @ColumnInfo(name = "status_id")
+    val statusId: Int,
 
     @NonNull
     @ColumnInfo(name = "location_description")

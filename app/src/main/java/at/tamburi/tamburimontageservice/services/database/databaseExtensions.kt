@@ -73,7 +73,7 @@ fun MontageTaskEntity.toMontageTask(
         creationDate = Date(creationDate),
         location = location,
         locationOwner = owner,
-        montageStatus = montageStatus,
+        statusId = statusId,
         locationDescription = locationDescription,
         powerConnection = powerConnection,
         montageGroundName = montageGroundName,

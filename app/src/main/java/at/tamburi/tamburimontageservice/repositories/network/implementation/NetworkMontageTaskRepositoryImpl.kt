@@ -7,6 +7,7 @@ import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
 import at.tamburi.tamburimontageservice.services.network.dto.LocationRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.dto.LockerRegistrationDto
+import at.tamburi.tamburimontageservice.services.network.dto.StatusDto
 import at.tamburi.tamburimontageservice.services.network.services.INetworkMontageTaskService
 import at.tamburi.tamburimontageservice.services.network.toLockerRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.toMontageTask
@@ -40,6 +41,39 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         } catch (e: Exception) {
             e.printStackTrace()
             throw Exception("Network Request Error")
+        }
+    }
+
+    override suspend fun setStatus(montageTaskId: Int, statusId: Int): DataState<Boolean> {
+        val statusDto = StatusDto(montageTaskId, statusId)
+        return try {
+            val response = networkMontageTaskService.setStatus(statusDto)
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("setStatus: Body not found")
+                when (response.code()) {
+                    200 -> DataState(hasData = true, data = true, message = "Successful")
+                    400 -> DataState(hasData = false, data = false, message = body.toString())
+                    500 -> DataState(
+                        hasData = false,
+                        data = false,
+                        message = "Internal Server Error"
+                    )
+                    else -> DataState(
+                        hasData = false,
+                        data = false,
+                        message = "Error - Code: ${response.code()}"
+                    )
+                }
+            } else {
+                DataState(
+                    hasData = false,
+                    data = false,
+                    message = "Request Server Information was not successful"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, data = false, message = "Error retrieving Data: ${e.message}")
         }
     }
 
@@ -101,6 +135,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                     )
                 }
             } else {
+                Log.d(TAG, response.message())
                 DataState(
                     hasData = false,
                     data = false,

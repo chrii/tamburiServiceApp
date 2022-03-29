@@ -23,8 +23,7 @@ import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,12 +37,6 @@ enum class LoginState {
     Error,
     Ready,
     NEXT
-}
-
-enum class TaskListToggle {
-    Doeb,
-    Flo,
-    All
 }
 
 @HiltViewModel
@@ -60,6 +53,8 @@ constructor(
     private val _hasActiveTask: MutableState<Boolean> = mutableStateOf(false)
     private val _activeTask: MutableState<MontageTask?> = mutableStateOf(null)
     private val _filteredTasks: MutableState<List<MontageTask>> = mutableStateOf(_tasks.value)
+    private val _isRefreshing = MutableStateFlow(false)
+
 
     val loginState: MutableState<LoginState> = _loginState
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
@@ -69,6 +64,9 @@ constructor(
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     var taskDetailId: Int = 0
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
+
     fun changeState(state: LoginState, loadingMessage: String? = null) {
         if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
@@ -138,9 +136,7 @@ constructor(
                     it[DataStoreConstants.ACTIVE_USER_ID]
                 }.first() ?: throw Exception("No active user")
                 val t = taskNetworkRepo.getMontageTaskList(userId)
-                //TODO: save task list to database
                 if (t.hasData) {
-                    Log.d(TAG, "${t.data}")
                     val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
                     if (dbTasks.hasData) {
                         _tasks.value = t.data!!
@@ -157,6 +153,37 @@ constructor(
                 e.printStackTrace()
                 errorMessage = e.message ?: "Empty error message on getTasksList()"
                 changeState(LoginState.Error)
+            }
+        }
+    }
+
+    fun onRefresh(lifecycle: Lifecycle, context: Context) {
+        lifecycle.coroutineScope.launch {
+            _isRefreshing.emit(true)
+            try {
+                val userId = context.dataStore.data.map {
+                    it[DataStoreConstants.ACTIVE_USER_ID]
+                }.first() ?: throw Exception("No active user")
+                val t = taskNetworkRepo.getMontageTaskList(userId)
+                if (t.hasData) {
+                    val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
+                    if (dbTasks.hasData) {
+                        _tasks.value = t.data!!
+                        _filteredTasks.value = t.data!!
+                        changeState(LoginState.Ready)
+                    } else {
+                        changeState(LoginState.Error, "Couldn't write Tasks to Database")
+                    }
+                } else {
+                    errorMessage = "Keine Auftragsdaten"
+                    changeState(LoginState.Error)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                errorMessage = e.message ?: "Empty error message on getTasksList()"
+                changeState(LoginState.Error)
+            } finally {
+                _isRefreshing.emit(false)
             }
         }
     }
@@ -207,11 +234,29 @@ constructor(
 
     private fun setActiveTask(context: Context, lifecycle: Lifecycle) {
         lifecycle.coroutineScope.launch {
-            context.dataStore.edit {
-                it[DataStoreConstants.ACTIVE_TASK_ID] = taskDetailId
-                it[DataStoreConstants.HAS_ACTIVE_TASK] = true
+            try {
+                val response = taskNetworkRepo.setStatus(
+                    taskDetailId,
+                    3
+                )
+                if (response.hasData) {
+                    val dbResponse = taskRepoDatabase.setStatus(taskDetailId, 3)
+                    if (dbResponse.hasData) {
+                        context.dataStore.edit {
+                            it[DataStoreConstants.ACTIVE_TASK_ID] = taskDetailId
+                            it[DataStoreConstants.HAS_ACTIVE_TASK] = true
+                        }
+                        hasActiveTask.value = true
+                    } else {
+                        hasActiveTask.value = false
+                    }
+                } else {
+                    hasActiveTask.value = false
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                changeState(LoginState.Error)
             }
-            hasActiveTask.value = true
         }
     }
 

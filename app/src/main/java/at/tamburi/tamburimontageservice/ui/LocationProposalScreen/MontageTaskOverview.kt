@@ -5,10 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +29,8 @@ import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
 fun MontageTaskOverview(
     viewModel: MontageWorkflowViewModel
 ) {
+    val context = LocalContext.current
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     val safeTask = viewModel.task.value ?: throw Exception("No active Task found")
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -62,12 +61,22 @@ fun MontageTaskOverview(
                     DetailExpandable(title = item.lockerName ?: "") {
                         TwoLineItem(cell1 = "Kasten ID:", cell2 = item.lockerId.toString())
                         TwoLineItem(cell1 = "QR Code:", cell2 = item.qrCode)
-                        TwoLineItem(cell1 = "Bus Slot:", cell2 = item.busSlot.toString())
+                        TwoLineItem(cell1 = "Kasten Nummer:", cell2 = item.busSlot.toString())
                         if (item.gateway) TwoLineItem(
                             cell1 = "Gateway ID:",
                             cell2 = item.gatewaySerialnumber
                         )
                     }
+                }
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    onClick = {
+                        viewModel.closeTask(context, lifecycle)
+                    }
+                ) {
+                    Text(text = context.getString(R.string.prop_submit_button_text))
                 }
             }
         }

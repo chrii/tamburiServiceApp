@@ -185,12 +185,18 @@ constructor(
 
     fun revokeTask(context: Context, lifecycle: Lifecycle) {
         lifecycle.coroutineScope.launch {
-            context.dataStore.edit {
-                it[DataStoreConstants.ACTIVE_TASK_ID] = -1
-                it[DataStoreConstants.HAS_ACTIVE_TASK] = false
+            val response = networkMontageTaskRepository.setStatus(
+                task.value?.montageTaskId!!,
+                2
+            )
+            if (response.hasData) {
+                context.dataStore.edit {
+                    it[DataStoreConstants.ACTIVE_TASK_ID] = -1
+                    it[DataStoreConstants.HAS_ACTIVE_TASK] = false
+                }
+                val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
             }
-            val intent = Intent(context, MainActivity::class.java)
-            context.startActivity(intent)
         }
     }
 
@@ -206,9 +212,11 @@ constructor(
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
-                val locationId = task.value?.location?.locationId
+                val montageTaskId = task.value?.montageTaskId
                     ?: throw Exception("registerLockers - Location ID not found")
-                val lockers = databaseMontageTaskRepository.getLockersByLocationId(locationId)
+                val lockers = databaseMontageTaskRepository.getLockersByTaskId(montageTaskId)
+
+                Log.d(TAG, "Has Data? - ${lockers.hasData}")
                 if (lockers.hasData) {
                     val networkResponse =
                         networkMontageTaskRepository.registerLockers(lockers.data!!)
@@ -219,6 +227,41 @@ constructor(
                         Toast.makeText(context, networkResponse.message, Toast.LENGTH_SHORT).show()
                         changeState(State.Error)
                     }
+                } else {
+                    Toast.makeText(context, "Locker List is empty", Toast.LENGTH_SHORT).show()
+                    changeState(State.Error)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                changeState(State.Error)
+            }
+        }
+    }
+
+    fun closeTask(context: Context, lifecycle: Lifecycle) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            try {
+                val safeTask = task.value ?: throw Exception("submitTask - Task is Null")
+                val networkResponse =
+                    networkMontageTaskRepository.setStatus(safeTask.montageTaskId, 4)
+                if (networkResponse.hasData) {
+                    val databaseResponse =
+                        databaseMontageTaskRepository.setStatus(safeTask.montageTaskId, 4)
+                    if (databaseResponse.hasData) {
+                        context.dataStore.edit {
+                            it[DataStoreConstants.ACTIVE_TASK_ID] = -1
+                            it[DataStoreConstants.HAS_ACTIVE_TASK] = false
+                        }
+                        task.value = null
+                        val intent = Intent(context, MainActivity::class.java)
+                        changeState(State.Ready)
+                        context.startActivity(intent)
+                    } else {
+                        changeState(State.Error)
+                    }
+                } else {
+                    changeState(State.Error)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

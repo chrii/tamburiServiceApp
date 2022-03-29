@@ -55,6 +55,20 @@ class DatabaseMontageTaskImpl(
         }
     }
 
+    override suspend fun setStatus(taskId: Int, status: Int): DataState<Boolean> {
+        return try {
+            val response = montageTaskDao.setStatus(taskId, status)
+            if(response > -1) {
+                DataState(hasData = true, data = true, message = "Successful")
+            } else {
+                DataState(hasData = false, data = false, message = "Failed to set Montage Status")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, data = false, message = "Database Error while saving montagestatus")
+        }
+    }
+
     override suspend fun saveTasks(tasks: List<MontageTask>): DataState<List<MontageTask>> {
         try {
             val result = tasks.map {
@@ -64,15 +78,13 @@ class DatabaseMontageTaskImpl(
                 it.servicemanList.map { user -> saveUser(user) }
                 it.lockerList.map { locker -> saveLocker(locker) }
 
-                Log.d(TAG, "Result has data: ${task.hasData}")
-                Log.d(TAG, "DATA: ${task.data}")
                 if (!task.hasData) {
                     val saveResult = montageTaskDao.saveTask(
                         montageTaskId = it.montageTaskId,
                         creationDate = it.creationDate.time,
                         locationId = it.location.locationId,
                         ownerId = it.locationOwner?.buildingOwnerId ?: -1,
-                        montageStatus = it.montageStatus,
+                        statusId = it.statusId,
                         locationDescription = it.locationDescription,
                         powerConnection = it.powerConnection,
                         montageGroundName = it.montageGroundName,
@@ -178,7 +190,7 @@ class DatabaseMontageTaskImpl(
                 val saveResult = lockerDao.saveLocker(
                     lockerId = locker.lockerId,
                     locationId = locker.locationId,
-                    lockerName = locker.lockerName ?:"",
+                    lockerName = locker.lockerName ?: "",
                     lockerType = locker.lockerType,
                     columnNumber = locker.columnNumber,
                     montageTaskId = locker.montageTaskId,
@@ -307,9 +319,9 @@ class DatabaseMontageTaskImpl(
         return DataState(hasData = false, data = null, message = "getAllTasks")
     }
 
-    override suspend fun getLockersByLocationId(locationId: Int): DataState<List<Locker>> {
+    override suspend fun getLockersByTaskId(montageTaskId: Int): DataState<List<Locker>> {
         return try {
-            val response = lockerDao.getLockersByLocationId(locationId)
+            val response = lockerDao.getLockersByLocationId(montageTaskId)
             if (response.isNotEmpty()) {
                 val lockerList = response.map { it.toLocker }
                 DataState(hasData = true, data = lockerList, message = "Request Successful")

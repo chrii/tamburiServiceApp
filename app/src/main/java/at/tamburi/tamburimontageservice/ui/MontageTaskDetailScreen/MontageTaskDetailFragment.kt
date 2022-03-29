@@ -63,7 +63,7 @@ class MontageTaskDetailFragment : Fragment() {
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_status),
-                                        cell2 = t.montageStatus
+                                        cell2 = getString(MontageStatus.getStatusString(t.statusId))
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_description),
