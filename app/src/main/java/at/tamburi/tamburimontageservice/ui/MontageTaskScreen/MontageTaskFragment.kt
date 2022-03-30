@@ -60,7 +60,7 @@ class MontageTaskFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.refresh) {
-            viewModel.getTaskList(lifecycle, requireContext())
+            viewModel.initializeData(requireContext(), lifecycle)
             true
         } else super.onOptionsItemSelected(item)
     }
@@ -104,64 +104,64 @@ class MontageTaskFragment : Fragment() {
                                     modifier = Modifier.fillMaxSize(),
                                     verticalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                        val tasks =
-                                            viewModel.filteredTasks.value.filter { task ->
-                                                task.statusId == MontageStatus.ASSIGNED
-                                            }
-                                        if (tasks.isNullOrEmpty()) {
-                                            Column(
-                                                modifier = Modifier.fillMaxSize(),
-                                                verticalArrangement = Arrangement.Center,
-                                                horizontalAlignment = Alignment.CenterHorizontally
-                                            ) {
-                                                Text("Keine Aufträge vorhanden")
-                                            }
-                                        } else {
-                                            LazyColumn(
-                                            ) {
-                                                items(tasks.size) { index ->
-                                                    Column {
-                                                        ListItem(
-                                                            modifier = Modifier
-                                                                .padding(bottom = 8.dp)
-                                                                .clickable {
-                                                                    viewModel.taskDetailId =
-                                                                        tasks[index].montageTaskId
-                                                                    findNavController().navigate(R.id.action_task_list_to_details)
-                                                                },
-                                                            text = {
-                                                                Text(text = "Auftragsnummer: ${tasks[index].montageTaskId}")
+                                    val tasks =
+                                        viewModel.filteredTasks.value.filter { task ->
+                                            task.statusId == MontageStatus.ASSIGNED
+                                        }
+                                    if (tasks.isNullOrEmpty()) {
+                                        Column(
+                                            modifier = Modifier.fillMaxSize(),
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text("Keine Aufträge vorhanden")
+                                        }
+                                    } else {
+                                        LazyColumn(
+                                        ) {
+                                            items(tasks.size) { index ->
+                                                Column {
+                                                    ListItem(
+                                                        modifier = Modifier
+                                                            .padding(bottom = 8.dp)
+                                                            .clickable {
+                                                                viewModel.taskDetailId =
+                                                                    tasks[index].montageTaskId
+                                                                findNavController().navigate(R.id.action_task_list_to_details)
                                                             },
-                                                            secondaryText = {
-                                                                Column {
-                                                                    Text(
-                                                                        text = stringResource(
-                                                                            R.string.owner_string,
-                                                                            tasks[index].locationOwner?.companyName
-                                                                                ?: "Empty..."
-                                                                        )
+                                                        text = {
+                                                            Text(text = "Auftragsnummer: ${tasks[index].montageTaskId}")
+                                                        },
+                                                        secondaryText = {
+                                                            Column {
+                                                                Text(
+                                                                    text = stringResource(
+                                                                        R.string.owner_string,
+                                                                        tasks[index].locationOwner?.companyName
+                                                                            ?: "Empty..."
                                                                     )
-                                                                    Text(
-                                                                        text = stringResource(
-                                                                            R.string.adress_string,
-                                                                            tasks[index].location.street,
-                                                                            tasks[index].location.number
-                                                                        ),
-                                                                    )
-                                                                }
-                                                            },
-                                                            trailing = {
-                                                                Icon(
-                                                                    imageVector = Icons.Default.KeyboardArrowRight,
-                                                                    contentDescription = "Pfeil nach rechts"
+                                                                )
+                                                                Text(
+                                                                    text = stringResource(
+                                                                        R.string.adress_string,
+                                                                        tasks[index].location.street,
+                                                                        tasks[index].location.number
+                                                                    ),
                                                                 )
                                                             }
-                                                        )
-                                                        Divider()
-                                                    }
+                                                        },
+                                                        trailing = {
+                                                            Icon(
+                                                                imageVector = Icons.Default.KeyboardArrowRight,
+                                                                contentDescription = "Pfeil nach rechts"
+                                                            )
+                                                        }
+                                                    )
+                                                    Divider()
                                                 }
                                             }
                                         }
+                                    }
 
                                     if (viewModel.hasActiveTask.value) {
                                         Column(

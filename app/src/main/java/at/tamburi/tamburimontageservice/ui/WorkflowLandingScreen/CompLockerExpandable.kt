@@ -50,7 +50,11 @@ fun CompLockerExpandable(
                         Log.d(TAG, "${viewModel.gatewaySerialnumber.isNotEmpty()}")
                         if (busSlot <= 0) {
                             Toast
-                                .makeText(context, "Wählen Sie einen Bus Slot", Toast.LENGTH_SHORT)
+                                .makeText(
+                                    context,
+                                    context.getText(R.string.wf_exp_order),
+                                    Toast.LENGTH_SHORT
+                                )
                                 .show()
                         } else {
                             if (viewModel.gatewaySerialnumber.isNotEmpty() || locker.gateway) {
@@ -89,7 +93,7 @@ fun CompLockerExpandable(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("Wähle Bus Slot")
+                            Text(context.getString(R.string.wf_exp_bus))
                             BusSlotDropDownMenu(
                                 itemList = listOf("1", "2", "3", "4", "5", "6"),
                                 selectedItem = locker.busSlot ?: 0
@@ -102,7 +106,7 @@ fun CompLockerExpandable(
                                 } catch (e: Exception) {
                                     Toast.makeText(
                                         context,
-                                        "Wählen Sie einen Bus Slot",
+                                        context.getText(R.string.wf_exp_order),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }

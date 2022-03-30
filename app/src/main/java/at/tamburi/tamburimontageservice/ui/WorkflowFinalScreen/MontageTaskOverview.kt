@@ -1,28 +1,18 @@
 package at.tamburi.tamburimontageservice.ui.LocationProposalScreen
 
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
-import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
-import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
-import at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen.BusSlotDropDownMenu
-import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
-import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
+import at.tamburi.tamburimontageservice.ui.composables.LineItemWithEllipsis
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -46,25 +36,25 @@ fun MontageTaskOverview(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                TwoLineItem(cell1 = "Standort ID:", cell2 = safeTask.location.locationId.toString())
-                TwoLineItem(
-                    cell1 = "Straße: ",
-                    cell2 = "${safeTask.location.street} ${safeTask.location.number}"
+                LineItemWithEllipsis(title = "Standort ID:", content = safeTask.location.locationId.toString())
+                LineItemWithEllipsis(
+                    title = "Straße: ",
+                    content = "${safeTask.location.street} ${safeTask.location.number}"
                 )
-                TwoLineItem(
-                    cell1 = "Stadt: ",
-                    cell2 = "${safeTask.location.zipCode} ${safeTask.location.cityName}"
+                LineItemWithEllipsis(
+                    title = "Stadt: ",
+                    content = "${safeTask.location.zipCode} ${safeTask.location.cityName}"
                 )
-                TwoLineItem(cell1 = "QR Code: ", cell2 = safeTask.location.qrCode)
+                LineItemWithEllipsis(title = "QR Code: ", content = safeTask.location.qrCode)
 
                 safeTask.lockerList.forEachIndexed { index, item ->
                     DetailExpandable(title = item.lockerName ?: "No Lockername") {
-                        TwoLineItem(cell1 = "Kasten ID:", cell2 = item.lockerId.toString())
-                        TwoLineItem(cell1 = "QR Code:", cell2 = item.qrCode)
-                        TwoLineItem(cell1 = "Kasten Nummer:", cell2 = item.busSlot.toString())
-                        if (item.gateway) TwoLineItem(
-                            cell1 = "Gateway ID:",
-                            cell2 = item.gatewaySerialnumber
+                        LineItemWithEllipsis(title = "Kasten ID:", content = item.lockerId.toString())
+                        LineItemWithEllipsis(title = "QR Code:", content = item.qrCode)
+                        LineItemWithEllipsis(title = "Kasten Nummer:", content = item.busSlot.toString())
+                        if (item.gateway) LineItemWithEllipsis(
+                            title = "Gateway ID:",
+                            content = item.gatewaySerialnumber
                         )
                     }
                 }

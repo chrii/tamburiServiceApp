@@ -62,6 +62,8 @@
     <string name="wf_exp_qr_code_registered">QR Code nicht registriert</string>
     <string name="wf_exp_qr_code_not_registered">QR Code registriert</string>
     <string name="wf_exp_no_registered_gateway">Registrieren Sie zuerst ein Gateway</string>
+    <string name="wf_exp_order">Wählen Sie den bus Slot</string>
+    <string name="wf_exp_bus">Bus Slot</string>
 
     <!-- LocationProposalScreen -->
     <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>

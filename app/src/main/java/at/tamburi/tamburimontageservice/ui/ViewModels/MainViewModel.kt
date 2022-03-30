@@ -55,8 +55,6 @@ constructor(
     private val _hasActiveTask: MutableState<Boolean> = mutableStateOf(false)
     private val _activeTask: MutableState<MontageTask?> = mutableStateOf(null)
     private val _filteredTasks: MutableState<List<MontageTask>> = mutableStateOf(_tasks.value)
-    private val _isRefreshing = MutableStateFlow(false)
-
 
     val loginState: MutableState<LoginState> = _loginState
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks

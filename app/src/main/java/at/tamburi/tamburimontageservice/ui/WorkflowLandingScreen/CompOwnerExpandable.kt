@@ -6,7 +6,7 @@ import androidx.compose.ui.res.stringResource
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.LocationOwner
 import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
-import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
+import at.tamburi.tamburimontageservice.ui.composables.LineItemWithEllipsis
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -17,27 +17,27 @@ fun CompOwnerExpandable(
         title = stringResource(id = R.string.wf_owner_title),
         description = ""
     ) {
-        TwoLineItem(
-            cell1 = stringResource(
+        LineItemWithEllipsis(
+            title = stringResource(
                 id = R.string.wf_owner_name
             ),
-            cell2 = owner.companyName
+            content = owner.companyName
         )
-        TwoLineItem(
-            cell1 = stringResource(id = R.string.wf_owner_contact_person),
-            cell2 = "${owner.name} ${owner.surname}"
+        LineItemWithEllipsis(
+            title = stringResource(id = R.string.wf_owner_contact_person),
+            content = "${owner.name} ${owner.surname}"
         )
-        TwoLineItem(
-            cell1 = stringResource(id = R.string.wf_owner_contact_number),
-            cell2 = owner.phoneNumber
+        LineItemWithEllipsis(
+            title = stringResource(id = R.string.wf_owner_contact_number),
+            content = owner.phoneNumber
         )
-        TwoLineItem(
-            cell1 = stringResource(id = R.string.wf_owner_address),
-            cell2 = owner.address
+        LineItemWithEllipsis(
+            title = stringResource(id = R.string.wf_owner_address),
+            content = owner.address
         )
-        TwoLineItem(
-            cell1 = stringResource(id = R.string.wf_owner_zip),
-            cell2 = "${owner.zipCode}, ${owner.city}"
+        LineItemWithEllipsis(
+            title = stringResource(id = R.string.wf_owner_zip),
+            content = "${owner.zipCode}, ${owner.city}"
         )
     }
 }
