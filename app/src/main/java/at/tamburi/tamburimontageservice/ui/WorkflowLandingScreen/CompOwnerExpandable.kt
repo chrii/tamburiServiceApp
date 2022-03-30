@@ -23,23 +23,21 @@ fun CompOwnerExpandable(
             ),
             cell2 = owner.companyName
         )
-        // TODO: Hardcoded. The LocationOwner Model should contain this information
         TwoLineItem(
             cell1 = stringResource(id = R.string.wf_owner_contact_person),
-            cell2 = "Luisa Mustermann"
+            cell2 = "${owner.name} ${owner.surname}"
         )
-        // TODO: Hardcoded. The LocationOwner Model should contain this information
         TwoLineItem(
             cell1 = stringResource(id = R.string.wf_owner_contact_number),
-            cell2 = "+43 664 23 45 34"
+            cell2 = owner.phoneNumber
         )
         TwoLineItem(
             cell1 = stringResource(id = R.string.wf_owner_address),
-            cell2 = "${owner.address} ${owner.address}"
+            cell2 = owner.address
         )
         TwoLineItem(
             cell1 = stringResource(id = R.string.wf_owner_zip),
-            cell2 = owner.zipCode
+            cell2 = "${owner.zipCode}, ${owner.city}"
         )
     }
 }

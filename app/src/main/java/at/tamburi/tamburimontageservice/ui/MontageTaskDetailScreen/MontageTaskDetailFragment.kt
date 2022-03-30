@@ -22,8 +22,10 @@ import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
+import at.tamburi.tamburimontageservice.ui.composables.TwoLineExpandable
 import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
+import at.tamburi.tamburimontageservice.utils.Utils
 
 class MontageTaskDetailFragment : Fragment() {
     val viewModel: MainViewModel by activityViewModels()
@@ -65,9 +67,9 @@ class MontageTaskDetailFragment : Fragment() {
                                         cell1 = stringResource(id = R.string.ds_montage_status),
                                         cell2 = getString(MontageStatus.getStatusString(t.statusId))
                                     )
-                                    TwoLineItem(
-                                        cell1 = stringResource(id = R.string.ds_description),
-                                        cell2 = t.locationDescription
+                                    TwoLineExpandable(
+                                        title = stringResource(R.string.ds_description),
+                                        content = t.locationDescription
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_ground),
@@ -75,7 +77,7 @@ class MontageTaskDetailFragment : Fragment() {
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_scheduled_date),
-                                        cell2 = viewModel.getReadableScheduleDate(task)
+                                        cell2 = Utils.getReadableScheduleDate(task)
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_locker_count),

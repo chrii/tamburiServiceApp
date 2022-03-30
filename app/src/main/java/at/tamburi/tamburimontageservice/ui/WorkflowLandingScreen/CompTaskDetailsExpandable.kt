@@ -8,14 +8,20 @@ import androidx.compose.ui.res.stringResource
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
+import at.tamburi.tamburimontageservice.ui.composables.TwoLineExpandable
 import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
+import at.tamburi.tamburimontageservice.utils.Utils
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CompTaskDetailsExpandable(
     task: MontageTask
 ) {
-    ExpandableCard(title = stringResource(id = R.string.wf_title), description = "", expanded = true) {
+    ExpandableCard(
+        title = stringResource(id = R.string.wf_title),
+        description = "",
+        expanded = true
+    ) {
         Column {
             TwoLineItem(
                 cell1 = stringResource(id = R.string.wf_task_id),
@@ -30,9 +36,13 @@ fun CompTaskDetailsExpandable(
                 cell1 = stringResource(id = R.string.wf_zip),
                 cell2 = task.location.zipCode
             )
-            TwoLineItem(
-                cell1 = stringResource(id = R.string.wf_power_connection),
-                cell2 = task.powerConnection.toString()
+            TwoLineExpandable(
+                title = stringResource(id = R.string.wf_power_connection),
+                content = task.powerConnection
+            )
+            TwoLineExpandable(
+                title = stringResource(id = R.string.wf_description),
+                content = task.locationDescription
             )
             TwoLineItem(
                 cell1 = stringResource(id = R.string.wf_montage_ground),
@@ -40,7 +50,7 @@ fun CompTaskDetailsExpandable(
             )
             TwoLineItem(
                 cell1 = stringResource(id = R.string.wf_scheduled_date),
-                cell2 = task.scheduledInstallationDate.toString()
+                cell2 = Utils.getReadableScheduleDate(task)
             )
         }
     }

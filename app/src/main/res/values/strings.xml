@@ -43,6 +43,7 @@
     <string name="wf_power_connection">Art des Strom Anschluss</string>
     <string name="wf_montage_ground">Art des Untergrunds</string>
     <string name="wf_scheduled_date">Datum der Montage</string>
+    <string name="wf_description">Hinweise zum Standort</string>
     <!-- Owner Tab -->
     <string name="wf_owner_title">Auftraggeber</string>
     <string name="wf_owner_name">Firmenname</string>

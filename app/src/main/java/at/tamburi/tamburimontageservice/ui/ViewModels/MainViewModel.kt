@@ -66,8 +66,6 @@ constructor(
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     var taskDetailId: Int = 0
-    val isRefreshing: StateFlow<Boolean>
-        get() = _isRefreshing.asStateFlow()
 
     fun changeState(state: LoginState, loadingMessage: String? = null) {
         if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
@@ -103,8 +101,6 @@ constructor(
         val lower = username.lowercase(Locale.getDefault())
         changeState(LoginState.Loading, "Login...")
         lifecycle.coroutineScope.launch {
-            //TODO: Imitates loading delay - Delete of not necessary anymore
-            delay(2000)
             try {
                 val networkUser = authRepo.getUser(lower, password)
                 if (networkUser.hasData) {
@@ -274,10 +270,5 @@ constructor(
     fun getDate(mil: Date = Date()): Date {
         val simple = SimpleDateFormat("MM-dd")
         return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse date")
-    }
-
-    @SuppressLint
-    fun getReadableScheduleDate(task: MontageTask): String {
-        return DateFormat.getDateInstance().format(task.scheduledInstallationDate)
     }
 }

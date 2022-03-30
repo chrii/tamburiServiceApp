@@ -1,5 +1,6 @@
 package at.tamburi.tamburimontageservice.ui.ViewModels
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -26,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import javax.inject.Inject
 
 enum class State {
