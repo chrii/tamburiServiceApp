@@ -90,7 +90,7 @@ constructor(
         qrCode: String,
         navigation: NavController
     ) {
-        navigation.navigate(R.id.action_qr_code_fragment_to_proposal_fragment)
+        navigation.navigate(R.id.action_qr_code_fragment_to_final_workflow_fragment)
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {

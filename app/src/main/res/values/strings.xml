@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tamburi Montage Service</string>
+    <string name="app_name">Montage Service</string>
 
     <!-- Permission Fragment -->
     <string name="camera_permission_accepted">Kamera autorisierung erteilt</string>

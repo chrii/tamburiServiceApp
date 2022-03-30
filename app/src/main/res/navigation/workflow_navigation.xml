@@ -37,6 +37,10 @@
             app:popUpToInclusive="false" />
 
         <action
+            android:id="@+id/action_qr_code_fragment_to_final_workflow_fragment"
+            app:destination="@+id/final_workflow_fragment" />
+
+        <action
             android:id="@+id/action_qr_code_next_handler"
             app:destination="@id/qr_code_fragment" />
 
