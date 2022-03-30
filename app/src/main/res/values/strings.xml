@@ -26,6 +26,7 @@
 
     <!-- Task Details Screen -->
     <string name="ds_montage_id">Auftrags ID:</string>
+    <string name="ds_task_details">Auftragsdetails</string>
     <string name="ds_street_name">Adresse:</string>
     <string name="ds_qr_code">QR Code ID:</string>
     <string name="ds_montage_status">Status:</string>

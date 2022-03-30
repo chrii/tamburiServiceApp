@@ -17,6 +17,8 @@ private const val TAG = "NtwMontageTaskRepo"
 
 class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: INetworkMontageTaskService) :
     INetworkMontageTaskRepository {
+    var retry = 0
+
     override suspend fun getMontageTaskList(serviceUserId: Int): DataState<List<MontageTask>> {
         return try {
             Log.d(TAG, "Getting Tasklist for user: $serviceUserId")
@@ -25,12 +27,22 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                 Log.d(TAG, "Response is successful: ${result.isSuccessful}")
                 val body = result.body() ?: throw Exception("getMontageTaskList - Body is empty")
                 when (result.code()) {
-                    200 -> DataState(
-                        hasData = true,
-                        data = body.map { it.toMontageTask() },
-                        message = "Successful"
-                    )
-                    500 -> DataState(false, null, "500 Server Error")
+                    200 -> {
+                        retry = 0
+                        DataState(
+                            hasData = true,
+                            data = body.map { it.toMontageTask() },
+                            message = "Successful"
+                        )
+                    }
+                    500 -> {
+                        if (retry <= 2) {
+                            retry++
+                            getMontageTaskList(serviceUserId)
+                        } else {
+                            DataState(false, null, "500 Server Error")
+                        }
+                    }
                     else -> DataState(false, null, "Network Error - ${result.code()}")
                 }
             } else {
@@ -50,13 +62,23 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("setStatus: Body not found")
                 when (response.code()) {
-                    200 -> DataState(hasData = true, data = true, message = "Successful")
+                    200 -> {
+                        retry = 0
+                        DataState(hasData = true, data = true, message = "Successful")
+                    }
                     400 -> DataState(hasData = false, data = false, message = body.toString())
-                    500 -> DataState(
-                        hasData = false,
-                        data = false,
-                        message = "Internal Server Error"
-                    )
+                    500 -> {
+                        if (retry <= 2) {
+                            retry++
+                            setStatus(montageTaskId, statusId)
+                        } else {
+                            DataState(
+                                hasData = false,
+                                data = false,
+                                message = "Internal Server Error"
+                            )
+                        }
+                    }
                     else -> DataState(
                         hasData = false,
                         data = false,
@@ -72,7 +94,11 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            DataState(hasData = false, data = false, message = "Error retrieving Data: ${e.message}")
+            DataState(
+                hasData = false,
+                data = false,
+                message = "Error retrieving Data: ${e.message}"
+            )
         }
     }
 
@@ -83,12 +109,20 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Body is null")
                 when (response.code()) {
-                    200 -> DataState(hasData = true, data = body, message = "Request successful")
-                    500 -> DataState(
-                        hasData = false,
-                        data = null,
-                        message = "Server not available - Code: ${response.code()}"
-                    )
+                    200 -> {
+                        retry = 0
+                        DataState(hasData = true, data = body, message = "Request successful")
+                    }
+                    500 -> if (retry <= 2) {
+                        retry++
+                        registerLocation(locationId, qrCode)
+                    } else {
+                        DataState(
+                            hasData = false,
+                            data = null,
+                            message = "Server not available - Code: ${response.code()}"
+                        )
+                    }
                     else -> DataState(
                         hasData = false,
                         data = null,
@@ -116,12 +150,18 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                 val secureBody =
                     response.body() ?: throw Exception("Error - Response Body is empty")
                 when (response.code()) {
-                    200 -> DataState(
-                        hasData = true,
-                        data = secureBody,
-                        message = "Request Successful"
-                    )
-                    500 -> DataState(
+                    200 -> {
+                        retry = 0
+                        DataState(
+                            hasData = true,
+                            data = secureBody,
+                            message = "Request Successful"
+                        )
+                    }
+                    500 -> if(retry <= 2) {
+                        retry++
+                        registerLockers(lockerList)
+                    } else DataState(
                         hasData = false,
                         data = false,
                         message = "Registration Lockers - Server Error"

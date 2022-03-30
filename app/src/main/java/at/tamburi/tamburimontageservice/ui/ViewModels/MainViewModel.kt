@@ -73,7 +73,6 @@ constructor(
     fun checkUserState(lifecycle: Lifecycle, context: Context) {
         changeState(LoginState.Loading, "Get User Data")
         lifecycle.coroutineScope.launch {
-            //TODO: Imitates loading delay - Delete if not necessary anymore
             val userId = context.dataStore.data.map {
                 it[DataStoreConstants.ACTIVE_USER_ID]
             }.first() ?: 0
@@ -158,7 +157,6 @@ constructor(
     private suspend fun fetchAndSaveTasks(userId: Int) {
         try {
             val t = taskNetworkRepo.getMontageTaskList(userId)
-            Log.d(TAG, "fetch - Got ${t.data?.map { it.statusId }} active tasks")
             if (t.hasData) {
                 val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
                 if (dbTasks.hasData) {
@@ -179,7 +177,6 @@ constructor(
     private suspend fun getActiveTask(context: Context, userId: Int) {
         try {
             val statsList = _tasks.value.filter { it.statusId == MontageStatus.ACTIVE }
-            Log.d(TAG, "Found ${statsList.size} active Tasks")
             when {
                 statsList.size > 1 -> {
                     resetOpenTasks()
@@ -187,7 +184,7 @@ constructor(
                     fetchAndSaveTasks(userId)
                     Toast.makeText(
                         context,
-                        "Zuviele aktive Aufträge es werden alle zurückgesetzt",
+                        "Zuviele aktive Aufträge - es werden alle zurückgesetzt",
                         Toast.LENGTH_LONG
                     ).show()
                 }

@@ -46,10 +46,9 @@ class MontageTaskDetailFragment : Fragment() {
                         task?.let { t ->
                             LazyColumn(Modifier.fillMaxSize()) {
                                 item {
-                                    //TODO: String zur Stringlist hinzufügen
                                     Text(
                                         modifier = Modifier.padding(8.dp),
-                                        text = "Auftragsdetails",
+                                        text = stringResource(id = R.string.ds_task_details),
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold
                                     )
