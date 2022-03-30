@@ -43,8 +43,7 @@ class MontageTaskFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getActiveTask(requireContext(), lifecycle)
-        viewModel.getTaskList(lifecycle, requireContext())
+        viewModel.initializeData(requireContext(), lifecycle)
     }
 
     private fun navigateToActivity(taskId: Int) {
@@ -73,6 +72,7 @@ class MontageTaskFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        Log.d(TAG, "Active Task: ${viewModel.activeTask.value}")
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
@@ -104,17 +104,6 @@ class MontageTaskFragment : Fragment() {
                                     modifier = Modifier.fillMaxSize(),
                                     verticalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    val isRefreshing by viewModel.isRefreshing.collectAsState()
-                                    SwipeRefresh(
-                                        state = rememberSwipeRefreshState(isRefreshing),
-                                        onRefresh = {
-                                            viewModel.onRefresh(
-                                                lifecycle, context
-                                            )
-                                        }) {
-                                        viewModel.filteredTasks.value.map {
-                                            Log.d(TAG, "Task Stats: ${it.statusId}")
-                                        }
                                         val tasks =
                                             viewModel.filteredTasks.value.filter { task ->
                                                 task.statusId == MontageStatus.ASSIGNED
@@ -173,7 +162,7 @@ class MontageTaskFragment : Fragment() {
                                                 }
                                             }
                                         }
-                                    }
+
                                     if (viewModel.hasActiveTask.value) {
                                         Column(
                                             modifier = Modifier

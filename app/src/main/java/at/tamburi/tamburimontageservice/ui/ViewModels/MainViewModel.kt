@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
+import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
@@ -133,23 +134,8 @@ constructor(
         changeState(LoginState.Loading, "Hole Aufträge")
         lifecycle.coroutineScope.launch {
             try {
-                val userId = context.dataStore.data.map {
-                    it[DataStoreConstants.ACTIVE_USER_ID]
-                }.first() ?: throw Exception("No active user")
-                val t = taskNetworkRepo.getMontageTaskList(userId)
-                if (t.hasData) {
-                    val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
-                    if (dbTasks.hasData) {
-                        _tasks.value = t.data!!
-                        _filteredTasks.value = t.data!!
-                        changeState(LoginState.Ready)
-                    } else {
-                        changeState(LoginState.Error, "Couldn't write Tasks to Database")
-                    }
-                } else {
-                    errorMessage = "Keine Auftragsdaten"
-                    changeState(LoginState.Error)
-                }
+                val userId = getUserId(context)
+                fetchAndSaveTasks(userId)
             } catch (e: Exception) {
                 e.printStackTrace()
                 errorMessage = e.message ?: "Empty error message on getTasksList()"
@@ -158,65 +144,69 @@ constructor(
         }
     }
 
-    fun onRefresh(lifecycle: Lifecycle, context: Context) {
+    fun initializeData(context: Context, lifecycle: Lifecycle) {
+        changeState(LoginState.Loading)
         lifecycle.coroutineScope.launch {
-            _isRefreshing.emit(true)
-            try {
-                val userId = context.dataStore.data.map {
-                    it[DataStoreConstants.ACTIVE_USER_ID]
-                }.first() ?: throw Exception("No active user")
-                val t = taskNetworkRepo.getMontageTaskList(userId)
-                if (t.hasData) {
-                    val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
-                    if (dbTasks.hasData) {
-                        _tasks.value = t.data!!
-                        _filteredTasks.value = t.data!!
-                        changeState(LoginState.Ready)
-                    } else {
-                        changeState(LoginState.Error, "Couldn't write Tasks to Database")
-                    }
-                } else {
-                    errorMessage = "Keine Auftragsdaten"
-                    changeState(LoginState.Error)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                errorMessage = e.message ?: "Empty error message on getTasksList()"
-                changeState(LoginState.Error)
-            } finally {
-                _isRefreshing.emit(false)
+            val userId = getUserId(context)
+            fetchAndSaveTasks(userId)
+            if (!_tasks.value.isNullOrEmpty()) {
+                getActiveTask(context, userId)
             }
+            changeState(LoginState.Ready)
         }
     }
 
-    fun getActiveTask(context: Context, lifecycle: Lifecycle) {
-        lifecycle.coroutineScope.launch {
-            try {
-                val hasData: Boolean = context.dataStore.data.map {
-                    it[DataStoreConstants.HAS_ACTIVE_TASK] ?: false
-                }.first()
-                Log.d(TAG, "Has active task? - $hasData")
+    private suspend fun getUserId(context: Context): Int = context.dataStore.data.map {
+        it[DataStoreConstants.ACTIVE_USER_ID]
+    }.first() ?: throw Exception("No active user")
 
-                if (hasData) {
-                    val activeTaskId: Int = context.dataStore.data.map {
-                        it[DataStoreConstants.ACTIVE_TASK_ID] ?: -1
-                    }.first()
 
-                    Log.d(TAG, "activeTaskId: $activeTaskId")
-
-                    val activeTask: MontageTask? =
-                        _tasks.value.find { it.montageTaskId == activeTaskId }
-
-                    if (activeTask != null) {
-                        _activeTask.value = activeTask
-                        _hasActiveTask.value = true
-                    } else {
-                        _hasActiveTask.value = false
-                    }
+    private suspend fun fetchAndSaveTasks(userId: Int) {
+        try {
+            val t = taskNetworkRepo.getMontageTaskList(userId)
+            Log.d(TAG, "fetch - Got ${t.data?.map { it.statusId }} active tasks")
+            if (t.hasData) {
+                val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
+                if (dbTasks.hasData) {
+                    _tasks.value = t.data!!
+                    _filteredTasks.value = t.data!!
+                } else {
+                    throw Exception("Couldn't write Tasks to Database")
                 }
-            } catch (e: Exception) {
-                throw Exception("Error getting DataStore values")
+            } else {
+                throw Exception("Keine Auftragsdaten")
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw Exception("Cannot fetch or save tasks - ${e.message}")
+        }
+    }
+
+    private suspend fun getActiveTask(context: Context, userId: Int) {
+        try {
+            val statsList = _tasks.value.filter { it.statusId == MontageStatus.ACTIVE }
+            Log.d(TAG, "Found ${statsList.size} active Tasks")
+            when {
+                statsList.size > 1 -> {
+                    resetOpenTasks()
+                    hasActiveTask.value = false
+                    fetchAndSaveTasks(userId)
+                    Toast.makeText(
+                        context,
+                        "Zuviele aktive Aufträge es werden alle zurückgesetzt",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                statsList.size == 1 -> {
+                    _activeTask.value = statsList.first()
+                    _hasActiveTask.value = true
+                }
+                else -> {
+                    _hasActiveTask.value = false
+                }
+            }
+        } catch (e: Exception) {
+            throw Exception("Error getting DataStore values")
         }
     }
 
@@ -230,6 +220,25 @@ constructor(
                 MontageWorkflowActivity::class.java
             )
             context.startActivity(intent)
+        }
+    }
+
+    private suspend fun resetOpenTasks() {
+        val tasks = _tasks.value.filter { it.statusId == MontageStatus.ACTIVE }
+        Log.d(TAG, "resetOpenTasks - Count ${tasks.size}")
+        if (tasks.isNotEmpty()) {
+            tasks.map {
+                val dbRes = taskRepoDatabase.setStatus(it.montageTaskId, MontageStatus.ASSIGNED)
+                Log.d(
+                    TAG,
+                    "Updating DB Task Status Response for ID ${it.montageTaskId}: ${dbRes.hasData}"
+                )
+                val ntwRes = taskNetworkRepo.setStatus(it.montageTaskId, MontageStatus.ASSIGNED)
+                Log.d(
+                    TAG,
+                    "Updating Network Task Status Response for ID ${it.montageTaskId}: ${ntwRes.hasData}"
+                )
+            }
         }
     }
 

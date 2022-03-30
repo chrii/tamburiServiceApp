@@ -30,7 +30,6 @@ class DatabaseMontageTaskImpl(
             val location: RemoteLocation =
                 locationDao.getLocationById(taskEntity.locationId)?.toRemoteLocation
                     ?: throw Exception("No Location found in database")
-            Log.d(TAG, "lockerListSize: ${taskEntity.lockerList.length}")
             val lockerIdList = Locker.lockerIdList(taskEntity.lockerList)
             val lockerList: List<Locker> = lockerIdList.map {
                 lockerDao.getLockerById(it)?.toLocker
@@ -59,14 +58,18 @@ class DatabaseMontageTaskImpl(
     override suspend fun setStatus(taskId: Int, status: Int): DataState<Boolean> {
         return try {
             val response = montageTaskDao.setStatus(taskId, status)
-            if(response > -1) {
+            if (response > -1) {
                 DataState(hasData = true, data = true, message = "Successful")
             } else {
                 DataState(hasData = false, data = false, message = "Failed to set Montage Status")
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            DataState(hasData = false, data = false, message = "Database Error while saving montagestatus")
+            DataState(
+                hasData = false,
+                data = false,
+                message = "Database Error while saving montagestatus"
+            )
         }
     }
 
