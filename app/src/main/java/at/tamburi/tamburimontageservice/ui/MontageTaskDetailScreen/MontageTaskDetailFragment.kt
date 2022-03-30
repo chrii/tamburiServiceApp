@@ -73,6 +73,14 @@ class MontageTaskDetailFragment : Fragment() {
                                         cell1 = stringResource(id = R.string.ds_montage_ground),
                                         cell2 = t.montageGroundName
                                     )
+                                    TwoLineItem(
+                                        cell1 = stringResource(id = R.string.ds_scheduled_date),
+                                        cell2 = viewModel.getReadableScheduleDate(task)
+                                    )
+                                    TwoLineItem(
+                                        cell1 = stringResource(id = R.string.ds_locker_count),
+                                        cell2 = task.lockerList.size.toString()
+                                    )
                                 }
                                 item {
                                     Button(
@@ -86,7 +94,7 @@ class MontageTaskDetailFragment : Fragment() {
                                     }
                                 }
                             }
-                        }
+                        } ?: Text(text = "Keine Aufträge gefunden")
                     }
                 }
             }

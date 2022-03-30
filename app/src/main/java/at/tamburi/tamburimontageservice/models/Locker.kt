@@ -13,7 +13,7 @@ data class Locker(
     val qrCode: String,
     val busSlot: Int?
 ) {
-        companion object {
+    companion object {
         fun lockerIdToString(lockerList: List<Locker>): String = lockerList
             .map { it.lockerId }
             .toString()
@@ -21,9 +21,13 @@ data class Locker(
             .replace("[", "")
             .replace("]", "")
 
-        fun lockerIdList(ids: String): List<Int> = ids
-            .split(",")
-            .map { it.trim().toInt() }
+        fun lockerIdList(ids: String): List<Int> = if (ids.isNotEmpty()) {
+            ids
+                .split(",")
+                .map { it.trim().toInt() }
+        } else {
+            listOf()
+        }
     }
 }
 

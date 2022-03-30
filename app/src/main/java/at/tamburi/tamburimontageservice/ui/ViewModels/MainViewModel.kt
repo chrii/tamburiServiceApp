@@ -25,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -264,5 +265,10 @@ constructor(
     fun getDate(mil: Date = Date()): Date {
         val simple = SimpleDateFormat("MM-dd")
         return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse date")
+    }
+
+    @SuppressLint
+    fun getReadableScheduleDate(task: MontageTask): String {
+        return DateFormat.getDateInstance().format(task.scheduledInstallationDate)
     }
 }

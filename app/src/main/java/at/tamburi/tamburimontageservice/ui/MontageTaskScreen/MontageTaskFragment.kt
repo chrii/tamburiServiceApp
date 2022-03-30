@@ -43,6 +43,7 @@ class MontageTaskFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        viewModel.getActiveTask(requireContext(), lifecycle)
         viewModel.getTaskList(lifecycle, requireContext())
     }
 
@@ -59,7 +60,7 @@ class MontageTaskFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if(item.itemId == R.id.refresh){
+        return if (item.itemId == R.id.refresh) {
             viewModel.getTaskList(lifecycle, requireContext())
             true
         } else super.onOptionsItemSelected(item)
@@ -83,7 +84,11 @@ class MontageTaskFragment : Fragment() {
                         when (viewModel.loginState.value) {
                             LoginState.Loading -> CustomLoadingIndicator()
                             LoginState.Error -> {
-                                Toast.makeText(requireContext(), viewModel.errorMessage, Toast.LENGTH_LONG)
+                                Toast.makeText(
+                                    requireContext(),
+                                    viewModel.errorMessage,
+                                    Toast.LENGTH_LONG
+                                )
                                     .show()
                             }
                             LoginState.Ready -> if (viewModel.filteredTasks.value.isEmpty()) {
@@ -107,11 +112,14 @@ class MontageTaskFragment : Fragment() {
                                                 lifecycle, context
                                             )
                                         }) {
+                                        viewModel.filteredTasks.value.map {
+                                            Log.d(TAG, "Task Stats: ${it.statusId}")
+                                        }
                                         val tasks =
                                             viewModel.filteredTasks.value.filter { task ->
                                                 task.statusId == MontageStatus.ASSIGNED
                                             }
-                                        if(tasks.isNullOrEmpty()) {
+                                        if (tasks.isNullOrEmpty()) {
                                             Column(
                                                 modifier = Modifier.fillMaxSize(),
                                                 verticalArrangement = Arrangement.Center,
@@ -122,7 +130,6 @@ class MontageTaskFragment : Fragment() {
                                         } else {
                                             LazyColumn(
                                             ) {
-                                                Log.d(TAG, "Tasks found: $tasks")
                                                 items(tasks.size) { index ->
                                                     Column {
                                                         ListItem(

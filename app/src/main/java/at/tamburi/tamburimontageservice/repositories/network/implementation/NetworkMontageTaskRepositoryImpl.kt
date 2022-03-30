@@ -24,7 +24,6 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
             if (result.isSuccessful) {
                 Log.d(TAG, "Response is successful: ${result.isSuccessful}")
                 val body = result.body() ?: throw Exception("getMontageTaskList - Body is empty")
-                Log.d(TAG, "Response Body: $body")
                 when (result.code()) {
                     200 -> DataState(
                         hasData = true,
@@ -111,7 +110,6 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
 
     override suspend fun registerLockers(lockerList: List<Locker>): DataState<Boolean> {
         val lockerRegistrationList = lockerList.map { it.toLockerRegistrationDto() }
-        Log.d(TAG, "LockerRegistrationList: $lockerRegistrationList")
         return try {
             val response = networkMontageTaskService.registerLockers(lockerRegistrationList)
             if (response.isSuccessful) {

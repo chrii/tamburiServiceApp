@@ -30,6 +30,7 @@ class DatabaseMontageTaskImpl(
             val location: RemoteLocation =
                 locationDao.getLocationById(taskEntity.locationId)?.toRemoteLocation
                     ?: throw Exception("No Location found in database")
+            Log.d(TAG, "lockerListSize: ${taskEntity.lockerList.length}")
             val lockerIdList = Locker.lockerIdList(taskEntity.lockerList)
             val lockerList: List<Locker> = lockerIdList.map {
                 lockerDao.getLockerById(it)?.toLocker
@@ -109,7 +110,7 @@ class DatabaseMontageTaskImpl(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            throw Exception("Saving Tasks was not successful - Stacktrace")
+            throw Exception("Saving Tasks was not successful")
         }
     }
 
