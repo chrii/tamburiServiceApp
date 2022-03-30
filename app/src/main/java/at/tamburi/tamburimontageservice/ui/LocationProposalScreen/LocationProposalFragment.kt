@@ -54,27 +54,21 @@ class LocationProposalFragment : Fragment() {
                                 viewModel.changeState(State.Ready)
                             }
                             State.Ready -> {
-                                val safeTask = viewModel.task.value ?: throw Exception("No Task found")
-                                Log.d(TAG, "QRCODE: ${safeTask.location.qrCode}")
-                                if (safeTask.location.qrCode.isNotEmpty()) {
-                                    MontageTaskOverview(viewModel)
-                                } else {
-                                    Column(
-                                        modifier = Modifier.padding(8.dp),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(text = stringResource(id = R.string.prop_information_text))
-                                        Button(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(8.dp),
-                                            onClick = {
-                                                findNavController().navigate(R.id.action_proposal_fragment_to_qr_code_fragment)
-                                            }
-                                        ) {
-                                            Text(stringResource(id = R.string.prop_scan_qr_code))
+                                Column(
+                                    modifier = Modifier.padding(8.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(text = stringResource(id = R.string.prop_information_text))
+                                    Button(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        onClick = {
+                                            findNavController().navigate(R.id.action_proposal_fragment_to_qr_code_fragment)
                                         }
+                                    ) {
+                                        Text(stringResource(id = R.string.prop_scan_qr_code))
                                     }
                                 }
                             }

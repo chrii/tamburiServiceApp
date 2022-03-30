@@ -15,7 +15,16 @@
         <action
             android:id="@+id/action_landing_fragment_to_proposal_fragment"
             app:destination="@id/location_proposal_fragment" />
+
+        <action
+            android:id="@+id/action_landing_fragment_to_final_fragment"
+            app:destination="@+id/final_workflow_fragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/final_workflow_fragment"
+        android:name="at.tamburi.tamburimontageservice.ui.WorkflowFinalScreen.WorkflowFinalFragment"
+        android:label="Tamburi" />
 
     <fragment
         android:id="@+id/qr_code_fragment"

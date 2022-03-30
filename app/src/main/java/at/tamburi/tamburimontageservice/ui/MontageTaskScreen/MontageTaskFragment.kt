@@ -7,7 +7,10 @@ import android.view.*
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,8 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -34,7 +35,6 @@ import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 import at.tamburi.tamburimontageservice.utils.Constants
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.flow.MutableStateFlow
 
 const val TAG = "MontageTaskFragm"
 

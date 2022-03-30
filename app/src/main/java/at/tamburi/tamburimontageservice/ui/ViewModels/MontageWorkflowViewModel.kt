@@ -222,7 +222,11 @@ constructor(
                         networkMontageTaskRepository.registerLockers(lockers.data!!)
                     if (networkResponse.hasData) {
                         changeState(State.Ready)
-                        navigation.navigate(R.id.action_landing_fragment_to_proposal_fragment)
+                        if (task.value?.location?.qrCode.isNullOrEmpty()) {
+                            navigation.navigate(R.id.action_landing_fragment_to_proposal_fragment)
+                        } else {
+                            navigation.navigate(R.id.action_landing_fragment_to_final_fragment)
+                        }
                     } else {
                         Toast.makeText(context, networkResponse.message, Toast.LENGTH_SHORT).show()
                         changeState(State.Error)
