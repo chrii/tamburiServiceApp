@@ -12,24 +12,26 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
-import at.tamburi.tamburimontageservice.mockdata.taskListMockData
+import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
-import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
+import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
+import at.tamburi.tamburimontageservice.utils.Constants
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-private const val TAG: String = "LoginViewModel"
+private const val TAG: String = "MainViewModel"
 
 // TODO: REFACTOR STATE NAMES
 enum class LoginState {
@@ -39,64 +41,54 @@ enum class LoginState {
     NEXT
 }
 
-enum class TaskListToggle {
-    Doeb,
-    Flo,
-    All
-}
-
 @HiltViewModel
 class MainViewModel
 @Inject
 constructor(
-    private val userRepo: IUserRepository,
-    private val taskRepo: IMontageTaskRepository,
-    private val authRepo: IAuthenticationRepository
+    private val databaseUserRepo: IDatabaseUserRepository,
+    private val taskRepoDatabase: IDatabaseMontageTaskRepository,
+    private val authRepo: IAuthenticationRepository,
+    private val taskNetworkRepo: INetworkMontageTaskRepository
 ) : ViewModel() {
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
     private val _tasks: MutableState<List<MontageTask>> = mutableStateOf(listOf())
     private val _hasActiveTask: MutableState<Boolean> = mutableStateOf(false)
     private val _activeTask: MutableState<MontageTask?> = mutableStateOf(null)
     private val _filteredTasks: MutableState<List<MontageTask>> = mutableStateOf(_tasks.value)
+    private val _isRefreshing = MutableStateFlow(false)
+
 
     val loginState: MutableState<LoginState> = _loginState
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
     val activeTask: MutableState<MontageTask?> = _activeTask
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
+    var activeUser: ServiceUser? = null
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     var taskDetailId: Int = 0
+
     fun changeState(state: LoginState, loadingMessage: String? = null) {
         if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
         _loginState.value = state
     }
 
-    fun toggleTaskList(magazine: String) {
-        Log.d(TAG, "Magazine: ${_tasks.value.first().magazine}")
-        if (magazine != "all") {
-            val filtered = _tasks.value.filter { it.magazine == magazine }
-            _filteredTasks.value = filtered
-        } else {
-            _filteredTasks.value = _tasks.value
-        }
-    }
-
-    fun checkUserState(lifecycle: Lifecycle) {
+    fun checkUserState(lifecycle: Lifecycle, context: Context) {
         changeState(LoginState.Loading, "Get User Data")
         lifecycle.coroutineScope.launch {
             //TODO: Imitates loading delay - Delete if not necessary anymore
-            val user = userRepo.getUser()
+            val userId = context.dataStore.data.map {
+                it[DataStoreConstants.ACTIVE_USER_ID]
+            }.first() ?: 0
+            val user = databaseUserRepo.getUser(userId)
             if (!user.hasData) {
                 changeState(LoginState.Ready)
             } else {
-                Log.d(TAG, "userdata: ${user.hasData}")
                 val serviceUser = user.data
                 val lastDate = getDate(Date(serviceUser!!.loginDate))
                 val todayDate = getDate()
-                Log.d(TAG, "today: ${todayDate}")
-                Log.d(TAG, "last: ${lastDate}")
 
                 if (todayDate == lastDate) {
+                    activeUser = user.data
                     changeState(LoginState.NEXT)
                 } else {
                     changeState(LoginState.Ready)
@@ -105,23 +97,26 @@ constructor(
         }
     }
 
-    fun onSubmit(username: String, password: String, lifecycle: Lifecycle) {
+    fun onSubmit(username: String, password: String, lifecycle: Lifecycle, context: Context) {
         val lower = username.lowercase(Locale.getDefault())
         changeState(LoginState.Loading, "Login...")
         lifecycle.coroutineScope.launch {
-            //TODO: Imitates loading delay - Delete of not necessary anymore
-            delay(2000)
             try {
                 val networkUser = authRepo.getUser(lower, password)
                 if (networkUser.hasData) {
-                    val result = userRepo.saveUser(networkUser.data!!)
+                    val result = databaseUserRepo.saveUser(networkUser.data!!)
                     if (!result.hasData) {
+                        Log.d(TAG, "Login has no data")
                         changeState(LoginState.Error, result.message)
                     } else {
+                        context.dataStore.edit {
+                            it[DataStoreConstants.ACTIVE_USER_ID] = networkUser.data!!.servicemanId
+                        }
                         Log.d(TAG, "Got Service User: ${networkUser.data!!.username}")
                         changeState(LoginState.NEXT)
                     }
                 } else {
+                    Log.d(TAG, "")
                     changeState(LoginState.Error, networkUser.message)
                 }
             } catch (e: Exception) {
@@ -131,56 +126,83 @@ constructor(
         }
     }
 
-    fun getTaskList(lifecycle: Lifecycle) {
+    fun getTaskList(lifecycle: Lifecycle, context: Context) {
         changeState(LoginState.Loading, "Hole Aufträge")
         lifecycle.coroutineScope.launch {
             try {
-                //TODO: Put out the Mock Data
-                taskListMockData.map { taskRepo.saveMockMontageTask(it) }
-                val tasks = taskRepo.getAllTasks()
-                if (tasks.hasData) {
-                    Log.d(TAG, "${tasks.data}")
-                    _tasks.value = tasks.data!!
-                    _filteredTasks.value = tasks.data!!
-                    changeState(LoginState.Ready)
-                } else {
-                    errorMessage = "Keine Auftragsdaten"
-                    changeState(LoginState.Error)
-                }
+                val userId = getUserId(context)
+                fetchAndSaveTasks(userId)
             } catch (e: Exception) {
+                e.printStackTrace()
                 errorMessage = e.message ?: "Empty error message on getTasksList()"
                 changeState(LoginState.Error)
             }
         }
     }
 
-    fun getActiveTask(context: Context, lifecycle: Lifecycle) {
-        Log.d(TAG, "Has active task?")
+    fun initializeData(context: Context, lifecycle: Lifecycle) {
+        changeState(LoginState.Loading)
         lifecycle.coroutineScope.launch {
-            try {
-                val hasData: Boolean = context.dataStore.data.map {
-                    it[DataStoreConstants.HAS_ACTIVE_TASK] ?: false
-                }.first()
-
-                if (hasData) {
-                    val activeTaskId: Int = context.dataStore.data.map {
-                        it[DataStoreConstants.ACTIVE_TASK_ID] ?: -1
-                    }.first()
-
-                    Log.d(TAG, "activeTaskId: $activeTaskId")
-                    val activeTask: MontageTask? =
-                        _tasks.value.find { it.montageId == activeTaskId }
-
-                    if (activeTask != null) {
-                        _activeTask.value = activeTask
-                        _hasActiveTask.value = true
-                    } else {
-                        _hasActiveTask.value = false
-                    }
-                }
-            } catch (e: Exception) {
-                throw Exception("Error getting DataStore values")
+            val userId = getUserId(context)
+            fetchAndSaveTasks(userId)
+            if (!_tasks.value.isNullOrEmpty()) {
+                getActiveTask(context, userId)
             }
+            changeState(LoginState.Ready)
+        }
+    }
+
+    private suspend fun getUserId(context: Context): Int = context.dataStore.data.map {
+        it[DataStoreConstants.ACTIVE_USER_ID]
+    }.first() ?: throw Exception("No active user")
+
+
+    private suspend fun fetchAndSaveTasks(userId: Int) {
+        try {
+            val t = taskNetworkRepo.getMontageTaskList(userId)
+            Log.d(TAG, "fetch - Got ${t.data?.map { it.statusId }} active tasks")
+            if (t.hasData) {
+                val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
+                if (dbTasks.hasData) {
+                    _tasks.value = t.data!!
+                    _filteredTasks.value = t.data!!
+                } else {
+                    throw Exception("Couldn't write Tasks to Database")
+                }
+            } else {
+                throw Exception("Keine Auftragsdaten")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw Exception("Cannot fetch or save tasks - ${e.message}")
+        }
+    }
+
+    private suspend fun getActiveTask(context: Context, userId: Int) {
+        try {
+            val statsList = _tasks.value.filter { it.statusId == MontageStatus.ACTIVE }
+            Log.d(TAG, "Found ${statsList.size} active Tasks")
+            when {
+                statsList.size > 1 -> {
+                    resetOpenTasks()
+                    hasActiveTask.value = false
+                    fetchAndSaveTasks(userId)
+                    Toast.makeText(
+                        context,
+                        "Zuviele aktive Aufträge es werden alle zurückgesetzt",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                statsList.size == 1 -> {
+                    _activeTask.value = statsList.first()
+                    _hasActiveTask.value = true
+                }
+                else -> {
+                    _hasActiveTask.value = false
+                }
+            }
+        } catch (e: Exception) {
+            throw Exception("Error getting DataStore values")
         }
     }
 
@@ -197,13 +219,50 @@ constructor(
         }
     }
 
-    fun setActiveTask(context: Context, lifecycle: Lifecycle) {
-        lifecycle.coroutineScope.launch {
-            context.dataStore.edit {
-                it[DataStoreConstants.ACTIVE_TASK_ID] = taskDetailId
-                it[DataStoreConstants.HAS_ACTIVE_TASK] = true
+    private suspend fun resetOpenTasks() {
+        val tasks = _tasks.value.filter { it.statusId == MontageStatus.ACTIVE }
+        Log.d(TAG, "resetOpenTasks - Count ${tasks.size}")
+        if (tasks.isNotEmpty()) {
+            tasks.map {
+                val dbRes = taskRepoDatabase.setStatus(it.montageTaskId, MontageStatus.ASSIGNED)
+                Log.d(
+                    TAG,
+                    "Updating DB Task Status Response for ID ${it.montageTaskId}: ${dbRes.hasData}"
+                )
+                val ntwRes = taskNetworkRepo.setStatus(it.montageTaskId, MontageStatus.ASSIGNED)
+                Log.d(
+                    TAG,
+                    "Updating Network Task Status Response for ID ${it.montageTaskId}: ${ntwRes.hasData}"
+                )
             }
-            hasActiveTask.value = true
+        }
+    }
+
+    private fun setActiveTask(context: Context, lifecycle: Lifecycle) {
+        lifecycle.coroutineScope.launch {
+            try {
+                val response = taskNetworkRepo.setStatus(
+                    taskDetailId,
+                    3
+                )
+                if (response.hasData) {
+                    val dbResponse = taskRepoDatabase.setStatus(taskDetailId, 3)
+                    if (dbResponse.hasData) {
+                        context.dataStore.edit {
+                            it[DataStoreConstants.ACTIVE_TASK_ID] = taskDetailId
+                            it[DataStoreConstants.HAS_ACTIVE_TASK] = true
+                        }
+                        hasActiveTask.value = true
+                    } else {
+                        hasActiveTask.value = false
+                    }
+                } else {
+                    hasActiveTask.value = false
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                changeState(LoginState.Error)
+            }
         }
     }
 

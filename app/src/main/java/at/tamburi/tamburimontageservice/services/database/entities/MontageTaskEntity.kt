@@ -8,57 +8,56 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "montage_task")
 data class MontageTaskEntity(
     @PrimaryKey
-    val id: Int,
+    @ColumnInfo(name="montage_task_id")
+    val montageTaskId: Int,
 
     @NonNull
-    @ColumnInfo(name = "montage_id")
-    val montageId: Int,
+    @ColumnInfo(name = "creation_date")
+    val creationDate: Long,
 
     @NonNull
-    @ColumnInfo(name = "created_at")
-    val createdAt: Long,
+    @ColumnInfo(name = "location_id")
+    val locationId: Int,
 
-    @NonNull
-    @ColumnInfo(name = "remote_location_id")
-    val remoteLocationId: Int,
-
-    @NonNull
-    @ColumnInfo(name = "magazine")
-    val magazine: String,
-
+    //NULL IS EMPTY
     @NonNull
     @ColumnInfo(name = "owner_id")
     val ownerId: Int,
 
+    //TODO Maybe Pitfall? How to save an enum in kotlin.
     @NonNull
-    @ColumnInfo(name = "montage_status")
-    val montageStatus: Int,
+    @ColumnInfo(name = "status_id")
+    val statusId: Int,
 
     @NonNull
-    @ColumnInfo(name = "location_desc")
-    val locationDesc: String,
+    @ColumnInfo(name = "location_description")
+    val locationDescription: String,
 
     @NonNull
     @ColumnInfo(name = "power_connection")
-    val powerConnection: Int,
+    val powerConnection: String,
 
     @NonNull
-    @ColumnInfo(name = "montage_ground")
-    val montageGround: String,
+    @ColumnInfo(name = "montage_ground_name")
+    val montageGroundName: String,
 
     @NonNull
-    @ColumnInfo(name = "montage_sketch")
-    val montageSketch: String,
+    @ColumnInfo(name = "montage_sketch_url")
+    val montageSketchUrl: String,
 
     @NonNull
-    @ColumnInfo(name = "locker_list")
+    @ColumnInfo(name= "service_user_ids")
+    val servicemanList: String,
+
+    @NonNull
+    @ColumnInfo(name= "montage_hint")
+    val montageHint: String,
+
+    @NonNull
+    @ColumnInfo(name= "locker_list")
     val lockerList: String,
 
     @NonNull
-    @ColumnInfo(name = "assigned_monteurs")
-    val assignedMonteurs: String,
-
-    @NonNull
-    @ColumnInfo(name = "scheduled_installation")
-    val scheduledInstallation: Long,
+    @ColumnInfo(name= "scheduled_installation_date")
+    val scheduledInstallationDate: Long
 )

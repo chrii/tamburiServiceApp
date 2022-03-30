@@ -5,7 +5,7 @@ import retrofit2.Response
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-interface AuthenticationService {
+interface IAuthenticationService {
     @POST("authenticate/serviceman")
     suspend fun getServiceUser(
         @Header("username") username: String,

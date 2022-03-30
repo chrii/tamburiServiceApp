@@ -3,14 +3,14 @@ package at.tamburi.tamburimontageservice.models
 import android.os.Parcelable
 
 data class RemoteLocation(
-    var locationName: String?,
-    var qrCode: String?,
     val locationId: Int,
+    val locationName: String,
     val countryId: Int,
     val cityId: Int,
     val zipCode: String,
-    val streetName: String,
-    val streetNumber: String,
-    val minimumReservationTime: Int,
-    val minimumPauseTime: Int
+    val street: String,
+    val number: String,
+    val qrCode: String,
+    val cityName: String,
+    val countryName: String
 )

@@ -9,27 +9,29 @@ interface MontageTaskDao {
     @Query("SELECT * FROM montage_task")
     suspend fun getAllTasks(): List<MontageTaskEntity>
 
-    @Query("SELECT * FROM montage_task WHERE id = :montageId")
+    @Query("SELECT * FROM montage_task WHERE montage_task_id = :montageId")
     suspend fun getTaskByTaskId(montageId: Int): MontageTaskEntity?
 
     @Query(
-        "INSERT INTO montage_task (id, montage_id, created_at, remote_location_id, magazine, owner_id, montage_status, location_desc, power_connection, montage_ground, montage_sketch, locker_list, assigned_monteurs, scheduled_installation) " +
-                "VALUES (:id, :montageId, :createdAt, :remoteLocationId, :magazine, :ownerId, :montageStatus, :locationDesc, :powerConnection, :montageGround, :montageSketch, :lockerList, :assignedMonteurs, :scheduledInstallation)"
+        "INSERT INTO montage_task (montage_task_id, creation_date, location_id, owner_id, status_id, location_description, power_connection, montage_ground_name, montage_sketch_url, locker_list, montage_hint, service_user_ids, scheduled_installation_date) " +
+                "VALUES (:montageTaskId, :creationDate, :locationId, :ownerId, :statusId, :locationDescription, :powerConnection, :montageGroundName, :montageSketchUrl, :lockerList, :montageHint, :servicemanList, :scheduledInstallationDate)"
     )
     suspend fun saveTask(
-        id: Int,
-        montageId: Int,
-        createdAt: Long,
-        remoteLocationId: Int,
-        magazine: String,
+        montageTaskId: Int,
+        creationDate: Long,
+        locationId: Int,
         ownerId: Int,
-        montageStatus: Int,
-        locationDesc: String,
-        powerConnection: Int,
-        montageGround: String,
-        montageSketch: String,
+        statusId: Int,
+        locationDescription: String,
+        powerConnection: String,
+        montageGroundName: String,
+        montageSketchUrl: String,
+        servicemanList: String,
+        montageHint: String,
         lockerList: String,
-        assignedMonteurs: String,
-        scheduledInstallation: Long
+        scheduledInstallationDate: Long
     ): Long
+
+    @Query("UPDATE montage_task SET status_id = :status WHERE montage_task_id = :taskId")
+    suspend fun setStatus(taskId: Int, status: Int): Int
 }

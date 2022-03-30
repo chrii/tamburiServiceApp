@@ -2,10 +2,10 @@ package at.tamburi.tamburimontageservice.modules
 
 import android.content.Context
 import androidx.room.Room
-import at.tamburi.tamburimontageservice.repositories.database.IMontageTaskRepository
-import at.tamburi.tamburimontageservice.repositories.database.IUserRepository
-import at.tamburi.tamburimontageservice.repositories.database.implementation.MontageTaskImpl
-import at.tamburi.tamburimontageservice.repositories.database.implementation.UserRepositoryImpl
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
+import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
+import at.tamburi.tamburimontageservice.repositories.database.implementation.DatabaseMontageTaskImpl
+import at.tamburi.tamburimontageservice.repositories.database.implementation.DatabaseUserRepositoryImpl
 import at.tamburi.tamburimontageservice.services.database.AppDatabase
 import at.tamburi.tamburimontageservice.services.database.dao.*
 import dagger.Module
@@ -52,8 +52,8 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(userDao: UserDao): IUserRepository {
-        return UserRepositoryImpl(userDao)
+    fun provideUserRepository(userDao: UserDao): IDatabaseUserRepository {
+        return DatabaseUserRepositoryImpl(userDao)
     }
 
     @Provides
@@ -62,8 +62,9 @@ object DatabaseModule {
         montageTaskDao: MontageTaskDao,
         ownerDao: LocationOwnerDao,
         lockerDao: LockerDao,
-        locationDao: RemoteLocationDao
-    ): IMontageTaskRepository {
-        return MontageTaskImpl(montageTaskDao, ownerDao, lockerDao, locationDao)
+        locationDao: RemoteLocationDao,
+        userDao: UserDao
+    ): IDatabaseMontageTaskRepository {
+        return DatabaseMontageTaskImpl(montageTaskDao, ownerDao, lockerDao, locationDao, userDao)
     }
 }

@@ -11,4 +11,5 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "ta
 object DataStoreConstants {
     val HAS_ACTIVE_TASK = booleanPreferencesKey("has_active_task")
     val ACTIVE_TASK_ID = intPreferencesKey("active_task")
+    val ACTIVE_USER_ID = intPreferencesKey("active_user_id")
 }

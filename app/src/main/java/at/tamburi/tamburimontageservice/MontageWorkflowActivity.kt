@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
@@ -17,6 +18,7 @@ private const val TAG = "MontageWorkflowActivity"
 @AndroidEntryPoint
 class MontageWorkflowActivity : AppCompatActivity() {
     val viewModel: MontageWorkflowViewModel by viewModels()
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +26,11 @@ class MontageWorkflowActivity : AppCompatActivity() {
         setContentView(R.layout.activity_montage_workflow)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_montage_workflow) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
         setupActionBarWithNavController(navController)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }

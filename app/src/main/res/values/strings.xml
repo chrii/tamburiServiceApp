@@ -25,12 +25,14 @@
     <string name="tasks">Aufträge</string>
 
     <!-- Task Details Screen -->
-    <string name="ds_montage_id">Auftrags ID</string>
+    <string name="ds_montage_id">Auftrags ID:</string>
     <string name="ds_street_name">Adresse:</string>
     <string name="ds_qr_code">QR Code ID:</string>
     <string name="ds_montage_status">Status:</string>
-    <string name="ds_description">Standort Beschreibung</string>
+    <string name="ds_description">Standort Beschreibung:</string>
     <string name="ds_montage_ground">Boden Beschaffenheit:</string>
+    <string name="ds_scheduled_date">Installations Datum:</string>
+    <string name="ds_locker_count">Anzahl der Kästen:</string>
 
     <!-- Workflow Landing Page -->
     <string name="wf_title">Auftragsdetails</string>
@@ -41,6 +43,7 @@
     <string name="wf_power_connection">Art des Strom Anschluss</string>
     <string name="wf_montage_ground">Art des Untergrunds</string>
     <string name="wf_scheduled_date">Datum der Montage</string>
+    <string name="wf_description">Hinweise zum Standort</string>
     <!-- Owner Tab -->
     <string name="wf_owner_title">Auftraggeber</string>
     <string name="wf_owner_name">Firmenname</string>
@@ -52,8 +55,29 @@
     <string name="wf_top_menu_title">Optionen</string>
     <string name="wf_top_menu_revoke_text">Auftrag annullieren</string>
     <string name="wf_top_menu_revoke_toast_text">Erfolgreich annulliert</string>
+    <!-- Locker Expandable -->
+    <string name="wf_exp_title">Kästen</string>
+    <string name="wf_exp_uses_gateway">Benutzt Gateway</string>
+    <string name="wf_exp_not_uses_gate">Ohne Gateway</string>
+    <string name="wf_exp_qr_code_registered">QR Code nicht registriert</string>
+    <string name="wf_exp_qr_code_not_registered">QR Code registriert</string>
+    <string name="wf_exp_no_registered_gateway">Registrieren Sie zuerst ein Gateway</string>
 
     <!-- LocationProposalScreen -->
     <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>
     <string name="prop_scan_qr_code">QR-Code Scannen</string>
+    <string name="prop_submit_button_text">Abschließen</string>
+
+    <!-- Qr-Code Screen -->
+    <string name="qrs_scan_location_text">Kleben Sie den Standort Sticker auf den Kasten und scannen Sie den Qr-Code</string>
+    <string name="qrs_scan_locker_text">Kleben Sie Kasten Sticker in den Kasten und scannen Sie den Qr-Code</string>
+    <string name="qrs_scan_gateway_text">Scannen Sie den Qr-Code auf dem Gateway</string>
+
+    <!-- Task Status Text -->
+    <string name="task_status_created">Erstellt</string>
+    <string name="task_status_assigned">Zugewiesen</string>
+    <string name="task_status_active">Aktiv</string>
+    <string name="task_status_closed">Abgeschlossen</string>
+    <string name="task_status_maintenance">Wartung</string>
+    <string name="task_status_else">Kein Status angegeben</string>
 </resources>

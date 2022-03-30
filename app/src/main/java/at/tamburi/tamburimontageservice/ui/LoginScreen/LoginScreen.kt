@@ -43,7 +43,7 @@ fun LoginScreen(
             viewModel.changeState(LoginState.Ready)
         }
         LoginState.NEXT -> {
-            Toast.makeText(context, "Logged In", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Willkommen zurück, ${viewModel.activeUser?.firstname}", Toast.LENGTH_LONG).show()
             navigation.navigate(R.id.action_loginFragment_to_task_list_fragment)
         }
         LoginState.Ready -> LazyColumn(
@@ -82,7 +82,8 @@ fun LoginScreen(
                         viewModel.onSubmit(
                             userNameTextField,
                             passwordTextField,
-                            lifecycle
+                            lifecycle,
+                            context
                         )
                     }
                 ) {

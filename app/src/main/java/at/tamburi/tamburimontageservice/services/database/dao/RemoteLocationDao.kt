@@ -9,20 +9,23 @@ interface RemoteLocationDao {
     @Query("SELECT * FROM remote_location WHERE location_id = :locationId")
     suspend fun getLocationById(locationId: Int): RemoteLocationEntity?
 
+    @Query("UPDATE remote_location SET qr_code = :qrCode WHERE location_id = :locationId")
+    suspend fun setQrCodeForLocation(locationId: Int, qrCode: String): Int
+
     @Query(
-        "INSERT INTO remote_location (location_id,qr_code,location_name,country_id,city_id,zip,street_name,street_number,minimum_reservation_time,minimum_pause_time) " +
-                "VALUES (:locationId,:qrCode,:locationName,:countryId,:cityId,:zipCode,:streetName,:streetNumber,:minimumReservationTime,:minimumPauseTime)"
+        "INSERT INTO remote_location (location_id, location_name, country_id, city_id, zip_code, street, number, qr_code, city_name, country_name) " +
+                "VALUES (:locationId, :locationName,:countryId,:cityId,:zipCode,:street,:number,:qrCode,:cityName,:countryName)"
     )
     suspend fun saveLocation(
         locationId: Int,
-        qrCode: String?,
-        locationName: String?,
+        locationName: String,
         countryId: Int,
         cityId: Int,
         zipCode: String,
-        streetName: String,
-        streetNumber: String,
-        minimumReservationTime: Int,
-        minimumPauseTime: Int
-    )
+        street: String,
+        number: String,
+        qrCode: String,
+        cityName: String,
+        countryName: String
+    ): Long
 }

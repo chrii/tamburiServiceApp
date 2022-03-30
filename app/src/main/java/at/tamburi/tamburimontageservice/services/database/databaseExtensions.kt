@@ -1,13 +1,9 @@
 package at.tamburi.tamburimontageservice.services.database
 
-import at.tamburi.tamburimontageservice.models.LocationOwner
-import at.tamburi.tamburimontageservice.models.MontageTask
-import at.tamburi.tamburimontageservice.models.RemoteLocation
-import at.tamburi.tamburimontageservice.models.ServiceUser
-import at.tamburi.tamburimontageservice.services.database.entities.LocationOwnerEntity
-import at.tamburi.tamburimontageservice.services.database.entities.MontageTaskEntity
-import at.tamburi.tamburimontageservice.services.database.entities.RemoteLocationEntity
-import at.tamburi.tamburimontageservice.services.database.entities.UserEntity
+import at.tamburi.tamburimontageservice.models.*
+import at.tamburi.tamburimontageservice.services.database.entities.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 //TODO: Do not forget to add magazine id if its here
@@ -19,33 +15,73 @@ val UserEntity.toServiceUser: ServiceUser
         surname = surname,
         phone = phone,
         email = email,
-        loginDate = loginDate,
+        loginDate = loginDate
     )
 
 val LocationOwnerEntity.toLocationOwner: LocationOwner
     get() = LocationOwner(
-        companyId = id,
+        buildingOwnerId = buildingOwnerId,
         companyName = companyName,
+        name = name,
+        surname = surname,
         address = address,
-        streetNumber = streetNumber,
-        zipCode = zipCode
+        address2 = address2,
+        city = city,
+        zipCode = zipCode,
+        email = email,
+        phoneNumber = phoneNumber,
     )
 
+//
 val RemoteLocationEntity.toRemoteLocation: RemoteLocation
     get() = RemoteLocation(
         locationId = locationId,
+        locationName = locationName,
         countryId = countryId,
         cityId = cityId,
         zipCode = zipCode,
-        streetName = streetName,
-        streetNumber = streetNumber,
+        street = street,
+        number = number,
         qrCode = qrCode,
-        locationName = locationName,
-        minimumReservationTime = minimumReservationTime,
-        minimumPauseTime = minimumPauseTime,
+        cityName = cityName,
+        countryName = countryName
     )
 
-//val MontageTaskEntity.toMontageTask: MontageTask
-//    get() = MontageTask(
-//
-//    )
+val LockerEntity.toLocker: Locker
+    get() = Locker(
+        lockerId = lockerId,
+        locationId = locationId,
+        lockerName = lockerName,
+        lockerType = lockerType,
+        columnNumber = columnNumber,
+        montageTaskId = montageTaskId,
+        typeName = typeName,
+        gateway = gateway,
+        gatewaySerialnumber = gatewaySerialnumber,
+        qrCode = qrCode,
+        busSlot = busSlot
+    )
+
+fun MontageTaskEntity.toMontageTask(
+    owner: LocationOwner?,
+    location: RemoteLocation,
+    lockers: List<Locker>,
+    serviceUserList: List<ServiceUser>
+): MontageTask {
+    return MontageTask(
+        montageTaskId = montageTaskId,
+        creationDate = Date(creationDate),
+        location = location,
+        locationOwner = owner,
+        statusId = statusId,
+        locationDescription = locationDescription,
+        powerConnection = powerConnection,
+        montageGroundName = montageGroundName,
+        montageSketchUrl = montageSketchUrl,
+        montageSketchImage = null,
+        servicemanList = serviceUserList,
+        scheduledInstallationDate = Date(scheduledInstallationDate),
+        montageHint = montageHint,
+        lockerList = lockers,
+    )
+}

@@ -20,9 +20,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
+import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
+import at.tamburi.tamburimontageservice.ui.composables.TwoLineExpandable
 import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
+import at.tamburi.tamburimontageservice.utils.Utils
 
 class MontageTaskDetailFragment : Fragment() {
     val viewModel: MainViewModel by activityViewModels()
@@ -32,7 +35,7 @@ class MontageTaskDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val task = viewModel.filteredTasks.value.find { it.montageId == viewModel.taskDetailId }
+        val task = viewModel.filteredTasks.value.find { it.montageTaskId == viewModel.taskDetailId }
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
@@ -42,6 +45,7 @@ class MontageTaskDetailFragment : Fragment() {
                         task?.let { t ->
                             LazyColumn(Modifier.fillMaxSize()) {
                                 item {
+                                    //TODO: String zur Stringlist hinzufügen
                                     Text(
                                         modifier = Modifier.padding(8.dp),
                                         text = "Auftragsdetails",
@@ -52,30 +56,32 @@ class MontageTaskDetailFragment : Fragment() {
                                 item {
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_id),
-                                        cell2 = t.montageId.toString()
+                                        cell2 = t.montageTaskId.toString()
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_street_name),
                                         cell2 =
-                                        "${t.remoteLocation.streetName} ${t.remoteLocation.streetNumber}"
+                                        "${t.location.street} ${t.location.number}"
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_status),
-                                        cell2 = when (t.montageStatus) {
-                                            MontageStatus.ASSIGNED -> "Zugewiesen"
-                                            MontageStatus.CREATED -> "Erstellt"
-                                            MontageStatus.ACTIVE -> "Aktiv"
-                                            MontageStatus.CLOSED -> "Beendet"
-                                            MontageStatus.MAINTENANCE -> "Wartungsauftrag"
-                                        }
+                                        cell2 = getString(MontageStatus.getStatusString(t.statusId))
                                     )
-                                    TwoLineItem(
-                                        cell1 = stringResource(id = R.string.ds_description),
-                                        cell2 = t.locationDesc
+                                    TwoLineExpandable(
+                                        title = stringResource(R.string.ds_description),
+                                        content = t.locationDescription
                                     )
                                     TwoLineItem(
                                         cell1 = stringResource(id = R.string.ds_montage_ground),
-                                        cell2 = t.montageGround.type
+                                        cell2 = t.montageGroundName
+                                    )
+                                    TwoLineItem(
+                                        cell1 = stringResource(id = R.string.ds_scheduled_date),
+                                        cell2 = Utils.getReadableScheduleDate(task)
+                                    )
+                                    TwoLineItem(
+                                        cell1 = stringResource(id = R.string.ds_locker_count),
+                                        cell2 = task.lockerList.size.toString()
                                     )
                                 }
                                 item {
@@ -90,7 +96,7 @@ class MontageTaskDetailFragment : Fragment() {
                                     }
                                 }
                             }
-                        }
+                        } ?: Text(text = "Keine Aufträge gefunden")
                     }
                 }
             }
