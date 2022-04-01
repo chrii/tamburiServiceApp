@@ -42,7 +42,9 @@ class PermissionFragment : Fragment() {
                     ) {
                         val permissionsState = rememberMultiplePermissionsState(
                             permissions = listOf(
-                                Manifest.permission.CAMERA
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION
                             )
                         )
                         val lifecycleOwner = LocalLifecycleOwner.current
@@ -55,21 +57,53 @@ class PermissionFragment : Fragment() {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
+                            var hasPermissionState = false
                             permissionsState.permissions.forEach { perm ->
                                 when (perm.permission) {
                                     Manifest.permission.CAMERA -> {
                                         when {
-                                            perm.hasPermission -> next()
-                                            perm.shouldShowRationale -> Text(text = stringResource(R.string.camera_permission_declined))
-                                            perm.isPermanentlyRevoked -> Text(
-                                                text = stringResource(
-                                                    id = R.string.camera_permission_permanently_revoked
+                                            perm.hasPermission -> hasPermissionState = true
+                                            perm.shouldShowRationale -> {
+                                                Text(stringResource(R.string.camera_permission_declined))
+                                                hasPermissionState = false
+                                            }
+                                            perm.isPermanentlyRevoked -> {
+                                                Text(
+                                                    stringResource(R.string.camera_permission_permanently_revoked)
                                                 )
-                                            )
+                                                hasPermissionState = false
+                                            }
+                                        }
+                                    }
+                                    Manifest.permission.ACCESS_COARSE_LOCATION -> {
+                                        when {
+                                            perm.hasPermission -> hasPermissionState = true
+                                            perm.shouldShowRationale -> {
+                                                Text(stringResource(id = R.string.location_permission_declined))
+                                                hasPermissionState = false
+                                            }
+                                            perm.isPermanentlyRevoked -> {
+                                                Text(stringResource(id = R.string.location_permission_permanently_revoked))
+                                                hasPermissionState = false
+                                            }
+                                        }
+                                    }
+                                    Manifest.permission.ACCESS_FINE_LOCATION -> {
+                                        when {
+                                            perm.hasPermission -> hasPermissionState = true
+                                            perm.shouldShowRationale -> {
+                                                Text(stringResource(id = R.string.location_permission_declined))
+                                                hasPermissionState = false
+                                            }
+                                            perm.isPermanentlyRevoked -> {
+                                                Text(stringResource(id = R.string.location_permission_permanently_revoked))
+                                                hasPermissionState = false
+                                            }
                                         }
                                     }
                                 }
                             }
+                            if (hasPermissionState) next()
                         }
                     }
                 }

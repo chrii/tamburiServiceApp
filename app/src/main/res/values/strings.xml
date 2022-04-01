@@ -2,9 +2,12 @@
     <string name="app_name">Montage Service</string>
 
     <!-- Permission Fragment -->
-    <string name="camera_permission_accepted">Kamera autorisierung erteilt</string>
-    <string name="camera_permission_declined">Kamera autorisierung wird für den Scanner benötigt."</string>
-    <string name="camera_permission_permanently_revoked">Autorisierung für Kamera wurde permanent abgelehnt. Um dies rückgängig zu machen, ändern Sie dieses in den Einstellungen unter App Einstellungen</string>
+    <string name="camera_permission_accepted">Kamera Autorisierung erteilt</string>
+    <string name="camera_permission_declined">Kamera Autorisierung wird für den Scanner benötigt."</string>
+    <string name="camera_permission_permanently_revoked">Autorisierung für Kamera wurde permanent abgelehnt. Um dies rückgängig zu machen, ändern Sie die Berchtigungen in den Einstellungen unter App Einstellungen</string>
+    <string name="location_permission_accepted">Standort Autorisierung erteilt</string>
+    <string name="location_permission_declined">Standort Autorisierung wird für ie Zuweisung des Kasten Standorts benötigt</string>
+    <string name="location_permission_permanently_revoked">Autorisierung für Standortdaten wurde permanent abgelehnt. Um dies rückgängig zu machen, ändern Sie die Berechtigungen in den App Einstellungen</string>
 
     <!-- Login Fragment -->
     <string name="username">Username</string>
