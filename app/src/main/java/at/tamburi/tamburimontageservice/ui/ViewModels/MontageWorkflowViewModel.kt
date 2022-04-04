@@ -165,7 +165,9 @@ constructor(
 
     fun getTask(context: Context, lifecycle: Lifecycle) {
         changeState(State.Loading)
+        val mainActivityIntent = Intent(context, MainActivity::class.java)
         lifecycle.coroutineScope.launch {
+            // Delay of 1000 Mil
             delay(1000)
             val id = context.dataStore.data.map {
                 it[DataStoreConstants.ACTIVE_TASK_ID] ?: -1
@@ -176,11 +178,12 @@ constructor(
                     _task.value = result.data!!
                     changeState(State.Ready)
                 } else {
-                    context.startActivity(Intent(context, MainActivity::class.java))
+                    context.startActivity(mainActivityIntent)
                     Toast.makeText(context, "No assigned Task available", Toast.LENGTH_LONG).show()
                 }
             } else {
-                changeState(State.Error)
+                Toast.makeText(context, "No Task ID found", Toast.LENGTH_LONG).show()
+                context.startActivity(mainActivityIntent)
             }
         }
     }

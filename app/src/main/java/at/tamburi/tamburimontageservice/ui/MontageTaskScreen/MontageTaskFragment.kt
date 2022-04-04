@@ -7,10 +7,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -47,9 +44,7 @@ class MontageTaskFragment : Fragment() {
     }
 
     private fun navigateToActivity(taskId: Int) {
-        val intent = Intent(requireActivity(), MontageWorkflowActivity::class.java).apply {
-            putExtra(Constants.INTENT_MONTAGE_TASK_KEY, taskId)
-        }
+        val intent = Intent(requireActivity(), MontageWorkflowActivity::class.java)
         startActivity(intent)
     }
 
@@ -72,7 +67,6 @@ class MontageTaskFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        Log.d(TAG, "Active Task: ${viewModel.activeTask.value}")
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {
@@ -91,23 +85,13 @@ class MontageTaskFragment : Fragment() {
                                 )
                                     .show()
                             }
-                            LoginState.Ready -> if (viewModel.filteredTasks.value.isEmpty()) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Text(text = stringResource(id = R.string.no_task_data))
-                                }
-                            } else {
+                            LoginState.Ready -> {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
                                     verticalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    val tasks =
-                                        viewModel.filteredTasks.value.filter { task ->
-                                            task.statusId == MontageStatus.ASSIGNED
-                                        }
+                                    val tasks = viewModel.filteredTasks.value
+                                        .filter { it.statusId == MontageStatus.ASSIGNED }
                                     if (tasks.isNullOrEmpty()) {
                                         Column(
                                             modifier = Modifier.fillMaxSize(),
@@ -118,6 +102,7 @@ class MontageTaskFragment : Fragment() {
                                         }
                                     } else {
                                         LazyColumn(
+                                            modifier = Modifier.weight(1.0f)
                                         ) {
                                             items(tasks.size) { index ->
                                                 Column {
@@ -162,22 +147,28 @@ class MontageTaskFragment : Fragment() {
                                             }
                                         }
                                     }
-
                                     if (viewModel.hasActiveTask.value) {
                                         Column(
                                             modifier = Modifier
+                                                .background(MaterialTheme.colors.primary)
+                                                .fillMaxWidth()
+                                                .padding(8.dp)
                                                 .clickable { navigateToActivity(viewModel.taskDetailId) }
                                         ) {
                                             Divider(
                                                 thickness = 1.dp
                                             )
-                                            ListItem(
-                                                modifier = Modifier.background(MaterialTheme.colors.primaryVariant),
-                                                text = { Text(text = "Aktiver Auftrag") },
-                                                secondaryText = { Text(text = "Auftragsnummer: ${viewModel.activeTask.value?.montageTaskId}") }
+                                            Text(text = stringResource(id = R.string.tl_header))
+                                            Text(
+                                                text = stringResource(
+                                                    R.string.tl_task_id,
+                                                    viewModel.activeTask.value?.montageTaskId
+                                                        ?: "No ID"
+                                                )
                                             )
                                         }
                                     }
+                                    Log.d(TAG, "hasActiveTask: ${viewModel.hasActiveTask.value}")
                                 }
                             }
                         }

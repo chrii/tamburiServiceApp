@@ -3,7 +3,7 @@
 
     <!-- Permission Fragment -->
     <string name="camera_permission_accepted">Kamera Autorisierung erteilt</string>
-    <string name="camera_permission_declined">Kamera Autorisierung wird für den Scanner benötigt."</string>
+    <string name="camera_permission_declined">Kamera Autorisierung wird für den Scanner benötigt"</string>
     <string name="camera_permission_permanently_revoked">Autorisierung für Kamera wurde permanent abgelehnt. Um dies rückgängig zu machen, ändern Sie die Berchtigungen in den Einstellungen unter App Einstellungen</string>
     <string name="location_permission_accepted">Standort Autorisierung erteilt</string>
     <string name="location_permission_declined">Standort Autorisierung wird für ie Zuweisung des Kasten Standorts benötigt</string>
@@ -18,6 +18,9 @@
     <string name="no_task_data">Keine Aufträge vorhanden</string>
     <string name="owner_string">Auftraggeber: %s</string>
     <string name="adress_string">Adresse: %s %s</string>
+    <!-- Task List Active Task -->
+    <string name="tl_header">Aktiver Auftrag</string>
+    <string name="tl_task_id">Auftragsnummer: %s</string>
     <!-- Task List Options Menu -->
     <string name="menu_item_doebler">Döblerhof Straße</string>
     <string name="menu_item_flo">Floridusgasse</string>

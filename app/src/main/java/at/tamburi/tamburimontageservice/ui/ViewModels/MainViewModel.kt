@@ -189,7 +189,16 @@ constructor(
                     ).show()
                 }
                 statsList.size == 1 -> {
-                    _activeTask.value = statsList.first()
+                    val task = statsList.first()
+                    val activeTaskId = context.dataStore.data.map {
+                        it[DataStoreConstants.ACTIVE_TASK_ID]
+                    }.first() ?: -1
+                    if(activeTaskId == -1) {
+                        context.dataStore.edit {
+                            it[DataStoreConstants.ACTIVE_TASK_ID] = task.montageTaskId
+                        }
+                    }
+                    _activeTask.value = task
                     _hasActiveTask.value = true
                 }
                 else -> {
@@ -243,6 +252,7 @@ constructor(
                 if (response.hasData) {
                     val dbResponse = taskRepoDatabase.setStatus(taskDetailId, 3)
                     if (dbResponse.hasData) {
+                        Log.d(TAG, "Save active Task ID $taskDetailId to datastore")
                         context.dataStore.edit {
                             it[DataStoreConstants.ACTIVE_TASK_ID] = taskDetailId
                             it[DataStoreConstants.HAS_ACTIVE_TASK] = true
