@@ -60,7 +60,7 @@ constructor(
         _state.value = s
     }
 
-    private fun setQrCodeForLocker(
+    fun setQrCodeForLocker(
         lifecycle: Lifecycle,
         lockerId: Int,
         qrCode: String,
@@ -85,15 +85,15 @@ constructor(
         qrCode: String,
         navigation: NavController
     ) {
-        navigation.navigate(R.id.action_qr_code_fragment_to_final_workflow_fragment)
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
                 val result = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
-                val networkResult =
-                    networkMontageTaskRepository.registerLocation(locationId, qrCode)
-                if (result.hasData && networkResult.hasData) {
+//                val networkResult =
+//                    networkMontageTaskRepository.registerLocation(locationId, qrCode)
+                if (result.hasData) {
                     changeState(State.Ready)
+                    navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
                 } else {
                     changeState(State.Error)
                 }
@@ -121,7 +121,7 @@ constructor(
                 Log.d(TAG, "$gatewaySerialnumberList")
                 Log.d(TAG, "$hasRegisteredGateway")
                 changeState(State.Ready)
-                navigation?.navigate(R.id.action_qr_code_next_handler)
+                navigation?.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
             } else {
                 changeState(State.Error)
             }
@@ -131,26 +131,6 @@ constructor(
     fun qrCodeScreenNavigator(navigation: NavController, scannerState: QrCodeScannerState) {
         qrCodeScannerState = scannerState
         navigation.navigate(R.id.action_landing_fragment_to_qr_code_fragment)
-    }
-
-    fun setDataForLocker(
-        lifecycle: Lifecycle,
-        lockerId: Int,
-        serialnumber: String,
-        qrCode: String,
-        navigation: NavController
-    ) {
-        setGatewayForLocker(
-            lifecycle,
-            lockerId,
-            gatewaySerialnumberList.first()
-        )
-        setQrCodeForLocker(
-            lifecycle,
-            lockerId,
-            qrCode,
-            navigation
-        )
     }
 
     fun setBusSlotForLocker(
@@ -195,6 +175,12 @@ constructor(
                 2
             )
             if (response.hasData) {
+                task.value?.lockerList?.forEach {
+                    databaseMontageTaskRepository.setGatewaySerialnumber("", it.lockerId)
+                    databaseMontageTaskRepository.setBusSlot(it.lockerId, 0)
+                    databaseMontageTaskRepository.setLocationQrCode(it.locationId, "")
+                    databaseMontageTaskRepository.setLockerQrCode("", it.lockerId)
+                }
                 context.dataStore.edit {
                     it[DataStoreConstants.ACTIVE_TASK_ID] = -1
                     it[DataStoreConstants.HAS_ACTIVE_TASK] = false
@@ -244,6 +230,20 @@ constructor(
                 e.printStackTrace()
                 changeState(State.Error)
             }
+        }
+    }
+
+    //TODO: Implement logic
+    fun checkGatewaySerial(serial: String): Boolean {
+        return true
+    }
+
+    fun checkQrCodeForLocker(code: String): Boolean {
+        return try {
+            code.toLong()
+            code.length == 15
+        } catch (e: Exception) {
+            false
         }
     }
 

@@ -84,7 +84,7 @@
     <string name="wf_exp_locker_id">Kasten ID</string>
     <string name="wf_exp_locker_gateway_text">Gateway Qr Code</string>
     <string name="wf_exp_locker_gateway_registered">Gateway registriert</string>
-    <string name="wf_exp_locker_qr_code_text">QR Code</string>
+    <string name="wf_exp_locker_qr_code_text">Kasten QR Code</string>
     <string name="wf_exp_locker_qr_code_registered">QR Code registriert</string>
     <string name="wf_exp_no_registered_gateway">Registrieren Sie zuerst ein Gateway</string>
     <string name="wf_exp_order">Wählen Sie die Kasten Nummer</string>
@@ -101,6 +101,7 @@
     <string name="qrs_scan_location_text">Kleben Sie den Standort Sticker auf den Kasten und scannen Sie den Qr-Code</string>
     <string name="qrs_scan_locker_text">Kleben Sie Kasten Sticker in den Kasten und scannen Sie den Qr-Code</string>
     <string name="qrs_scan_gateway_text">Scannen Sie den Qr-Code auf dem Gateway</string>
+    <string name="qrs_scan_error">Ungültiger QR-Code</string>
 
     <!-- Task Status Text -->
     <string name="task_status_created">Erstellt</string>

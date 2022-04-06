@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.runtime.*
@@ -45,7 +46,7 @@ fun CompLockerExpandable(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     ExpandableCard(title = stringResource(R.string.wf_exp_title), description = "") {
         safeTask.lockerList.forEach { locker ->
-            var busSlot by remember { mutableStateOf(0) }
+            var busSlot by remember { mutableStateOf(locker.busSlot) }
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -57,6 +58,8 @@ fun CompLockerExpandable(
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         if (locker.gateway) {
+                            busSlot = 1
+                            viewModel.setBusSlotForLocker(busSlot!!, locker.lockerId, lifecycle)
                             TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_gateway_text)) {
                                 if (locker.gatewaySerialnumber.isNotEmpty()) {
                                     Text(stringResource(id = R.string.wf_exp_locker_gateway_registered))
@@ -69,6 +72,7 @@ fun CompLockerExpandable(
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         } else {
+                                            viewModel.activeLocker = locker
                                             viewModel.qrCodeScreenNavigator(
                                                 navigation,
                                                 QrCodeScannerState.Gateway
@@ -84,7 +88,13 @@ fun CompLockerExpandable(
                             if (locker.qrCode.isNotEmpty()) {
                                 Text(stringResource(id = R.string.wf_exp_locker_qr_code_registered))
                             } else {
-                                IconButton(onClick = { /*TODO*/ }) {
+                                IconButton(onClick = {
+                                    viewModel.activeLocker = locker
+                                    viewModel.qrCodeScreenNavigator(
+                                        navigation,
+                                        QrCodeScannerState.Locker
+                                    )
+                                }) {
                                     Icon(Icons.Default.QrCodeScanner, "QR CODE SCANNER")
                                 }
                             }
@@ -92,13 +102,15 @@ fun CompLockerExpandable(
                         if (busSlot == 0) {
                             TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_bus_text)) {
                                 BusSlotDropDownMenu(
-                                    itemList = listOf("0", "1", "2", "3", "4", "5", "6"),
-                                    selectedItem = locker.busSlot ?: 0
+                                    itemList = listOf("1", "2", "3", "4", "5", "6"),
+                                    selectedItem = busSlot!!
                                 ) {
                                     try {
                                         busSlot = it.toInt()
                                         viewModel.setBusSlotForLocker(
-                                            busSlot, locker.lockerId, lifecycle
+                                            it.toInt(),
+                                            locker.lockerId,
+                                            lifecycle
                                         )
                                     } catch (e: Exception) {
                                         Toast.makeText(
@@ -111,7 +123,19 @@ fun CompLockerExpandable(
                             }
                         } else {
                             TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_bus_text2)) {
-                                Text(locker.busSlot.toString())
+                                Row(
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(busSlot.toString())
+                                    if (!locker.gateway) {
+                                        IconButton(onClick = {
+                                            busSlot = 0
+                                        }) {
+                                            Icon(Icons.Default.Close, "Close Button")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

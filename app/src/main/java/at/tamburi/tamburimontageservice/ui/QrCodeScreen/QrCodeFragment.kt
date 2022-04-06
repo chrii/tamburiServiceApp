@@ -39,6 +39,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import at.tamburi.tamburimontageservice.R
+import at.tamburi.tamburimontageservice.models.Locker
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
@@ -59,6 +60,15 @@ class QrCodeFragment : Fragment() {
             setContent {
                 TamburiMontageServiceTheme {
                     Surface(color = MaterialTheme.colors.background) {
+                        if (viewModel.activeLocker == null) {
+                            Toast.makeText(
+                                requireContext(),
+                                "No active Locker found",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            findNavController().navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+                        }
+                        val locker = viewModel.activeLocker!!
                         var code by remember {
                             mutableStateOf("")
                         }
@@ -115,12 +125,31 @@ class QrCodeFragment : Fragment() {
                                     ScannerText(stringResource(R.string.qrs_scan_location_text))
                                 }
                                 QrCodeScannerState.Locker -> if (code.isNotEmpty()) {
-                                    lockerFormatter(code = code)
+                                    if (viewModel.checkQrCodeForLocker(code)) {
+                                        viewModel.setQrCodeForLocker(
+                                            lifecycle,
+                                            locker.lockerId,
+                                            code,
+                                            findNavController()
+                                        )
+                                    } else {
+                                        ScannerText(stringResource(id = R.string.qrs_scan_error))
+                                    }
                                 } else {
                                     ScannerText(stringResource(R.string.qrs_scan_locker_text))
                                 }
                                 QrCodeScannerState.Gateway -> if (code.isNotEmpty()) {
-                                    gatewayFormatter(code = code)
+                                    //TODO Gateway Scanner validation
+                                    if (viewModel.checkGatewaySerial(code)) {
+                                        viewModel.setGatewayForLocker(
+                                            lifecycle,
+                                            locker.lockerId,
+                                            code,
+                                            findNavController()
+                                        )
+                                    } else {
+                                        ScannerText(stringResource(id = R.string.qrs_scan_error))
+                                    }
                                 } else {
                                     ScannerText(stringResource(R.string.qrs_scan_gateway_text))
                                 }
@@ -145,46 +174,9 @@ class QrCodeFragment : Fragment() {
     }
 
     @Composable
-    fun lockerFormatter(code: String) {
-        if (viewModel.activeLocker == null) {
-            findNavController(this).navigate(R.id.action_qr_code_fragment_to_landing_fragment)
-            Toast.makeText(
-                requireContext(),
-                "No active Locker found",
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            if (checkQrCodeForLocker(code)) {
-                Log.d(TAG, viewModel.gatewaySerialnumberList.toString())
-                viewModel.setDataForLocker(
-                    lifecycle,
-                    viewModel.activeLocker?.lockerId!!,
-                    viewModel.gatewaySerialnumberList.first(),
-                    code,
-                    findNavController(this)
-                )
-            } else {
-                Text(
-                    text = "Locker QR-Code ungültig",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp)
-                )
-            }
-        }
-    }
-
-    @Composable
     private fun gatewayFormatter(code: String) {
         if (viewModel.activeLocker == null) {
             findNavController(this).navigate(R.id.action_qr_code_fragment_to_landing_fragment)
-            Toast.makeText(
-                requireContext(),
-                "No active Locker found",
-                Toast.LENGTH_SHORT
-            ).show()
         } else {
             // TODO: Validation for gateway Qr-Codes
             // It should not be possible to scan a locker qr code for a gateway like in dev test
@@ -211,7 +203,10 @@ class QrCodeFragment : Fragment() {
             )
         } else {
             viewModel.setLocationQrCode(
-                lifecycle, viewModel.task.value?.location?.locationId!!, code, this.findNavController()
+                lifecycle,
+                viewModel.task.value?.location?.locationId!!,
+                code,
+                this.findNavController()
             )
         }
     }
@@ -227,15 +222,6 @@ class QrCodeFragment : Fragment() {
                 ?: ""
         } catch (e: Exception) {
             ""
-        }
-    }
-
-    private fun checkQrCodeForLocker(code: String): Boolean {
-        return try {
-            code.toLong()
-            code.length == 15
-        } catch (e: Exception) {
-            false
         }
     }
 }
