@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
@@ -17,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
@@ -43,6 +48,7 @@ class MontageTaskDetailFragment : Fragment() {
                     Surface(
                         color = MaterialTheme.colors.background
                     ) {
+                        val openDialog = remember { mutableStateOf(false) }
                         task?.let { t ->
                             LazyColumn(Modifier.fillMaxSize()) {
                                 item {
@@ -112,11 +118,29 @@ class MontageTaskDetailFragment : Fragment() {
                                             .padding(8.dp)
                                             .fillMaxWidth(),
                                         onClick = {
-                                            viewModel.onSubmitTask(requireContext(), lifecycle)
+                                            if (t.lockerList.isEmpty()) {
+                                                openDialog.value = true
+                                            } else {
+                                                viewModel.onSubmitTask(requireContext(), lifecycle)
+                                            }
                                         }) {
                                         Text(stringResource(id = R.string.ds_button_name))
                                     }
                                 }
+                            }
+                            if (openDialog.value) {
+                                AlertDialog(
+                                    onDismissRequest = { openDialog.value = false },
+                                    title = { Text(stringResource(id = R.string.ds_error_dialog_title)) },
+                                    text = { Text(stringResource(id = R.string.ds_error_dialog_content)) },
+                                    confirmButton = {
+                                        Button(onClick = {
+                                            findNavController().popBackStack()
+                                        }) {
+                                            Text(stringResource(id = R.string.ds_error_dialog_button))
+                                        }
+                                    }
+                                )
                             }
                         } ?: Text(text = stringResource(id = R.string.ds_no_task))
                     }
