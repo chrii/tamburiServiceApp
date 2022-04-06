@@ -1,10 +1,15 @@
 package at.tamburi.tamburimontageservice.ui.MontageTaskScreen
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -60,6 +65,8 @@ class MontageTaskFragment : Fragment() {
         } else super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("MissingPermission")
+    @RequiresApi(Build.VERSION_CODES.P)
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +74,7 @@ class MontageTaskFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme {

@@ -29,29 +29,52 @@ fun MontageTaskOverview(
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // TODO: Strings zur Stringlist hinzufügen
+                // TODO: ÜBERSETZUNG
                 Text(
                     modifier = Modifier.padding(8.dp),
                     text = "Standort Details",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                LineItemWithEllipsis(title = "Standort ID:", content = safeTask.location.locationId.toString())
+                //TODO: ÜBERSETZUNG
+                LineItemWithEllipsis(
+                    title = "Standort ID:",
+                    content = safeTask.location.locationId.toString()
+                )
+                //TODO: ÜBERSETZUNG
                 LineItemWithEllipsis(
                     title = "Straße: ",
                     content = "${safeTask.location.street} ${safeTask.location.number}"
                 )
+                //TODO: ÜBERSETZUNG
                 LineItemWithEllipsis(
                     title = "Stadt: ",
                     content = "${safeTask.location.zipCode} ${safeTask.location.cityName}"
                 )
-                LineItemWithEllipsis(title = "QR Code: ", content = safeTask.location.qrCode)
+                //TODO: ÜBERSETZUNG
+                LineItemWithEllipsis(
+                    title = "QR Code: ",
+                    content = safeTask.location.qrCode
+                )
 
                 safeTask.lockerList.forEachIndexed { index, item ->
                     DetailExpandable(title = item.lockerName ?: "No Lockername") {
-                        LineItemWithEllipsis(title = "Kasten ID:", content = item.lockerId.toString())
-                        LineItemWithEllipsis(title = "QR Code:", content = item.qrCode)
-                        LineItemWithEllipsis(title = "Kasten Nummer:", content = item.busSlot.toString())
+                        //TODO: ÜBERSETZUNG
+                        LineItemWithEllipsis(
+                            title = "Kasten ID:",
+                            content = item.lockerId.toString()
+                        )
+                        //TODO: ÜBERSETZUNG
+                        LineItemWithEllipsis(
+                            title = "QR Code:",
+                            content = item.qrCode
+                        )
+                        //TODO: ÜBERSETZUNG
+                        LineItemWithEllipsis(
+                            title = "Kasten Nummer:",
+                            content = item.busSlot.toString()
+                        )
+                        //TODO: ÜBERSETZUNG
                         if (item.gateway) LineItemWithEllipsis(
                             title = "Gateway ID:",
                             content = item.gatewaySerialnumber

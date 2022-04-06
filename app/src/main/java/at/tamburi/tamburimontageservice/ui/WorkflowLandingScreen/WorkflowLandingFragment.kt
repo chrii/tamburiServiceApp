@@ -99,6 +99,7 @@ class WorkflowLandingFragment : Fragment() {
                                                     .fillMaxWidth()
                                                     .padding(8.dp),
                                                 onClick = {
+                                                    //TODO: ONCLICK AUF BUTTON
                                                     viewModel.registerLockers(
                                                         lifecycle,
                                                         requireContext(),
@@ -106,6 +107,7 @@ class WorkflowLandingFragment : Fragment() {
                                                     )
                                                 }
                                             ) {
+                                                //TODO: ÜBERSETZUNG
                                                 Text(text = "Weiter")
                                             }
                                         }

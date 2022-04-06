@@ -78,6 +78,7 @@ fun CompLockerExpandable(
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
+                        //TODO: Übersetzung
                         Text("Kasten ID: ${locker.lockerId}")
                         when (locker.gateway) {
                             true -> Text(stringResource(R.string.wf_exp_uses_gateway))
@@ -140,6 +141,7 @@ fun BusSlotDropDownMenu(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            //TODO: ÜBERSETZUNG
             Text(
                 if (default) "Wählen" else itemList[selectedIndex],
                 modifier = Modifier

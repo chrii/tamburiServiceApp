@@ -18,9 +18,11 @@
     <string name="no_task_data">Keine Aufträge vorhanden</string>
     <string name="owner_string">Auftraggeber: %s</string>
     <string name="adress_string">Adresse: %s %s</string>
+
     <!-- Task List Active Task -->
     <string name="tl_header">Aktiver Auftrag</string>
     <string name="tl_task_id">Auftragsnummer: %s</string>
+
     <!-- Task List Options Menu -->
     <string name="menu_item_doebler">Döblerhof Straße</string>
     <string name="menu_item_flo">Floridusgasse</string>
@@ -34,15 +36,25 @@
     <string name="ds_montage_id">Auftrags ID:</string>
     <string name="ds_task_details">Auftragsdetails</string>
     <string name="ds_street_name">Adresse:</string>
+    <string name="ds_zip_city_name">Bezirk:</string>
     <string name="ds_qr_code">QR Code ID:</string>
     <string name="ds_montage_status">Status:</string>
     <string name="ds_description">Standort Beschreibung:</string>
     <string name="ds_montage_ground">Boden Beschaffenheit:</string>
     <string name="ds_scheduled_date">Installations Datum:</string>
     <string name="ds_locker_count">Anzahl der Kästen:</string>
+    <string name="ds_button_name">Zuweisen</string>
+    <string name="ds_no_task">Kein Task gefunden</string>
+    <string name="ds_locker_type">Kasten Typen</string>
+    <!-- Locker Detail Expandable -->
+    <string name="ds_exp_locker_type">Kasten Typ:</string>
+    <string name="ds_exp_has_gateway">Gateway:</string>
+    <string name="ds_exp_gateway_yes">Ja</string>
+    <string name="ds_exp_gateway_no">Nein</string>
 
     <!-- Workflow Landing Page -->
     <string name="wf_title">Auftragsdetails</string>
+
     <!-- General-->
     <string name="wf_task_id">Auftrags ID</string>
     <string name="wf_address">Adresse</string>
@@ -51,6 +63,7 @@
     <string name="wf_montage_ground">Art des Untergrunds</string>
     <string name="wf_scheduled_date">Datum der Montage</string>
     <string name="wf_description">Hinweise zum Standort</string>
+
     <!-- Owner Tab -->
     <string name="wf_owner_title">Auftraggeber</string>
     <string name="wf_owner_name">Firmenname</string>
@@ -58,10 +71,12 @@
     <string name="wf_owner_contact_number">Telefonnummer</string>
     <string name="wf_owner_address">Adresse</string>
     <string name="wf_owner_zip">Bezirk</string>
+
     <!-- Top Menu -->
     <string name="wf_top_menu_title">Optionen</string>
     <string name="wf_top_menu_revoke_text">Auftrag annullieren</string>
     <string name="wf_top_menu_revoke_toast_text">Erfolgreich annulliert</string>
+
     <!-- Locker Expandable -->
     <string name="wf_exp_title">Kästen</string>
     <string name="wf_exp_uses_gateway">Benutzt Gateway</string>
