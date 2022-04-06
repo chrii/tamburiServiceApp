@@ -85,6 +85,9 @@ class WorkflowLandingFragment : Fragment() {
                                         safeTask.locationOwner?.let { CompOwnerExpandable(owner = it) }
                                     }
                                     item {
+
+                                    }
+                                    item {
                                         CompLockerExpandable(
                                             safeTask = safeTask,
                                             viewModel = viewModel,

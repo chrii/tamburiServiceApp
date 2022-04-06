@@ -27,17 +27,5 @@ fun CompOwnerExpandable(
             title = stringResource(id = R.string.wf_owner_contact_person),
             content = "${owner.name} ${owner.surname}"
         )
-        LineItemWithEllipsis(
-            title = stringResource(id = R.string.wf_owner_contact_number),
-            content = owner.phoneNumber
-        )
-        LineItemWithEllipsis(
-            title = stringResource(id = R.string.wf_owner_address),
-            content = owner.address
-        )
-        LineItemWithEllipsis(
-            title = stringResource(id = R.string.wf_owner_zip),
-            content = "${owner.zipCode}, ${owner.city}"
-        )
     }
 }

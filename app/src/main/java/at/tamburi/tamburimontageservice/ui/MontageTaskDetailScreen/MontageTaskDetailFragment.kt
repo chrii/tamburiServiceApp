@@ -49,6 +49,7 @@ class MontageTaskDetailFragment : Fragment() {
                         color = MaterialTheme.colors.background
                     ) {
                         val openDialog = remember { mutableStateOf(false) }
+                        var dialogText = remember { mutableStateOf("") }
                         task?.let { t ->
                             LazyColumn(Modifier.fillMaxSize()) {
                                 item {
@@ -119,6 +120,12 @@ class MontageTaskDetailFragment : Fragment() {
                                             .fillMaxWidth(),
                                         onClick = {
                                             if (t.lockerList.isEmpty()) {
+                                                dialogText.value =
+                                                    context.getString(R.string.ds_error_dialog_locker_size)
+                                                openDialog.value = true
+                                            } else if (!viewModel.hasGatewayAvailable(t)) {
+                                                dialogText.value =
+                                                    context.getString(R.string.ds_error_dialog_gateway)
                                                 openDialog.value = true
                                             } else {
                                                 viewModel.onSubmitTask(requireContext(), lifecycle)
@@ -132,7 +139,7 @@ class MontageTaskDetailFragment : Fragment() {
                                 AlertDialog(
                                     onDismissRequest = { openDialog.value = false },
                                     title = { Text(stringResource(id = R.string.ds_error_dialog_title)) },
-                                    text = { Text(stringResource(id = R.string.ds_error_dialog_content)) },
+                                    text = { Text(dialogText.value) },
                                     confirmButton = {
                                         Button(onClick = {
                                             findNavController().popBackStack()

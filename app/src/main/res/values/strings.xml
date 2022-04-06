@@ -53,7 +53,8 @@
     <string name="ds_exp_gateway_no">Nein</string>
     <!-- Locker Detail Error Dialog -->
     <string name="ds_error_dialog_title">Keine Kästen registriert</string>
-    <string name="ds_error_dialog_content">Dieser Auftrag kann nicht zugewiesen werden, da keine Kästen zu diesem Auftrag gefunden wurden. Bitte wenden Sie sich an die Dispo.</string>
+    <string name="ds_error_dialog_locker_size">Dieser Auftrag kann nicht zugewiesen werden, da keine Kästen zu diesem Auftrag gefunden wurden. Bitte wenden Sie sich an die Dispo.</string>
+    <string name="ds_error_dialog_gateway">Dieser Auftrag kann nicht zugewiesen werden, da kein Gateway zu diesem Auftrag gefunden wurde. Bitte wenden Sie sich an die Dispo.</string>
     <string name="ds_error_dialog_button">Auftragsliste</string>
 
     <!-- Workflow Landing Page -->

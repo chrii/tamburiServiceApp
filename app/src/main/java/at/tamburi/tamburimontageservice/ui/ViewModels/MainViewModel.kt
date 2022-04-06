@@ -271,6 +271,10 @@ constructor(
         }
     }
 
+    fun hasGatewayAvailable(task: MontageTask): Boolean {
+        return task.lockerList.map { it.gateway }.contains(true)
+    }
+
     @SuppressLint("SimpleDateFormat")
     fun getDate(mil: Date = Date()): Date {
         val simple = SimpleDateFormat("MM-dd")
