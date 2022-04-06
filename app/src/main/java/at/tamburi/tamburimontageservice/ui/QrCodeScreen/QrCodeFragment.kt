@@ -155,11 +155,11 @@ class QrCodeFragment : Fragment() {
             ).show()
         } else {
             if (checkQrCodeForLocker(code)) {
-                Log.d(TAG, viewModel.gatewaySerialnumber.toString())
+                Log.d(TAG, viewModel.gatewaySerialnumberList.toString())
                 viewModel.setDataForLocker(
                     lifecycle,
                     viewModel.activeLocker?.lockerId!!,
-                    viewModel.gatewaySerialnumber.first(),
+                    viewModel.gatewaySerialnumberList.first(),
                     code,
                     findNavController(this)
                 )

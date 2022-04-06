@@ -1,6 +1,5 @@
 package at.tamburi.tamburimontageservice.ui.ViewModels
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -12,22 +11,18 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import at.tamburi.tamburimontageservice.MainActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
-import at.tamburi.tamburimontageservice.repositories.network.implementation.NetworkMontageTaskRepositoryImpl
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.text.DateFormat
 import javax.inject.Inject
 
 enum class State {
@@ -55,11 +50,11 @@ constructor(
     private val _task: MutableState<MontageTask?> = mutableStateOf(null)
     var qrCodeScannerState: QrCodeScannerState = QrCodeScannerState.Locker
     var activeLocker = _task.value?.lockerList?.first()
-    var gatewaySerialnumber: MutableList<String> = mutableListOf()
+    var gatewaySerialnumberList: MutableList<String> = mutableListOf()
 
     val state: MutableState<State> = _state
     val task: MutableState<MontageTask?> = _task
-    val hasRegisteredGateway: Boolean = gatewaySerialnumber.isNotEmpty()
+    val hasRegisteredGateway: Boolean = gatewaySerialnumberList.isNotEmpty()
 
     fun changeState(s: State) {
         _state.value = s
@@ -121,9 +116,9 @@ constructor(
             val result =
                 databaseMontageTaskRepository.setGatewaySerialnumber(serialnumber, lockerId)
             if (result.hasData) {
-                gatewaySerialnumber.add(serialnumber)
+                gatewaySerialnumberList.add(serialnumber)
                 qrCodeScannerState = QrCodeScannerState.Locker
-                Log.d(TAG, "$gatewaySerialnumber")
+                Log.d(TAG, "$gatewaySerialnumberList")
                 Log.d(TAG, "$hasRegisteredGateway")
                 changeState(State.Ready)
                 navigation?.navigate(R.id.action_qr_code_next_handler)
@@ -131,6 +126,11 @@ constructor(
                 changeState(State.Error)
             }
         }
+    }
+
+    fun qrCodeScreenNavigator(navigation: NavController, scannerState: QrCodeScannerState) {
+        qrCodeScannerState = scannerState
+        navigation.navigate(R.id.action_landing_fragment_to_qr_code_fragment)
     }
 
     fun setDataForLocker(
@@ -143,7 +143,7 @@ constructor(
         setGatewayForLocker(
             lifecycle,
             lockerId,
-            gatewaySerialnumber.first()
+            gatewaySerialnumberList.first()
         )
         setQrCodeForLocker(
             lifecycle,

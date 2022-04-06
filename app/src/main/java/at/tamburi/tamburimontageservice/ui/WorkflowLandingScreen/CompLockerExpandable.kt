@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
 import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
+import at.tamburi.tamburimontageservice.ui.composables.TwoLineItemAbst
 
 private const val TAG = "CompLockerExpandable"
 
@@ -36,7 +39,7 @@ fun CompLockerExpandable(
     navigation: NavController
 ) {
     viewModel.qrCodeScannerState =
-        if (viewModel.gatewaySerialnumber.isNotEmpty()) QrCodeScannerState.Locker
+        if (viewModel.gatewaySerialnumberList.isNotEmpty()) QrCodeScannerState.Locker
         else QrCodeScannerState.Gateway
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -45,32 +48,7 @@ fun CompLockerExpandable(
             var busSlot by remember { mutableStateOf(0) }
             ListItem(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        Log.d(TAG, "${viewModel.gatewaySerialnumber.isNotEmpty()}")
-                        if (busSlot <= 0) {
-                            Toast
-                                .makeText(
-                                    context,
-                                    context.getText(R.string.wf_exp_order),
-                                    Toast.LENGTH_SHORT
-                                )
-                                .show()
-                        } else {
-                            if (viewModel.gatewaySerialnumber.isNotEmpty() || locker.gateway) {
-                                viewModel.activeLocker = locker
-                                navigation.navigate(R.id.action_landing_fragment_to_qr_code_fragment)
-                            } else {
-                                Toast
-                                    .makeText(
-                                        context,
-                                        context.getText(R.string.wf_exp_no_registered_gateway),
-                                        Toast.LENGTH_LONG
-                                    )
-                                    .show()
-                            }
-                        }
-                    },
+                    .fillMaxWidth(),
                 text = { Text(text = locker.typeName ?: "") },
                 secondaryText = {
                     Column(
@@ -78,39 +56,62 @@ fun CompLockerExpandable(
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        //TODO: Übersetzung
-                        Text("Kasten ID: ${locker.lockerId}")
-                        when (locker.gateway) {
-                            true -> Text(stringResource(R.string.wf_exp_uses_gateway))
-                            false -> Text(stringResource(R.string.wf_exp_not_uses_gate))
-                        }
-
-                        when (locker.qrCode.isEmpty()) {
-                            true -> Text(text = stringResource(R.string.wf_exp_qr_code_registered))
-                            false -> Text(text = stringResource(R.string.wf_exp_qr_code_not_registered))
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(context.getString(R.string.wf_exp_bus))
-                            BusSlotDropDownMenu(
-                                itemList = listOf("1", "2", "3", "4", "5", "6"),
-                                selectedItem = locker.busSlot ?: 0
-                            ) {
-                                try {
-                                    busSlot = it.toInt()
-                                    viewModel.setBusSlotForLocker(
-                                        busSlot, locker.lockerId, lifecycle
-                                    )
-                                } catch (e: Exception) {
-                                    Toast.makeText(
-                                        context,
-                                        context.getText(R.string.wf_exp_order),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                        if (locker.gateway) {
+                            TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_gateway_text)) {
+                                if (locker.gatewaySerialnumber.isNotEmpty()) {
+                                    Text(stringResource(id = R.string.wf_exp_locker_gateway_registered))
+                                } else {
+                                    IconButton(onClick = {
+                                        if (busSlot != 1) {
+                                            Toast.makeText(
+                                                context,
+                                                context.getText(R.string.wf_exp_locker_gateway_bus_wrong_id),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            viewModel.qrCodeScreenNavigator(
+                                                navigation,
+                                                QrCodeScannerState.Gateway
+                                            )
+                                        }
+                                    }) {
+                                        Icon(Icons.Default.QrCodeScanner, "QR CODE SCANNER")
+                                    }
                                 }
+                            }
+                        }
+                        TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_qr_code_text)) {
+                            if (locker.qrCode.isNotEmpty()) {
+                                Text(stringResource(id = R.string.wf_exp_locker_qr_code_registered))
+                            } else {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(Icons.Default.QrCodeScanner, "QR CODE SCANNER")
+                                }
+                            }
+                        }
+                        if (busSlot == 0) {
+                            TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_bus_text)) {
+                                BusSlotDropDownMenu(
+                                    itemList = listOf("0", "1", "2", "3", "4", "5", "6"),
+                                    selectedItem = locker.busSlot ?: 0
+                                ) {
+                                    try {
+                                        busSlot = it.toInt()
+                                        viewModel.setBusSlotForLocker(
+                                            busSlot, locker.lockerId, lifecycle
+                                        )
+                                    } catch (e: Exception) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getText(R.string.wf_exp_order),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+                        } else {
+                            TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_bus_text2)) {
+                                Text(locker.busSlot.toString())
                             }
                         }
                     }

@@ -71,6 +71,8 @@
     <string name="wf_owner_contact_number">Telefonnummer</string>
     <string name="wf_owner_address">Adresse</string>
     <string name="wf_owner_zip">Bezirk</string>
+    <string name="wf_person_in_charge">Verantwortliche/r vor Ort</string>
+    <string name="wf_p_in_charge_phone">Telefon</string>
 
     <!-- Top Menu -->
     <string name="wf_top_menu_title">Optionen</string>
@@ -79,13 +81,16 @@
 
     <!-- Locker Expandable -->
     <string name="wf_exp_title">Kästen</string>
-    <string name="wf_exp_uses_gateway">Benutzt Gateway</string>
-    <string name="wf_exp_not_uses_gate">Ohne Gateway</string>
-    <string name="wf_exp_qr_code_registered">QR Code nicht registriert</string>
-    <string name="wf_exp_qr_code_not_registered">QR Code registriert</string>
+    <string name="wf_exp_locker_id">Kasten ID</string>
+    <string name="wf_exp_locker_gateway_text">Gateway Qr Code</string>
+    <string name="wf_exp_locker_gateway_registered">Gateway registriert</string>
+    <string name="wf_exp_locker_qr_code_text">QR Code</string>
+    <string name="wf_exp_locker_qr_code_registered">QR Code registriert</string>
     <string name="wf_exp_no_registered_gateway">Registrieren Sie zuerst ein Gateway</string>
-    <string name="wf_exp_order">Wählen Sie den bus Slot</string>
-    <string name="wf_exp_bus">Bus Slot</string>
+    <string name="wf_exp_order">Wählen Sie die Kasten Nummer</string>
+    <string name="wf_exp_locker_gateway_bus_wrong_id">Der Gateway Kasten muss Kasten Nummer 1 sein</string>
+    <string name="wf_exp_locker_bus_text">Kastenreihenfolge</string>
+    <string name="wf_exp_locker_bus_text2">Kasten Nummer</string>
 
     <!-- LocationProposalScreen -->
     <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>
