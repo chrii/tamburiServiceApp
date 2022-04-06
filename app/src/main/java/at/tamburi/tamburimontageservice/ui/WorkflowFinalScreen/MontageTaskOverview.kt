@@ -1,5 +1,6 @@
 package at.tamburi.tamburimontageservice.ui.LocationProposalScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -86,7 +87,8 @@ fun MontageTaskOverview(
                         .fillMaxWidth()
                         .padding(8.dp),
                     onClick = {
-                        viewModel.closeTask(context, lifecycle)
+                        Toast.makeText(context, "Derzeit nicht möglich", Toast.LENGTH_SHORT).show()
+//                        viewModel.closeTask(context, lifecycle)
                     }
                 ) {
                     Text(text = context.getString(R.string.prop_submit_button_text))

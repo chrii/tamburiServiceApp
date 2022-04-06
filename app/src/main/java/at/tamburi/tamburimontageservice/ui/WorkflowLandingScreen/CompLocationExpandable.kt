@@ -1,11 +1,9 @@
 package at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -45,11 +43,16 @@ fun CompLocationExpandable(
             )
             if (safeTask.location.qrCode.isEmpty()) {
                 TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_location_qr_code)) {
-                    IconButton(onClick = {
-                        viewModel.activeLocker = safeTask.lockerList.first()
-                        viewModel.qrCodeScreenNavigator(navigation, QrCodeScannerState.Location)
-                    }) {
-                        Icon(Icons.Default.QrCodeScanner, contentDescription = "Map Icon")
+                    IconButton(
+                        onClick = {
+                            viewModel.activeLocker = safeTask.lockerList.first()
+                            viewModel.qrCodeScreenNavigator(navigation, QrCodeScannerState.Location)
+                        }) {
+                        Icon(
+                            Icons.Default.QrCodeScanner,
+                            contentDescription = "Map Icon",
+                            tint = MaterialTheme.colors.primary
+                        )
                     }
                 }
             } else {

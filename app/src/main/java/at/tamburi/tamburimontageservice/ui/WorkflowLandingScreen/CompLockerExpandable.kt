@@ -51,10 +51,12 @@ fun CompLockerExpandable(
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = { Text(
-                    text = locker.typeName ?: "",
-                    fontWeight = FontWeight.Bold
-                ) },
+                text = {
+                    Text(
+                        text = locker.typeName ?: "",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 secondaryText = {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -68,22 +70,28 @@ fun CompLockerExpandable(
                                 if (locker.gatewaySerialnumber.isNotEmpty()) {
                                     Text(stringResource(id = R.string.wf_exp_locker_gateway_registered))
                                 } else {
-                                    IconButton(onClick = {
-                                        if (busSlot != 1) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getText(R.string.wf_exp_locker_gateway_bus_wrong_id),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        } else {
-                                            viewModel.activeLocker = locker
-                                            viewModel.qrCodeScreenNavigator(
-                                                navigation,
-                                                QrCodeScannerState.Gateway
-                                            )
+                                    IconButton(
+                                        onClick = {
+                                            if (busSlot != 1) {
+                                                Toast.makeText(
+                                                    context,
+                                                    context.getText(R.string.wf_exp_locker_gateway_bus_wrong_id),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                viewModel.activeLocker = locker
+                                                viewModel.qrCodeScreenNavigator(
+                                                    navigation,
+                                                    QrCodeScannerState.Gateway
+                                                )
+                                            }
                                         }
-                                    }) {
-                                        Icon(Icons.Default.QrCodeScanner, "QR CODE SCANNER")
+                                    ) {
+                                        Icon(
+                                            Icons.Default.QrCodeScanner,
+                                            "QR CODE SCANNER",
+                                            tint = MaterialTheme.colors.primary
+                                        )
                                     }
                                 }
                             }
@@ -99,7 +107,11 @@ fun CompLockerExpandable(
                                         QrCodeScannerState.Locker
                                     )
                                 }) {
-                                    Icon(Icons.Default.QrCodeScanner, "QR CODE SCANNER")
+                                    Icon(
+                                        Icons.Default.QrCodeScanner,
+                                        "QR CODE SCANNER",
+                                        tint = MaterialTheme.colors.primary
+                                    )
                                 }
                             }
                         }
