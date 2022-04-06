@@ -76,8 +76,6 @@
     <string name="wf_owner_contact_number">Telefonnummer</string>
     <string name="wf_owner_address">Adresse</string>
     <string name="wf_owner_zip">Bezirk</string>
-    <string name="wf_person_in_charge">Verantwortliche/r vor Ort</string>
-    <string name="wf_p_in_charge_phone">Telefon</string>
 
     <!-- Top Menu -->
     <string name="wf_top_menu_title">Optionen</string>
@@ -96,6 +94,14 @@
     <string name="wf_exp_locker_gateway_bus_wrong_id">Der Gateway Kasten muss Kasten Nummer 1 sein</string>
     <string name="wf_exp_locker_bus_text">Kastenreihenfolge</string>
     <string name="wf_exp_locker_bus_text2">Kasten Nummer</string>
+
+    <!-- Location Expandable -->
+    <string name="wf_exp_location_title">Standort</string>
+    <string name="wf_exp_location_person_in_charge">Verantwortliche/r vor Ort</string>
+    <string name="wf_exp_location_p_in_charge_phone">Telefon</string>
+    <string name="wf_exp_location_qr_code">Standort QR Code</string>
+    <string name="wf_exp_location_qr_code_registered">Standort QR Code Status</string>
+    <string name="wf_exp_location_name">Standort Name</string>
 
     <!-- LocationProposalScreen -->
     <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>

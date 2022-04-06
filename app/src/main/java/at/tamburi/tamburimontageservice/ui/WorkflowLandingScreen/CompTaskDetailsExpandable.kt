@@ -50,14 +50,6 @@ fun CompTaskDetailsExpandable(
                 title = stringResource(id = R.string.wf_scheduled_date),
                 content = Utils.getReadableScheduleDate(task)
             )
-            LineItemWithEllipsis(
-                title = stringResource(id = R.string.wf_person_in_charge),
-                content = "Hier könnte Ihr Name stehen"
-            )
-            LineItemWithEllipsis(
-                title = stringResource(id = R.string.wf_p_in_charge_phone),
-                content = "066420543627"
-            )
         }
     }
 }

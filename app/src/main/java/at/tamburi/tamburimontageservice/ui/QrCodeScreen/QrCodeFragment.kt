@@ -120,7 +120,17 @@ class QrCodeFragment : Fragment() {
                             //TODO: Refactor Composables to avoid Warnings
                             when (viewModel.qrCodeScannerState) {
                                 QrCodeScannerState.Location -> if (code.isNotEmpty()) {
-                                    locationFormatter(code = code)
+//                                    locationFormatter(code = code)
+                                    if (viewModel.checkLocationQrCode(code)) {
+                                        viewModel.setLocationQrCode(
+                                            lifecycle,
+                                            locker.locationId,
+                                            code,
+                                            findNavController()
+                                        )
+                                    } else {
+                                        ScannerText(t = stringResource(id = R.string.qrs_scan_error))
+                                    }
                                 } else {
                                     ScannerText(stringResource(R.string.qrs_scan_location_text))
                                 }
@@ -191,7 +201,7 @@ class QrCodeFragment : Fragment() {
 
     @Composable
     private fun locationFormatter(code: String) {
-        val id = cutUrlForLocationId(code)
+        val id = viewModel.cutUrlForLocationId(code)
         if (id.isEmpty()) {
             Text(
                 text = "Location QR-Code ungültig",
@@ -208,20 +218,6 @@ class QrCodeFragment : Fragment() {
                 code,
                 this.findNavController()
             )
-        }
-    }
-
-    private fun cutUrlForLocationId(code: String): String {
-        //TODO: Errorhandling
-        return try {
-            val uri = Uri.parse(code)
-            Log.v(TAG, "Queryparam: ${uri.getQueryParameter("qr")}")
-            Log.v(TAG, "authority: ${uri.authority}")
-            Log.v(TAG, "Path: ${uri.path}")
-            if (uri.authority != Constants.LOCATION_SCANNER_FLAG) "" else uri.getQueryParameter("qr")
-                ?: ""
-        } catch (e: Exception) {
-            ""
         }
     }
 }

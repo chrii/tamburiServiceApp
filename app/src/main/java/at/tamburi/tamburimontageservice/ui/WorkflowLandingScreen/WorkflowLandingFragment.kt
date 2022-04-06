@@ -85,7 +85,10 @@ class WorkflowLandingFragment : Fragment() {
                                         safeTask.locationOwner?.let { CompOwnerExpandable(owner = it) }
                                     }
                                     item {
-
+                                        CompLocationExpandable(
+                                            viewModel,
+                                            findNavController()
+                                        )
                                     }
                                     item {
                                         CompLockerExpandable(

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -50,7 +51,10 @@ fun CompLockerExpandable(
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = { Text(text = locker.typeName ?: "") },
+                text = { Text(
+                    text = locker.typeName ?: "",
+                    fontWeight = FontWeight.Bold
+                ) },
                 secondaryText = {
                     Column(
                         modifier = Modifier.fillMaxWidth(),

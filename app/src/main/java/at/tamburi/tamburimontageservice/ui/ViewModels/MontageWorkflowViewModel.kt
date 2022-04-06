@@ -2,6 +2,7 @@ package at.tamburi.tamburimontageservice.ui.ViewModels
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
@@ -16,6 +17,7 @@ import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
+import at.tamburi.tamburimontageservice.utils.Constants
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -238,12 +240,34 @@ constructor(
         return true
     }
 
+    fun checkLocationQrCode(code: String): Boolean {
+        return try {
+            val id = cutUrlForLocationId(code)
+            id.isNotEmpty()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+
+    }
+
     fun checkQrCodeForLocker(code: String): Boolean {
         return try {
             code.toLong()
             code.length == 15
         } catch (e: Exception) {
             false
+        }
+    }
+
+    fun cutUrlForLocationId(code: String): String {
+        //TODO: Errorhandling
+        return try {
+            val uri = Uri.parse(code)
+            if (uri.authority != Constants.LOCATION_SCANNER_FLAG) "" else uri.getQueryParameter("qr")
+                ?: ""
+        } catch (e: Exception) {
+            ""
         }
     }
 
