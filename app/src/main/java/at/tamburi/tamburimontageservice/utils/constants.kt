@@ -6,3 +6,8 @@ object Constants {
     const val API_URL = "https://dev.tamburi.at:8080/api/"
 //    const val API_URL = "http://192.168.0.122:8080/api/"
 }
+
+object NonNullString {
+    const val NO_PERSON: String = "No Contact Person"
+    const val NO_PHONE: String = "No Phone"
+}

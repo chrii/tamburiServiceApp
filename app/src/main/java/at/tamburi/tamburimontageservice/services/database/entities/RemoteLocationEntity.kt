@@ -13,7 +13,7 @@ data class RemoteLocationEntity(
     val locationId: Int,
     @NonNull
     @ColumnInfo(name = "location_name")
-    val locationName: String,
+    val locationName: String?,
     @NonNull
     @ColumnInfo(name = "country_id")
     val countryId: Int,
@@ -22,26 +22,32 @@ data class RemoteLocationEntity(
     val cityId: Int,
     @NonNull
     @ColumnInfo(name = "zip_code")
-    val zipCode: String,
+    val zipCode: String?,
     @NonNull
     @ColumnInfo(name = "street")
-    val street: String,
+    val street: String?,
     @NonNull
     @ColumnInfo(name = "number")
-    val number: String,
+    val number: String?,
     @NonNull
     @ColumnInfo(name = "qr_code")
-    val qrCode: String,
+    val qrCode: String?,
     @NonNull
     @ColumnInfo(name = "city_name")
-    val cityName: String,
+    val cityName: String?,
     @NonNull
     @ColumnInfo(name = "country_name")
-    val countryName: String,
+    val countryName: String?,
     @NonNull
     @ColumnInfo(name = "longitude")
-    val longitude: Double,
+    val longitude: Double?,
     @NonNull
     @ColumnInfo(name = "latitude")
-    val latitude: Double
+    val latitude: Double?,
+    @NonNull
+    @ColumnInfo(name = "contact_person")
+    val contactPerson: String?,
+    @NonNull
+    @ColumnInfo(name = "contact_phone")
+    val contactPhone: String?
 )

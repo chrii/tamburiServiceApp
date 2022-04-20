@@ -118,11 +118,12 @@ class QrCodeFragment : Fragment() {
                                 QrCodeScannerState.Location -> if (code.isNotEmpty()) {
 //                                    locationFormatter(code = code)
                                     if (viewModel.checkLocationQrCode(code)) {
-                                        viewModel.setLocationQrCode(
+                                        viewModel.submitLocationQrCode(
                                             lifecycle,
-                                            locker.locationId,
+                                            context,
+                                            findNavController(),
                                             code,
-                                            findNavController()
+                                            locker.locationId
                                         )
                                     } else {
                                         ScannerText(t = stringResource(id = R.string.qrs_scan_error))

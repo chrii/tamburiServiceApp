@@ -29,8 +29,8 @@ import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
 import at.tamburi.tamburimontageservice.ui.composables.LineItemWithEllipsis
 import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
+import at.tamburi.tamburimontageservice.utils.NonNullString
 import at.tamburi.tamburimontageservice.utils.Utils
-
 
 class MontageTaskDetailFragment : Fragment() {
     val viewModel: MainViewModel by activityViewModels()
@@ -74,6 +74,18 @@ class MontageTaskDetailFragment : Fragment() {
                                         title = stringResource(id = R.string.ds_zip_city_name),
                                         content =
                                         "${t.location.zipCode}, ${t.location.cityName}"
+                                    )
+                                    LineItemWithEllipsis(
+                                        title = stringResource(id = R.string.ds_person_in_charge),
+                                        content = if (t.location.contactPerson == NonNullString.NO_PERSON) {
+                                            stringResource(id = R.string.ds_no_person)
+                                        } else {
+                                            t.location.contactPerson
+                                        }
+                                    )
+                                    if (t.location.contactPhone != NonNullString.NO_PHONE) LineItemWithEllipsis(
+                                        title = stringResource(id = R.string.ds_phone_number),
+                                        content = t.location.contactPhone
                                     )
                                     LineItemWithEllipsis(
                                         title = stringResource(id = R.string.ds_montage_status),

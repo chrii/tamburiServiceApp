@@ -102,7 +102,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun registerLocation(locationId: Int, qrCode: String): DataState<Boolean> {
+    override suspend fun registerLocation(locationId: Int, qrCode: String): DataState<String> {
         val locationRegistrationObject = LocationRegistrationDto(locationId, qrCode)
         return try {
             val response = networkMontageTaskService.registerLocation(locationRegistrationObject)

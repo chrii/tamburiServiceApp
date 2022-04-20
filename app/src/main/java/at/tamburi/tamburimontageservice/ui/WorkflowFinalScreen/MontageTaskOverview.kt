@@ -43,45 +43,45 @@ fun MontageTaskOverview(
                 )
                 //TODO: ÜBERSETZUNG
                 LineItemWithEllipsis(
-                    title = "Standort ID:",
+                    title = "Standort ID",
                     content = safeTask.location.locationId.toString()
                 )
                 //TODO: ÜBERSETZUNG
                 LineItemWithEllipsis(
-                    title = "Straße: ",
+                    title = "Straße",
                     content = "${safeTask.location.street} ${safeTask.location.number}"
                 )
                 //TODO: ÜBERSETZUNG
                 LineItemWithEllipsis(
-                    title = "Stadt: ",
+                    title = "Stadt",
                     content = "${safeTask.location.zipCode} ${safeTask.location.cityName}"
                 )
                 //TODO: ÜBERSETZUNG
                 LineItemWithEllipsis(
-                    title = "QR Code: ",
+                    title = "QR Code",
                     content = safeTask.location.qrCode
                 )
 
                 safeTask.lockerList.forEachIndexed { index, item ->
-                    DetailExpandable(title = item.lockerName ?: "No Lockername") {
+                    DetailExpandable(title = "Kasten ${item.busSlot.toString()}") {
                         //TODO: ÜBERSETZUNG
                         LineItemWithEllipsis(
-                            title = "Kasten ID:",
-                            content = item.lockerId.toString()
+                            title = "Kasten ID",
+                            content = index.toString()
                         )
                         //TODO: ÜBERSETZUNG
                         LineItemWithEllipsis(
-                            title = "QR Code:",
+                            title = "QR Code",
                             content = item.qrCode
                         )
                         //TODO: ÜBERSETZUNG
                         LineItemWithEllipsis(
-                            title = "Kasten Nummer:",
+                            title = "Kasten Nummer",
                             content = item.busSlot.toString()
                         )
                         //TODO: ÜBERSETZUNG
                         if (item.gateway) LineItemWithEllipsis(
-                            title = "Gateway ID:",
+                            title = "Gateway ID",
                             content = item.gatewaySerialnumber
                         )
                     }

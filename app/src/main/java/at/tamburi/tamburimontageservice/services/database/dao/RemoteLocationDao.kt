@@ -19,9 +19,15 @@ interface RemoteLocationDao {
         locationId: Int
     ): Int
 
+    @Query("UPDATE remote_location SET location_name = :locationName WHERE location_id = :locationId")
+    suspend fun setLocationName(
+        locationId: Int,
+        locationName: String
+    ): Int
+
     @Query(
-        "INSERT INTO remote_location (location_id, location_name, country_id, city_id, zip_code, street, number, qr_code, city_name, country_name, longitude, latitude) " +
-                "VALUES (:locationId, :locationName,:countryId,:cityId,:zipCode,:street,:number,:qrCode,:cityName,:countryName, :longitude, :latitude)"
+        "INSERT INTO remote_location (location_id, location_name, country_id, city_id, zip_code, street, number, qr_code, city_name, country_name, longitude, latitude, contact_person, contact_phone) " +
+                "VALUES (:locationId, :locationName,:countryId,:cityId,:zipCode,:street,:number,:qrCode,:cityName,:countryName, :longitude, :latitude, :contactPerson, :contactPhone)"
     )
     suspend fun saveLocation(
         locationId: Int,
@@ -35,6 +41,8 @@ interface RemoteLocationDao {
         cityName: String,
         countryName: String,
         longitude: Double,
-        latitude: Double
+        latitude: Double,
+        contactPerson: String,
+        contactPhone: String
     ): Long
 }

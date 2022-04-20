@@ -264,6 +264,56 @@ constructor(
         return locationQRCode || lockerListContainsEmptyData
     }
 
+    fun submitLocationQrCode(
+        lifecycle: Lifecycle,
+        context: Context,
+        navigation: NavController,
+        qrCode: String,
+        locationId: Int
+    ) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            try {
+                val dbResponse = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
+                if (dbResponse.hasData) {
+                    val networkResponse =
+                        networkMontageTaskRepository.registerLocation(locationId, qrCode)
+                    if (networkResponse.hasData) {
+                        val locationName: String =
+                            networkResponse.data ?: throw Exception("Server sent no location name")
+                        val dbNameResponse =
+                            databaseMontageTaskRepository.setLocationName(locationId, locationName)
+                        if (dbNameResponse.hasData) {
+                            changeState(State.Ready)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Failed to save location name to Database",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        changeState(State.Ready)
+                        Toast.makeText(
+                            context,
+                            "Couldn't send Qr Code to Server",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                } else {
+                    Toast.makeText(context, "Couldn't save Location Qr Code", Toast.LENGTH_SHORT)
+                        .show()
+                    changeState(State.Ready)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            }
+            navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+        }
+    }
+
     fun submitTaskData(lifecycle: Lifecycle, context: Context, navigation: NavController) {
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
@@ -280,29 +330,15 @@ constructor(
                         networkMontageTaskRepository.registerLockers(lockers.data!!)
                     if (lockerNetworkResponse.hasData) {
                         changeState(State.Ready)
-                        if (safeTask.location.qrCode.isNotEmpty()) {
-                            val locationNetworkResponse =
-                                networkMontageTaskRepository.registerLocation(
-                                    safeTask.location.locationId,
-                                    safeTask.location.qrCode
-                                )
-                            if (locationNetworkResponse.hasData) {
-                                navigation.navigate(R.id.action_landing_fragment_to_final_fragment)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Couldn't send Location QR Code to Server",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } else {
-                            Toast.makeText(context, "No QR Code found", Toast.LENGTH_SHORT).show()
-                        }
+                        navigation.navigate(R.id.action_landing_fragment_to_final_fragment)
                     } else {
-                        Toast.makeText(context, lockerNetworkResponse.message, Toast.LENGTH_SHORT)
-                            .show()
-                        changeState(State.Error)
+                        Toast.makeText(
+                            context,
+                            "Couldn't send Locker QR Codes to Server",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                 } else {
                     Toast.makeText(context, "Locker List is empty", Toast.LENGTH_SHORT).show()
                     changeState(State.Error)

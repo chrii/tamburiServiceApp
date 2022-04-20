@@ -21,7 +21,7 @@ interface INetworkMontageTaskService {
     @POST("remote_montage/mobile/register_location")
     suspend fun registerLocation(
         @Body locationRegistrationObject: LocationRegistrationDto
-    ): Response<Boolean>
+    ): Response<String>
 
     @POST("remote_montage/mobile/status")
     suspend fun setStatus(

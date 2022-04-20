@@ -1,7 +1,5 @@
 package at.tamburi.tamburimontageservice.models
 
-import android.os.Parcelable
-
 data class RemoteLocation(
     val locationId: Int,
     val locationName: String,
@@ -14,5 +12,7 @@ data class RemoteLocation(
     val number: String,
     val qrCode: String,
     val cityName: String,
-    val countryName: String
+    val countryName: String,
+    val contactPerson: String,
+    val contactPhone: String
 )

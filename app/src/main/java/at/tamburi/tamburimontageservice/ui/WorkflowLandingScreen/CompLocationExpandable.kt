@@ -23,7 +23,9 @@ import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
 import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
 import at.tamburi.tamburimontageservice.ui.composables.LineItemWithEllipsis
 import at.tamburi.tamburimontageservice.ui.composables.TwoLineItemAbst
+import at.tamburi.tamburimontageservice.utils.NonNullString
 
+@RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CompLocationExpandable(
@@ -41,12 +43,15 @@ fun CompLocationExpandable(
             // TODO: Hardcoded content
             LineItemWithEllipsis(
                 title = stringResource(id = R.string.wf_exp_location_person_in_charge),
-                content = "Hier könnte Ihr Name stehen"
+                content = if (NonNullString.NO_PERSON == safeTask.location.contactPerson) {
+                    stringResource(id = R.string.ds_no_person)
+                } else {
+                    safeTask.location.contactPerson
+                }
             )
-            //TODO: Hardcoded Number
-            LineItemWithEllipsis(
+            if (safeTask.location.contactPhone != NonNullString.NO_PHONE) LineItemWithEllipsis(
                 title = stringResource(id = R.string.wf_exp_location_p_in_charge_phone),
-                content = "066420543627"
+                content = safeTask.location.contactPhone
             )
 
             if (safeTask.location.longitude <= 0 || safeTask.location.latitude <= 0) {
@@ -77,7 +82,7 @@ fun CompLocationExpandable(
                         }) {
                         Icon(
                             Icons.Default.QrCodeScanner,
-                            contentDescription = "Map Icon",
+                            contentDescription = "QR Code Icon",
                             tint = MaterialTheme.colors.primary
                         )
                     }
@@ -85,7 +90,7 @@ fun CompLocationExpandable(
             } else {
                 TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_location_name)) {
                     //TODO: Hardcoded Text
-                    Text(text = "Julia")
+                    Text(text = safeTask.location.locationName)
                 }
                 TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_location_qr_code_registered)) {
                     Text(text = "Registriert")

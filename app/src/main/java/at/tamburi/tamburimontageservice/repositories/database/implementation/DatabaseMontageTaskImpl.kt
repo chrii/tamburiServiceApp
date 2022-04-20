@@ -55,6 +55,23 @@ class DatabaseMontageTaskImpl(
         }
     }
 
+    override suspend fun setLocationName(
+        locationId: Int,
+        locationName: String
+    ): DataState<Boolean> {
+        return try {
+            val response = locationDao.setLocationName(locationId, locationName)
+            if(response > -1) {
+                DataState(hasData = true, data = true, message = "Successful")
+            } else {
+                DataState(hasData = false, data = null, message = "Failed to set location name")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, data = null, message = "Error saving name do database")
+        }
+    }
+
     override suspend fun setStatus(taskId: Int, status: Int): DataState<Boolean> {
         return try {
             val response = montageTaskDao.setStatus(taskId, status)
@@ -165,7 +182,9 @@ class DatabaseMontageTaskImpl(
                     cityName = location.cityName,
                     countryName = location.countryName,
                     longitude = location.longitude,
-                    latitude = location.latitude
+                    latitude = location.latitude,
+                    contactPerson = location.contactPerson,
+                    contactPhone = location.contactPhone
                 )
                 if (savingResult > -1) {
                     DataState(

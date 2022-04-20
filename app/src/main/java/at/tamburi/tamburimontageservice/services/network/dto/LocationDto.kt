@@ -11,6 +11,8 @@ data class LocationDto(
     var qrCode: String?,
     var cityName: String,
     var countryName: String,
-    var longitude: Double,
-    var latitude: Double
+    var longitude: Double?,
+    var latitude: Double?,
+    var contactPerson: String?,
+    var contactPhone: String?
 )

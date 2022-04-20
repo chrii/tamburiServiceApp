@@ -36,17 +36,19 @@ val LocationOwnerEntity.toLocationOwner: LocationOwner
 val RemoteLocationEntity.toRemoteLocation: RemoteLocation
     get() = RemoteLocation(
         locationId = locationId,
-        locationName = locationName,
+        locationName = locationName ?: "",
         countryId = countryId,
         cityId = cityId,
-        zipCode = zipCode,
-        street = street,
-        number = number,
-        qrCode = qrCode,
-        cityName = cityName,
-        countryName = countryName,
-        longitude = longitude,
-        latitude = latitude
+        zipCode = zipCode ?: "No Zip Code",
+        street = street ?: "No Street Name",
+        number = number ?: "No Street Number",
+        qrCode = qrCode ?: "",
+        cityName = cityName ?: "No City Name",
+        countryName = countryName ?: "No Country Name",
+        longitude = longitude ?: 0.0,
+        latitude = latitude ?: 0.0,
+        contactPerson = contactPerson ?: "No contact Person",
+        contactPhone = contactPhone ?: "No Phone"
     )
 
 val LockerEntity.toLocker: Locker

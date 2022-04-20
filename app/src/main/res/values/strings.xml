@@ -33,19 +33,22 @@
     <string name="tasks">Aufträge</string>
 
     <!-- Task Details Screen -->
-    <string name="ds_montage_id">Auftrags ID:</string>
+    <string name="ds_montage_id">Auftrags ID</string>
     <string name="ds_task_details">Auftragsdetails</string>
-    <string name="ds_street_name">Adresse:</string>
-    <string name="ds_zip_city_name">Bezirk:</string>
-    <string name="ds_qr_code">QR Code ID:</string>
-    <string name="ds_montage_status">Status:</string>
-    <string name="ds_description">Standort Beschreibung:</string>
-    <string name="ds_montage_ground">Boden Beschaffenheit:</string>
-    <string name="ds_scheduled_date">Installations Datum:</string>
-    <string name="ds_locker_count">Anzahl der Kästen:</string>
+    <string name="ds_street_name">Adresse</string>
+    <string name="ds_zip_city_name">Bezirk</string>
+    <string name="ds_qr_code">QR Code ID</string>
+    <string name="ds_montage_status">Status</string>
+    <string name="ds_description">Standort Beschreibung</string>
+    <string name="ds_montage_ground">Boden Beschaffenheit</string>
+    <string name="ds_scheduled_date">Installations Datum</string>
+    <string name="ds_locker_count">Anzahl der Kästen</string>
     <string name="ds_button_name">Zuweisen</string>
     <string name="ds_no_task">Kein Task gefunden</string>
     <string name="ds_locker_type">Kasten Typen</string>
+    <string name="ds_person_in_charge">Kontaktperson</string>
+    <string name="ds_no_person">Dispo</string>
+    <string name="ds_phone_number">Telefonnummer</string>
     <!-- Locker Detail Expandable -->
     <string name="ds_exp_locker_type">Kasten Typ:</string>
     <string name="ds_exp_has_gateway">Gateway:</string>
