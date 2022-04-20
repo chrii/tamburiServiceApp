@@ -53,7 +53,9 @@ fun LocationDto.toRemoteLocation(): RemoteLocation = RemoteLocation(
     number = number,
     qrCode = qrCode ?: "",
     cityName = cityName,
-    countryName = countryName
+    countryName = countryName,
+    longitude = longitude,
+    latitude = latitude
 )
 
 fun OwnerDto.toLocationOwner(): LocationOwner = LocationOwner(

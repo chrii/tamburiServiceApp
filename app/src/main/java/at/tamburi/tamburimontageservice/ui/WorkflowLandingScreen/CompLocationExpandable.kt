@@ -1,15 +1,20 @@
 package at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen
 
+import android.location.Location
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
@@ -25,6 +30,8 @@ fun CompLocationExpandable(
     viewModel: MontageWorkflowViewModel,
     navigation: NavController
 ) {
+    val context = LocalContext.current
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     viewModel.task.value?.let { safeTask ->
         ExpandableCard(
             title = stringResource(id = R.string.wf_exp_location_title),
@@ -41,6 +48,26 @@ fun CompLocationExpandable(
                 title = stringResource(id = R.string.wf_exp_location_p_in_charge_phone),
                 content = "066420543627"
             )
+
+            if (safeTask.location.longitude <= 0 || safeTask.location.latitude <= 0) {
+                TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_location_GPS_title)) {
+                    IconButton(onClick = {
+                        viewModel.setGPSLocation(context, lifecycle)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.MyLocation,
+                            contentDescription = "GPS Location Button",
+                            tint = MaterialTheme.colors.primary
+                        )
+                    }
+                }
+            } else {
+                LineItemWithEllipsis(
+                    title = stringResource(id = R.string.wf_exp_location_GPS_title),
+                    content = stringResource(id = R.string.wf_exp_location_GPS_content)
+                )
+            }
+
             if (safeTask.location.qrCode.isEmpty()) {
                 TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_location_qr_code)) {
                     IconButton(
@@ -64,7 +91,6 @@ fun CompLocationExpandable(
                     Text(text = "Registriert")
                 }
             }
-
         }
     }
 }

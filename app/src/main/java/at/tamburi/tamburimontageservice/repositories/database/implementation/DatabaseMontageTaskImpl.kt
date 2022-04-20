@@ -164,6 +164,8 @@ class DatabaseMontageTaskImpl(
                     qrCode = location.qrCode,
                     cityName = location.cityName,
                     countryName = location.countryName,
+                    longitude = location.longitude,
+                    latitude = location.latitude
                 )
                 if (savingResult > -1) {
                     DataState(
@@ -339,6 +341,29 @@ class DatabaseMontageTaskImpl(
         } catch (e: Exception) {
             e.printStackTrace()
             DataState(hasData = false, data = null, message = "Error getting Data from Database")
+        }
+    }
+
+    override suspend fun setGPSCoordinates(
+        lon: Double,
+        lat: Double,
+        locationId: Int
+    ): DataState<Boolean> {
+        return try {
+            val response = locationDao.setGPSData(lon, lat, locationId)
+
+            if (response != -1) {
+                DataState(hasData = true, true, "Successful")
+            } else {
+                DataState(
+                    hasData = false,
+                    false,
+                    "setGPSCoordinates - Couldn't save GPS Coordinates"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(hasData = false, false, "setGPSCoordinates - Error")
         }
     }
 }

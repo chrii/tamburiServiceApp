@@ -1,10 +1,15 @@
 package at.tamburi.tamburimontageservice.ui.ViewModels
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.location.Criteria
+import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.edit
@@ -20,6 +25,7 @@ import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTask
 import at.tamburi.tamburimontageservice.utils.Constants
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -66,7 +72,7 @@ constructor(
         lifecycle: Lifecycle,
         lockerId: Int,
         qrCode: String,
-        navigation: NavController
+        navigation: NavController? = null
     ) {
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
@@ -74,11 +80,68 @@ constructor(
             if (result.hasData) {
                 Log.v(TAG, "QR Code successfully added to database")
                 changeState(State.Ready)
-                navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+                navigation?.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
             } else {
                 changeState(State.Error)
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    @SuppressLint("MissingPermission")
+    fun setGPSLocation(context: Context, lifecycle: Lifecycle) {
+        changeState(State.Loading)
+//        val locationManager =
+//            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        Log.d(
+//            TAG,
+//            "LocationManager - isLocation enabled: ${locationManager.isLocationEnabled}"
+//        )
+//        Log.d(
+//            TAG,
+//            "LocationManager - isProvider enabled: ${
+//                locationManager.isProviderEnabled(
+//                    LocationManager.GPS_PROVIDER
+//                )
+//            }"
+//        )
+//        Log.d(
+//            TAG,
+//            "LocationManager - Providers found: ${locationManager.getProviders(true)}"
+//        )
+//        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+//
+//        if (location == null) {
+        val locationService = LocationServices.getFusedLocationProviderClient(context)
+        locationService.lastLocation.apply {
+            Log.d(TAG, "Trying LocationServices... isSuccessful - $isSuccessful")
+            if (isSuccessful) {
+                addOnSuccessListener {
+                    Log.d(TAG, it.toString())
+                    lifecycle.coroutineScope.launch {
+                        _task.value?.location?.locationId?.let { id ->
+                            databaseMontageTaskRepository.setGPSCoordinates(
+                                it.longitude,
+                                it.latitude,
+                                id
+                            )
+                            changeState(State.Ready)
+                        }
+                    }
+                    getTask(context, lifecycle)
+                }
+                addOnFailureListener {
+                    Toast.makeText(context, "Failed to ge GPS Location", Toast.LENGTH_LONG)
+                        .show()
+                    it.printStackTrace()
+                    changeState(State.Ready)
+                }
+            } else {
+                Toast.makeText(context, "Cant open GPS Service", Toast.LENGTH_SHORT).show()
+                changeState(State.Ready)
+            }
+        }
+//        }
     }
 
     fun setLocationQrCode(
@@ -149,7 +212,6 @@ constructor(
         changeState(State.Loading)
         val mainActivityIntent = Intent(context, MainActivity::class.java)
         lifecycle.coroutineScope.launch {
-            // Delay of 1000 Mil
             delay(1000)
             val id = context.dataStore.data.map {
                 it[DataStoreConstants.ACTIVE_TASK_ID] ?: -1
@@ -181,6 +243,7 @@ constructor(
                     databaseMontageTaskRepository.setGatewaySerialnumber("", it.lockerId)
                     databaseMontageTaskRepository.setBusSlot(it.lockerId, 0)
                     databaseMontageTaskRepository.setLocationQrCode(it.locationId, "")
+                    databaseMontageTaskRepository.setGPSCoordinates(0.0, 0.0, it.locationId)
                     databaseMontageTaskRepository.setLockerQrCode("", it.lockerId)
                 }
                 context.dataStore.edit {
@@ -193,35 +256,51 @@ constructor(
         }
     }
 
-    fun hasEmptyQrCode(): Boolean {
-        if (_task.value != null) {
-            val qrCodes = _task.value!!.lockerList.map { it.qrCode.isEmpty() }
-            return qrCodes.contains(true)
-        }
-        return true
+    fun hasEmptyQrCodes(): Boolean {
+        val safeTask = _task.value ?: throw Exception("hasEmptyCode() - No task found")
+        val lockerListContainsEmptyData =
+            safeTask.lockerList.map { it.qrCode.isEmpty() }.contains(true)
+        val locationQRCode = safeTask.location.qrCode.isEmpty()
+        return locationQRCode || lockerListContainsEmptyData
     }
 
-    fun registerLockers(lifecycle: Lifecycle, context: Context, navigation: NavController) {
+    fun submitTaskData(lifecycle: Lifecycle, context: Context, navigation: NavController) {
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
-                val montageTaskId = task.value?.montageTaskId
+                val safeTask = task.value
                     ?: throw Exception("registerLockers - Location ID not found")
-                val lockers = databaseMontageTaskRepository.getLockersByTaskId(montageTaskId)
+                val lockers =
+                    databaseMontageTaskRepository.getLockersByTaskId(safeTask.montageTaskId)
 
                 Log.d(TAG, "Has Data? - ${lockers.hasData}")
+                Log.d(TAG, "Sending lockers: ${safeTask.lockerList}")
                 if (lockers.hasData) {
-                    val networkResponse =
+                    val lockerNetworkResponse =
                         networkMontageTaskRepository.registerLockers(lockers.data!!)
-                    if (networkResponse.hasData) {
+                    if (lockerNetworkResponse.hasData) {
                         changeState(State.Ready)
-                        if (task.value?.location?.qrCode.isNullOrEmpty()) {
-                            navigation.navigate(R.id.action_landing_fragment_to_proposal_fragment)
+                        if (safeTask.location.qrCode.isNotEmpty()) {
+                            val locationNetworkResponse =
+                                networkMontageTaskRepository.registerLocation(
+                                    safeTask.location.locationId,
+                                    safeTask.location.qrCode
+                                )
+                            if (locationNetworkResponse.hasData) {
+                                navigation.navigate(R.id.action_landing_fragment_to_final_fragment)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Couldn't send Location QR Code to Server",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         } else {
-                            navigation.navigate(R.id.action_landing_fragment_to_final_fragment)
+                            Toast.makeText(context, "No QR Code found", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(context, networkResponse.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, lockerNetworkResponse.message, Toast.LENGTH_SHORT)
+                            .show()
                         changeState(State.Error)
                     }
                 } else {

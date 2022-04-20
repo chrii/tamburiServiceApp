@@ -44,7 +44,9 @@ val RemoteLocationEntity.toRemoteLocation: RemoteLocation
         number = number,
         qrCode = qrCode,
         cityName = cityName,
-        countryName = countryName
+        countryName = countryName,
+        longitude = longitude,
+        latitude = latitude
     )
 
 val LockerEntity.toLocker: Locker

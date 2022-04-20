@@ -1,35 +1,29 @@
 package at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.get
-import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.R
-import at.tamburi.tamburimontageservice.ui.MontageTaskDetailScreen.CompTopAppBar
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.State
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
-import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
-import at.tamburi.tamburimontageservice.ui.composables.TwoLineItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 private const val TAG = "WorkflowLandingFragment"
 
@@ -56,7 +50,9 @@ class WorkflowLandingFragment : Fragment() {
         }
     }
 
-    @OptIn(ExperimentalMaterialApi::class)
+    @RequiresApi(Build.VERSION_CODES.P)
+    @SuppressLint("MissingPermission")
+    @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -64,6 +60,7 @@ class WorkflowLandingFragment : Fragment() {
     ): View {
         setHasOptionsMenu(true)
         viewModel.getTask(requireContext(), lifecycle)
+
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme() {
@@ -97,24 +94,21 @@ class WorkflowLandingFragment : Fragment() {
                                             navigation = findNavController()
                                         )
                                     }
-                                    //TODO: Sketch Expandable
-                                    if (!viewModel.hasEmptyQrCode()) {
+                                    if (!viewModel.hasEmptyQrCodes()) {
                                         item {
                                             Button(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(8.dp),
                                                 onClick = {
-                                                    //TODO: ONCLICK AUF BUTTON
-                                                    viewModel.registerLockers(
+                                                    viewModel.submitTaskData(
                                                         lifecycle,
                                                         requireContext(),
                                                         findNavController()
                                                     )
                                                 }
                                             ) {
-                                                //TODO: ÜBERSETZUNG
-                                                Text(text = "Weiter")
+                                                Text(text = stringResource(id = R.string.wf_button))
                                             }
                                         }
                                     }

@@ -212,6 +212,7 @@ constructor(
 
     fun onSubmitTask(context: Context, lifecycle: Lifecycle) {
         if (hasActiveTask.value) {
+            // TODO: Static Text
             Toast.makeText(context, "Aktiver Auftrag existiert bereits", Toast.LENGTH_SHORT).show()
         } else {
             setActiveTask(context, lifecycle)

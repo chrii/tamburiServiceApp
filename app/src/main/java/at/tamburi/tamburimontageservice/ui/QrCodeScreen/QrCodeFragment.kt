@@ -1,9 +1,7 @@
 package at.tamburi.tamburimontageservice.ui.QrCodeScreen
 
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
@@ -39,11 +37,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import at.tamburi.tamburimontageservice.R
-import at.tamburi.tamburimontageservice.models.Locker
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.QrCodeScannerState
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
-import at.tamburi.tamburimontageservice.utils.Constants
 
 private const val TAG = "QrCodeFragment"
 
@@ -136,12 +132,33 @@ class QrCodeFragment : Fragment() {
                                 }
                                 QrCodeScannerState.Locker -> if (code.isNotEmpty()) {
                                     if (viewModel.checkQrCodeForLocker(code)) {
-                                        viewModel.setQrCodeForLocker(
-                                            lifecycle,
-                                            locker.lockerId,
-                                            code,
-                                            findNavController()
-                                        )
+                                        try {
+                                            val safeTask = viewModel.task.value
+                                                ?: throw Exception("setQrCode - Error getting Task")
+                                            val gatewaySerial = safeTask.lockerList
+                                                .map { it.gatewaySerialnumber }
+                                                .find { it.isNotEmpty() }
+                                                ?: throw Exception("Enter gateway Serial first")
+                                            viewModel.setQrCodeForLocker(
+                                                lifecycle,
+                                                locker.lockerId,
+                                                code,
+                                                null
+                                            )
+                                            viewModel.setGatewayForLocker(
+                                                lifecycle,
+                                                locker.lockerId,
+                                                gatewaySerial,
+                                                findNavController()
+                                            )
+                                        } catch (e: Exception) {
+                                            findNavController().navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+                                            Toast.makeText(
+                                                context,
+                                                e.message,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     } else {
                                         ScannerText(stringResource(id = R.string.qrs_scan_error))
                                     }

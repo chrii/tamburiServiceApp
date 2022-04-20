@@ -13,5 +13,6 @@ interface IDatabaseMontageTaskRepository {
     suspend fun setLockerQrCode(qrCode: String, lockerId: Int): DataState<Boolean>
     suspend fun setLocationQrCode(locationId: Int, qrCode: String): DataState<Boolean>
     suspend fun setGatewaySerialnumber(serialnumber: String, lockerId: Int): DataState<Boolean>
+    suspend fun setGPSCoordinates(lon: Double, lat: Double, locationId: Int): DataState<Boolean>
     suspend fun saveTasks(tasks: List<MontageTask>): DataState<List<MontageTask>>
 }
