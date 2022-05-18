@@ -95,6 +95,14 @@ fun CompLocationExpandable(
                 TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_location_qr_code_registered)) {
                     Text(text = "Registriert")
                 }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        viewModel.resetLocationQrCode(lifecycle, safeTask.location.locationId)
+                    }) {
+                    //TODO: Hardcoded text
+                    Text(text = "Reset Location")
+                }
             }
         }
     }

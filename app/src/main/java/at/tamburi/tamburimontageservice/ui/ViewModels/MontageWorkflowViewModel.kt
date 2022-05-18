@@ -144,6 +144,31 @@ constructor(
 //        }
     }
 
+    fun resetLocationQrCode(
+        lifecycle: Lifecycle,
+        locationId: Int,
+    ) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            try {
+                val result = databaseMontageTaskRepository.setLocationQrCode(locationId, "")
+                if (result.hasData) {
+                    val taskResult =
+                        databaseMontageTaskRepository.getTaskById(_task.value?.montageTaskId!!)
+                    if (taskResult.hasData) {
+                        _task.value = taskResult.data
+                    }
+                    changeState(State.Ready)
+                } else {
+                    changeState(State.Error)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                changeState(State.Error)
+            }
+        }
+    }
+
     fun setLocationQrCode(
         lifecycle: Lifecycle,
         locationId: Int,
