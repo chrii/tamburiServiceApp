@@ -61,7 +61,7 @@ class DatabaseMontageTaskImpl(
     ): DataState<Boolean> {
         return try {
             val response = locationDao.setLocationName(locationId, locationName)
-            if(response > -1) {
+            if (response > -1) {
                 DataState(hasData = true, data = true, message = "Successful")
             } else {
                 DataState(hasData = false, data = null, message = "Failed to set location name")

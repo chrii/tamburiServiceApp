@@ -113,18 +113,16 @@ class QrCodeFragment : Fragment() {
                                     previewView
                                 }
                             )
-                            //TODO: Refactor Composables to avoid Warnings
                             when (viewModel.qrCodeScannerState) {
                                 QrCodeScannerState.Location -> if (code.isNotEmpty()) {
-//                                    locationFormatter(code = code)
                                     if (viewModel.checkLocationQrCode(code)) {
-                                        viewModel.submitLocationQrCode(
-                                            lifecycle,
-                                            context,
-                                            findNavController(),
-                                            code,
-                                            locker.locationId
-                                        )
+                                    viewModel.submitLocationQrCode(
+                                        lifecycle,
+                                        context,
+                                        findNavController(),
+                                        code,
+                                        locker.locationId
+                                    )
                                     } else {
                                         ScannerText(t = stringResource(id = R.string.qrs_scan_error))
                                     }
@@ -199,43 +197,5 @@ class QrCodeFragment : Fragment() {
                 .fillMaxWidth()
                 .padding(32.dp)
         )
-    }
-
-    @Composable
-    private fun gatewayFormatter(code: String) {
-        if (viewModel.activeLocker == null) {
-            findNavController(this).navigate(R.id.action_qr_code_fragment_to_landing_fragment)
-        } else {
-            // TODO: Validation for gateway Qr-Codes
-            // It should not be possible to scan a locker qr code for a gateway like in dev test
-            viewModel.setGatewayForLocker(
-                lifecycle,
-                viewModel.activeLocker?.lockerId!!,
-                code,
-                findNavController(this)
-            )
-        }
-    }
-
-    @Composable
-    private fun locationFormatter(code: String) {
-        val id = viewModel.cutUrlForLocationId(code)
-        if (id.isEmpty()) {
-            Text(
-                text = "Location QR-Code ungültig",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp)
-            )
-        } else {
-            viewModel.setLocationQrCode(
-                lifecycle,
-                viewModel.task.value?.location?.locationId!!,
-                code,
-                this.findNavController()
-            )
-        }
     }
 }
