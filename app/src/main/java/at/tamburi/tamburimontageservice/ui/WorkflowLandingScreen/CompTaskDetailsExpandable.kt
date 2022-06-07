@@ -22,6 +22,10 @@ fun CompTaskDetailsExpandable(
     ) {
         Column {
             LineItemWithEllipsis(
+                title = stringResource(id = R.string.wf_location_name),
+                content = task.location.locationName
+            )
+            LineItemWithEllipsis(
                 title = stringResource(id = R.string.wf_task_id),
                 content = task.montageTaskId.toString()
             )
