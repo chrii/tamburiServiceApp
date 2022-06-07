@@ -18,6 +18,7 @@
     <string name="no_task_data">Keine Aufträge vorhanden</string>
     <string name="owner_string">Auftraggeber: %s</string>
     <string name="adress_string">Adresse: %s %s</string>
+    <string name="location_name">Standort: %s</string>
 
     <!-- Task List Active Task -->
     <string name="tl_header">Aktiver Auftrag</string>
@@ -59,6 +60,11 @@
     <string name="ds_error_dialog_locker_size">Dieser Auftrag kann nicht zugewiesen werden, da keine Kästen zu diesem Auftrag gefunden wurden. Bitte wenden Sie sich an die Dispo.</string>
     <string name="ds_error_dialog_gateway">Dieser Auftrag kann nicht zugewiesen werden, da kein Gateway zu diesem Auftrag gefunden wurde. Bitte wenden Sie sich an die Dispo.</string>
     <string name="ds_error_dialog_button">Auftragsliste</string>
+    <!-- Locker Detail Date Dialog -->
+    <string name="ds_date_dialog_title">Warnung</string>
+    <string name="ds_date_dialog_content">Das Montage Datum des Auftrags ist der %s \n Möchten Sie trotzdem fortfahren?</string>
+    <string name="ds_date_dialog_confirm">Trotzdem annehmen</string>
+    <string name="ds_date_dialog_decline">Zurück</string>
 
     <!-- Workflow Landing Page -->
     <string name="wf_title">Auftragsdetails</string>

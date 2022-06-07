@@ -100,9 +100,9 @@ class MontageTaskFragment : Fragment() {
                                 ) {
                                     val tasks = viewModel.filteredTasks.value
                                         .filter { it.statusId == MontageStatus.ASSIGNED }
-                                    if (tasks.isNullOrEmpty()) {
+                                    if (tasks.isEmpty()) {
                                         Column(
-                                            modifier = Modifier.fillMaxSize(),
+                                            modifier = Modifier.fillMaxWidth(),
                                             verticalArrangement = Arrangement.Center,
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
@@ -123,10 +123,11 @@ class MontageTaskFragment : Fragment() {
                                                                 findNavController().navigate(R.id.action_task_list_to_details)
                                                             },
                                                         text = {
-                                                            Text(text = "Auftragsnummer: ${tasks[index].montageTaskId}")
+                                                            Text(text = tasks[index].location.locationName)
                                                         },
                                                         secondaryText = {
                                                             Column {
+                                                                Text(text = "Auftragsnummer: ${tasks[index].montageTaskId}")
                                                                 Text(
                                                                     text = stringResource(
                                                                         R.string.owner_string,
@@ -166,7 +167,9 @@ class MontageTaskFragment : Fragment() {
                                             Divider(
                                                 thickness = 1.dp
                                             )
-                                            Text(text = stringResource(id = R.string.tl_header))
+                                            Text(
+                                                text = stringResource(id = R.string.tl_header)
+                                            )
                                             Text(
                                                 text = stringResource(
                                                     R.string.tl_task_id,

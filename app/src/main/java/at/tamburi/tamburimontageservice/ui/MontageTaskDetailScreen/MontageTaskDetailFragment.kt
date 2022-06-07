@@ -5,14 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
@@ -48,8 +49,9 @@ class MontageTaskDetailFragment : Fragment() {
                     Surface(
                         color = MaterialTheme.colors.background
                     ) {
-                        val openDialog = remember { mutableStateOf(false) }
-                        var dialogText = remember { mutableStateOf("") }
+                        var openDialog by remember { mutableStateOf(false) }
+                        var dateDialog by remember { mutableStateOf(false) }
+                        var dialogText by remember { mutableStateOf("") }
                         task?.let { t ->
                             LazyColumn(Modifier.fillMaxSize()) {
                                 item {
@@ -132,26 +134,75 @@ class MontageTaskDetailFragment : Fragment() {
                                             .fillMaxWidth(),
                                         onClick = {
                                             if (t.lockerList.isEmpty()) {
-                                                dialogText.value =
+                                                dialogText =
                                                     context.getString(R.string.ds_error_dialog_locker_size)
-                                                openDialog.value = true
+                                                openDialog = true
                                             } else if (!viewModel.hasGatewayAvailable(t)) {
-                                                dialogText.value =
+                                                dialogText =
                                                     context.getString(R.string.ds_error_dialog_gateway)
-                                                openDialog.value = true
+                                                openDialog = true
                                             } else {
-                                                viewModel.onSubmitTask(requireContext(), lifecycle)
+                                                if (viewModel.isInstallationDate(task.montageTaskId)) {
+                                                    viewModel.onSubmitTask(
+                                                        requireContext(),
+                                                        lifecycle
+                                                    )
+                                                } else {
+                                                    dateDialog = true
+                                                }
                                             }
                                         }) {
                                         Text(stringResource(id = R.string.ds_button_name))
                                     }
                                 }
                             }
-                            if (openDialog.value) {
+                            if (dateDialog) {
                                 AlertDialog(
-                                    onDismissRequest = { openDialog.value = false },
+                                    onDismissRequest = { dateDialog = false },
+                                    title = {
+                                        Row {
+                                            Icon(
+                                                imageVector = Icons.Default.Warning,
+                                                contentDescription = "Warning Icon"
+                                            )
+                                            Text(text = stringResource(id = R.string.ds_date_dialog_title))
+                                        }
+                                    },
+                                    text = {
+                                        Text(
+                                            text = stringResource(
+                                                id = R.string.ds_date_dialog_content,
+                                                Utils.getReadableScheduleDate(task)
+                                            )
+                                        )
+                                    },
+                                    confirmButton = {
+                                        Row {
+                                            Button(
+                                                modifier = Modifier.padding(4.dp),
+                                                onClick = {
+                                                    viewModel.onSubmitTask(
+                                                        requireContext(),
+                                                        lifecycle
+                                                    )
+                                                }) {
+                                                Text(stringResource(id = R.string.ds_date_dialog_confirm))
+                                            }
+                                            Button(
+                                                modifier = Modifier.padding(4.dp),
+                                                onClick = { findNavController().popBackStack() }
+                                            ) {
+                                                Text(stringResource(id = R.string.ds_date_dialog_decline))
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                            if (openDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { openDialog = false },
                                     title = { Text(stringResource(id = R.string.ds_error_dialog_title)) },
-                                    text = { Text(dialogText.value) },
+                                    text = { Text(dialogText) },
                                     confirmButton = {
                                         Button(onClick = {
                                             findNavController().popBackStack()

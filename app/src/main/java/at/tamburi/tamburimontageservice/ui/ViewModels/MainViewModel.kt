@@ -281,4 +281,11 @@ constructor(
         val simple = SimpleDateFormat("MM-dd")
         return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse date")
     }
+
+    fun isInstallationDate(taskId: Int): Boolean {
+        val task = _tasks.value.find { it.montageTaskId == taskId} ?: throw Exception("Task not found")
+        val todaysDate = getDate()
+        val installationDate = getDate(task.scheduledInstallationDate)
+        return todaysDate == installationDate
+    }
 }
