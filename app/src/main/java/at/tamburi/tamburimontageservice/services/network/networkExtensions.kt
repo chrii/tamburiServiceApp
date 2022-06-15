@@ -61,27 +61,27 @@ fun LocationDto.toRemoteLocation(): RemoteLocation = RemoteLocation(
 )
 
 fun OwnerDto.toLocationOwner(): LocationOwner = LocationOwner(
-    buildingOwnerId = buildingOwnerId,
-    companyName = companyName,
-    name = name,
-    surname = surname,
-    address = address,
-    address2 = address2,
-    city = city,
-    zipCode = zipCode,
+    buildingOwnerId = buildingOwnerId ?: -1,
+    companyName = companyName ?: "No Company",
+    name = name ?: "No Name",
+    surname = surname ?: "No Surname",
+    address = address ?: "No Address found",
+    address2 = address2 ?: "",
+    city = city ?: "No City",
+    zipCode = zipCode ?: "No Zip Code",
     email = email ?: "No Email Address",
     phoneNumber = phoneNumber ?: "No Phone Number"
 )
 
 fun LockerDto.toLocker(): Locker = Locker(
-    lockerId = lockerId,
-    locationId = locationId,
-    lockerName = lockerName,
-    lockerType = lockerType,
-    columnNumber = columnNumber,
-    montageTaskId = montageTaskId,
+    lockerId = lockerId ?: -1,
+    locationId = locationId ?: -1,
+    lockerName = lockerName ?: "No Locker Name",
+    lockerType = lockerType ?: -1,
+    columnNumber = columnNumber ?: -1,
+    montageTaskId = montageTaskId ?: -1,
     typeName = typeName ?: "",
-    gateway = gateway,
+    gateway = gateway ?: false,
     gatewaySerialnumber = gatewaySerialnumber ?: "",
     qrCode = qrCode ?: "",
     busSlot = 0

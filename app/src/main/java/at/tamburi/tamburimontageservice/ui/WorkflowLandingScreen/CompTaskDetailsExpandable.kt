@@ -35,8 +35,8 @@ fun CompTaskDetailsExpandable(
                         task.location.number
             )
             LineItemWithEllipsis(
-                title = stringResource(id = R.string.wf_zip),
-                content = task.location.zipCode
+                title = stringResource(id = R.string.wf_city),
+                content = "${task.location.zipCode}, ${task.location.cityName}"
             )
             LineItemWithEllipsis(
                 title = stringResource(id = R.string.wf_power_connection),

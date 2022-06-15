@@ -73,7 +73,7 @@
     <string name="wf_location_name">Kasten Name</string>
     <string name="wf_task_id">Auftrags ID</string>
     <string name="wf_address">Adresse</string>
-    <string name="wf_zip">Bezirk</string>
+    <string name="wf_city">Stadt</string>
     <string name="wf_power_connection">Art des Strom Anschluss</string>
     <string name="wf_montage_ground">Art des Untergrunds</string>
     <string name="wf_scheduled_date">Datum der Montage</string>
