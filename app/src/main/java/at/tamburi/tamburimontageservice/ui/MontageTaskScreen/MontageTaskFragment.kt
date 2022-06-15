@@ -33,6 +33,7 @@ import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginState
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
+import at.tamburi.tamburimontageservice.ui.composables.MontageTaskListItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 import at.tamburi.tamburimontageservice.utils.Constants
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -100,6 +101,7 @@ class MontageTaskFragment : Fragment() {
                                 ) {
                                     val tasks = viewModel.filteredTasks.value
                                         .filter { it.statusId == MontageStatus.ASSIGNED }
+                                        .sortedBy { it.scheduledInstallationDate }
                                     if (tasks.isEmpty()) {
                                         Column(
                                             modifier = Modifier.fillMaxWidth(),
@@ -112,46 +114,13 @@ class MontageTaskFragment : Fragment() {
                                         LazyColumn(
                                             modifier = Modifier.weight(1.0f)
                                         ) {
-                                            items(tasks.size) { index ->
-                                                Column {
-                                                    ListItem(
-                                                        modifier = Modifier
-                                                            .padding(bottom = 8.dp)
-                                                            .clickable {
-                                                                viewModel.taskDetailId =
-                                                                    tasks[index].montageTaskId
-                                                                findNavController().navigate(R.id.action_task_list_to_details)
-                                                            },
-                                                        text = {
-                                                            Text(text = tasks[index].location.locationName)
-                                                        },
-                                                        secondaryText = {
-                                                            Column {
-                                                                Text(text = "Auftragsnummer: ${tasks[index].montageTaskId}")
-                                                                Text(
-                                                                    text = stringResource(
-                                                                        R.string.owner_string,
-                                                                        tasks[index].locationOwner?.companyName
-                                                                            ?: "Empty..."
-                                                                    )
-                                                                )
-                                                                Text(
-                                                                    text = stringResource(
-                                                                        R.string.adress_string,
-                                                                        tasks[index].location.street,
-                                                                        tasks[index].location.number
-                                                                    ),
-                                                                )
-                                                            }
-                                                        },
-                                                        trailing = {
-                                                            Icon(
-                                                                imageVector = Icons.Default.KeyboardArrowRight,
-                                                                contentDescription = "Pfeil nach rechts"
-                                                            )
-                                                        }
+                                            tasks.map { task ->
+                                                item {
+                                                    MontageTaskListItem(
+                                                        viewModel = viewModel,
+                                                        navigation = findNavController(),
+                                                        task = task
                                                     )
-                                                    Divider()
                                                 }
                                             }
                                         }
