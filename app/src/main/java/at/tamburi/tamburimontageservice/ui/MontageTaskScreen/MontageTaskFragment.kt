@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
@@ -60,10 +61,17 @@ class MontageTaskFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.refresh) {
-            viewModel.initializeData(requireContext(), lifecycle)
-            true
-        } else super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.refresh -> {
+                viewModel.initializeData(requireContext(), lifecycle)
+                true
+            }
+            R.id.logout -> {
+                viewModel.logout(lifecycle, requireContext(), findNavController())
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -148,7 +156,10 @@ class MontageTaskFragment : Fragment() {
                                             )
                                         }
                                     }
-                                    Log.d(TAG, "hasActiveTask: ${viewModel.hasActiveTask.value}")
+                                    Log.d(
+                                        TAG,
+                                        "hasActiveTask: ${viewModel.hasActiveTask.value}"
+                                    )
                                 }
                             }
                         }

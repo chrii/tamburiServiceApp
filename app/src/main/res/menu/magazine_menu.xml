@@ -3,4 +3,8 @@
     <item
         android:id="@+id/refresh"
         android:title="Aktualisieren" />
+
+    <item
+        android:id="@+id/logout"
+        android:title="Ausloggen" />
 </menu>

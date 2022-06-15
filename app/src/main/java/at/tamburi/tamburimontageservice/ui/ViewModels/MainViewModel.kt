@@ -11,7 +11,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
+import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.models.ServiceUser
@@ -94,6 +96,21 @@ constructor(
         }
     }
 
+    fun logout(
+        lifecycle: Lifecycle,
+        context: Context,
+        navigation: NavController
+    ) {
+        activeUser = null
+        changeState(LoginState.Loading)
+        lifecycle.coroutineScope.launch{
+            context.dataStore.edit {
+                it[DataStoreConstants.ACTIVE_USER_ID] = 0
+            }
+            navigation.navigate(R.id.action_task_list_to_login)
+        }
+    }
+
     fun onSubmit(username: String, password: String, lifecycle: Lifecycle, context: Context) {
         val lower = username.lowercase(Locale.getDefault())
         changeState(LoginState.Loading, "Login...")
@@ -142,7 +159,7 @@ constructor(
         lifecycle.coroutineScope.launch {
             val userId = getUserId(context)
             fetchAndSaveTasks(userId)
-            if (!_tasks.value.isNullOrEmpty()) {
+            if (_tasks.value.isNotEmpty()) {
                 getActiveTask(context, userId)
             }
             changeState(LoginState.Ready)
