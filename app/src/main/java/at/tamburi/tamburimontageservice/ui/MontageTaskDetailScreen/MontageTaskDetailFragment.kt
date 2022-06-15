@@ -64,6 +64,10 @@ class MontageTaskDetailFragment : Fragment() {
                                 }
                                 item {
                                     LineItemWithEllipsis(
+                                        title = stringResource(id = R.string.ds_montage_name),
+                                        content = t.location.locationName
+                                    )
+                                    LineItemWithEllipsis(
                                         title = stringResource(id = R.string.ds_montage_id),
                                         content = t.montageTaskId.toString()
                                     )
