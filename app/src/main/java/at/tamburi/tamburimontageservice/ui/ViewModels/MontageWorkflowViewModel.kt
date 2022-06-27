@@ -194,13 +194,49 @@ constructor(
         }
     }
 
+    fun removeLockerQrCode(lifecycle: Lifecycle, context: Context, lockerId: Int) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            try {
+                val result = databaseMontageTaskRepository.setLockerQrCode("", lockerId)
+                if (result.hasData) {
+                    getTask(context, lifecycle)
+                    changeState(State.Ready)
+                    Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT)
+                } else {
+                    changeState(State.Ready)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                changeState(State.Ready)
+            }
+        }
+    }
+
+    fun removeGatewayQrCode(lifecycle: Lifecycle, context: Context, lockerId: Int) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            try {
+                val result = databaseMontageTaskRepository.setGatewaySerialnumber("", lockerId)
+                if (result.hasData) {
+                    getTask(context, lifecycle)
+                    Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT)
+                } else {
+                    changeState(State.Ready)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                changeState(State.Ready)
+            }
+        }
+    }
+
     fun setGatewayForLocker(
         lifecycle: Lifecycle,
         lockerId: Int,
         serialnumber: String,
         navigation: NavController? = null
     ) {
-        // TODO: We need a QR Code validation for gateway QR codes
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             val result =
@@ -359,11 +395,11 @@ constructor(
                     } else {
                         Toast.makeText(
                             context,
-                            "Couldn't send Locker QR Codes to Server",
+                            lockerNetworkResponse.message,
                             Toast.LENGTH_SHORT
                         ).show()
+                        changeState(State.Ready)
                     }
-
                 } else {
                     Toast.makeText(context, "Locker List is empty", Toast.LENGTH_SHORT).show()
                     changeState(State.Error)
@@ -375,10 +411,7 @@ constructor(
         }
     }
 
-    //TODO: Implement logic
-    fun checkGatewaySerial(serial: String): Boolean {
-        return true
-    }
+    fun checkGatewaySerial(serial: String): Boolean = serial.take(3) == "PCG"
 
     fun checkLocationQrCode(code: String): Boolean {
         return try {

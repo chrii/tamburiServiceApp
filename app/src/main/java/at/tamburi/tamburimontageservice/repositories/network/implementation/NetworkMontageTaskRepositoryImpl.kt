@@ -111,7 +111,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                 when (response.code()) {
                     200 -> {
                         retry = 0
-                        DataState(hasData = true, data = body, message = "Request successful")
+                        DataState(hasData = true, data = body, message = "Request successful ${response.code()}")
                     }
                     500 -> if (retry <= 2) {
                         retry++
@@ -146,10 +146,18 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         val lockerRegistrationList = lockerList.map { it.toLockerRegistrationDto() }
         return try {
             val response = networkMontageTaskService.registerLockers(lockerRegistrationList)
+            Log.d(TAG, "Response: $response")
+            Log.d(TAG, "Response: ${response.isSuccessful}")
             if (response.isSuccessful) {
+            Log.d(TAG, "Response: ${response.code()}")
                 val secureBody =
                     response.body() ?: throw Exception("Error - Response Body is empty")
                 when (response.code()) {
+                    400 -> DataState(
+                        hasData = false,
+                        data = false,
+                        message = "Gateway or Locker Serial in Use"
+                    )
                     200 -> {
                         retry = 0
                         DataState(
@@ -158,7 +166,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                             message = "Request Successful"
                         )
                     }
-                    500 -> if(retry <= 2) {
+                    500 -> if (retry <= 2) {
                         retry++
                         registerLockers(lockerList)
                     } else DataState(

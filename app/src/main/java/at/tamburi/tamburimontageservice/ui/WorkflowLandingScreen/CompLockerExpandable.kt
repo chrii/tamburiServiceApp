@@ -68,7 +68,21 @@ fun CompLockerExpandable(
                             viewModel.setBusSlotForLocker(busSlot!!, locker.lockerId, lifecycle)
                             TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_gateway_text)) {
                                 if (locker.gatewaySerialnumber.isNotEmpty()) {
-                                    Text(stringResource(id = R.string.wf_exp_locker_gateway_registered))
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.removeGatewayQrCode(
+                                                lifecycle,
+                                                context,
+                                                locker.lockerId
+                                            )
+                                        }
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Close,
+                                            "",
+                                            tint = MaterialTheme.colors.primary
+                                        )
+                                    }
                                 } else {
                                     IconButton(
                                         onClick = {
@@ -98,7 +112,26 @@ fun CompLockerExpandable(
                         }
                         TwoLineItemAbst(title = stringResource(id = R.string.wf_exp_locker_qr_code_text)) {
                             if (locker.qrCode.isNotEmpty()) {
-                                Text(stringResource(id = R.string.wf_exp_locker_qr_code_registered))
+                                IconButton(
+                                    onClick = {
+//                                        viewModel.setQrCodeForLocker(
+//                                            lifecycle,
+//                                            locker.lockerId,
+//                                            ""
+//                                        )
+                                        viewModel.removeLockerQrCode(
+                                            lifecycle,
+                                            context,
+                                            locker.lockerId
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        "QR CODE SCANNER",
+                                        tint = MaterialTheme.colors.primary
+                                    )
+                                }
                             } else {
                                 IconButton(onClick = {
                                     viewModel.activeLocker = locker

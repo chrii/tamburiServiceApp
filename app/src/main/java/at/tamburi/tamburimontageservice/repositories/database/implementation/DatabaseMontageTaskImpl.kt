@@ -349,12 +349,12 @@ class DatabaseMontageTaskImpl(
             val response = lockerDao.getLockersByLocationId(montageTaskId)
             if (response.isNotEmpty()) {
                 val lockerList = response.map { it.toLocker }
-                DataState(hasData = true, data = lockerList, message = "Request Successful")
+                DataState(hasData = true, data = lockerList, message = "Request Successful1")
             } else {
                 DataState(
                     hasData = false,
                     data = null,
-                    message = "No Lockers with this location id "
+                    message = "No Lockers with this location id"
                 )
             }
         } catch (e: Exception) {
