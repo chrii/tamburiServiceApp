@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/workflow_landing_fragment"
-        android:name="at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen.WorkflowLandingFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.WorkflowLandingScreen.WorkflowLandingFragment"
         android:label="Auftrag">
         <action
             android:id="@+id/action_landing_fragment_to_qr_code_fragment"
@@ -23,12 +23,12 @@
 
     <fragment
         android:id="@+id/final_workflow_fragment"
-        android:name="at.tamburi.tamburimontageservice.ui.WorkflowFinalScreen.WorkflowFinalFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.WorkflowFinalScreen.WorkflowFinalFragment"
         android:label="Tamburi" />
 
     <fragment
         android:id="@+id/qr_code_fragment"
-        android:name="at.tamburi.tamburimontageservice.ui.QrCodeScreen.QrCodeFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.QrCodeScreen.QrCodeFragment"
         android:label="Scanner">
         <action
             android:id="@+id/action_qr_code_fragment_to_landing_fragment"
@@ -51,7 +51,7 @@
 
     <fragment
         android:id="@+id/location_proposal_fragment"
-        android:name="at.tamburi.tamburimontageservice.ui.LocationProposalScreen.LocationProposalFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.LocationProposalScreen.LocationProposalFragment"
         android:label="Verbinden">
         <action
             android:id="@+id/action_proposal_fragment_to_qr_code_fragment"

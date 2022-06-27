@@ -9,9 +9,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
-import at.tamburi.tamburimontageservice.MainActivity
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
+import at.tamburi.tamburimontageservice.ui.MainActivity.MainActivity
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.Utils
 import at.tamburi.tamburimontageservice.utils.dataStore

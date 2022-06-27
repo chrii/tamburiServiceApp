@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice
+package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity
 
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
+import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.State
 import at.tamburi.tamburimontageservice.utils.Constants

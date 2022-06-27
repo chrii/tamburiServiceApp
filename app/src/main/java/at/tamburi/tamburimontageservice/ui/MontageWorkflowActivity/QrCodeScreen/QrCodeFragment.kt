@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.QrCodeScreen
+package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.QrCodeScreen
 
 import android.os.Build
 import android.os.Bundle

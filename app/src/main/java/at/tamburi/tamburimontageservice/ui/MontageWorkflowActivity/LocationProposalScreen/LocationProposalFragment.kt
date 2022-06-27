@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.LocationProposalScreen
+package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.LocationProposalScreen
 
 import android.os.Bundle
 import android.util.Log

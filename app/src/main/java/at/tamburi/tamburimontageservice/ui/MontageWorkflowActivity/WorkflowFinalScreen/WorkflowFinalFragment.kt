@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.WorkflowFinalScreen
+package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.WorkflowFinalScreen
 
 import android.os.Bundle
 import android.view.LayoutInflater

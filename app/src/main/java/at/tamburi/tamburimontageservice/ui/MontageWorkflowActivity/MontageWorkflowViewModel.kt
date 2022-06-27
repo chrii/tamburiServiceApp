@@ -17,11 +17,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavController
-import at.tamburi.tamburimontageservice.MainActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
+import at.tamburi.tamburimontageservice.ui.MainActivity.MainActivity
 import at.tamburi.tamburimontageservice.utils.Constants
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore

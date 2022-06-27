@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen
+package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.WorkflowLandingScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.ExperimentalMaterialApi

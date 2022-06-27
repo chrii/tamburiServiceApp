@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen
+package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.WorkflowLandingScreen
 
 import android.util.Log
 import android.widget.Toast

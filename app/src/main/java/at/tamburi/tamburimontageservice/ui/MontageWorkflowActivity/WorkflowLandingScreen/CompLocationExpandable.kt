@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.WorkflowLandingScreen
+package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.WorkflowLandingScreen
 
 import android.location.Location
 import android.os.Build

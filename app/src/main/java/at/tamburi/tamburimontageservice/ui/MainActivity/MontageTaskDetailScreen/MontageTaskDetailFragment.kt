@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.MontageTaskDetailScreen
+package at.tamburi.tamburimontageservice.ui.MainActivity.MontageTaskDetailScreen
 
 import android.os.Bundle
 import android.view.LayoutInflater

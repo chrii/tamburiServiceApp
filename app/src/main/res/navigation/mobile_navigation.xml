@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/fragment_task_list"
-        android:name="at.tamburi.tamburimontageservice.ui.MontageTaskScreen.MontageTaskFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.MainActivity.MontageTaskScreen.MontageTaskFragment"
         android:label="@string/tasks">
         <action
             android:id="@+id/action_task_list_to_details"
@@ -25,6 +25,6 @@
 
     <fragment
         android:id="@+id/fragment_task_detail"
-        android:name="at.tamburi.tamburimontageservice.ui.MontageTaskDetailScreen.MontageTaskDetailFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.MainActivity.MontageTaskDetailScreen.MontageTaskDetailFragment"
         android:label="@string/app_name" />
 </navigation>

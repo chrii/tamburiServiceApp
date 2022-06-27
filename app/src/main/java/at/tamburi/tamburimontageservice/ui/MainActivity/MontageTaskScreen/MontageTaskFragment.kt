@@ -1,9 +1,7 @@
-package at.tamburi.tamburimontageservice.ui.MontageTaskScreen
+package at.tamburi.tamburimontageservice.ui.MainActivity.MontageTaskScreen
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,10 +13,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -28,17 +22,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainState
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
+import at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.composables.MontageTaskListItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
-import at.tamburi.tamburimontageservice.utils.Constants
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 const val TAG = "MontageTaskFragm"
 
