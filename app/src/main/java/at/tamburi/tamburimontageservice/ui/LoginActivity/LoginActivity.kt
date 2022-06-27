@@ -18,7 +18,6 @@ class LoginActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        Log.d(TAG, "LoginActivity used")
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.activity_login) as NavHostFragment
         navController = navHostFragment.navController

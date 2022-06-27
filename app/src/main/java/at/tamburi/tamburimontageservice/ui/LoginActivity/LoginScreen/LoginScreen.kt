@@ -99,6 +99,7 @@ fun LoginScreen(
                                 imageVector = Icons.Default.Error,
                                 contentDescription = "Warning Icon"
                             )
+                            //TODO: Refactoring
                             Text(text = "Error")
                         }
                     },

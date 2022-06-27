@@ -34,9 +34,7 @@ class LoginFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colors.background
                     ) {
-                        LoginScreen(
-                            viewModel = viewModel
-                        )
+                        LoginScreen(viewModel)
                     }
                 }
             }
