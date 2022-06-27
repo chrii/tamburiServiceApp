@@ -1,10 +1,11 @@
-package at.tamburi.tamburimontageservice
+package at.tamburi.tamburimontageservice.ui.LoginActivity
 
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import at.tamburi.tamburimontageservice.R
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "LoginActivity"

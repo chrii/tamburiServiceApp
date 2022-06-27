@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.PermissionScreen
+package at.tamburi.tamburimontageservice.ui.LoginActivity.PermissionScreen
 
 import android.Manifest
 import android.os.Bundle

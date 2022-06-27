@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.LoginScreen
+package at.tamburi.tamburimontageservice.ui.LoginActivity.LoginScreen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -17,6 +17,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
+import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginState
+import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.theme.White
 

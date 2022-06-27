@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/permission_login"
-        android:name="at.tamburi.tamburimontageservice.ui.PermissionScreen.PermissionFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.LoginActivity.PermissionScreen.PermissionFragment"
         android:label="@string/app_name">
         <action
             android:id="@+id/action_permission_to_login_screen"
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/fragment_login"
-        android:name="at.tamburi.tamburimontageservice.ui.LoginScreen.LoginFragment"
+        android:name="at.tamburi.tamburimontageservice.ui.LoginActivity.LoginScreen.LoginFragment"
         android:label="@string/app_name">
         <action
             android:id="@+id/action_loginFragment_to_task_list_fragment"

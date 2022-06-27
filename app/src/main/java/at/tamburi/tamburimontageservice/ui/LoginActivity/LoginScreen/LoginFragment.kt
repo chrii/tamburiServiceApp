@@ -1,4 +1,4 @@
-package at.tamburi.tamburimontageservice.ui.LoginScreen
+package at.tamburi.tamburimontageservice.ui.LoginActivity.LoginScreen
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 
 private const val TAG = "LoginFragment"
