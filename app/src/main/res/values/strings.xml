@@ -25,6 +25,10 @@
     <string name="tl_header">Aktiver Auftrag</string>
     <string name="tl_task_id">Auftragsnummer: %s</string>
 
+    <!-- Side Navigation -->
+    <string name="side_nav_montage_tasks">Montage Aufträge</string>
+    <string name="side_nav_service_tasks">Service Aufträge</string>
+
     <!-- Task List Options Menu -->
     <string name="menu_item_doebler">Döblerhof Straße</string>
     <string name="menu_item_flo">Floridusgasse</string>

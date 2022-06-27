@@ -20,6 +20,7 @@ import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTa
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
+import at.tamburi.tamburimontageservice.ui.LoginActivity.LoginActivity
 import at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.Utils
@@ -81,7 +82,8 @@ constructor(
             context.dataStore.edit {
                 it[DataStoreConstants.ACTIVE_USER_ID] = 0
             }
-            navigation.navigate(R.id.action_task_list_to_login)
+            val intent = Intent(context, LoginActivity::class.java)
+            context.startActivity(intent)
         }
     }
 

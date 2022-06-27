@@ -67,7 +67,6 @@ class MontageTaskFragment : Fragment() {
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.P)
-    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
