@@ -13,12 +13,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
+import at.tamburi.tamburimontageservice.ui.ViewModels.LoginViewModel
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 
 private const val TAG = "LoginFragment"
 
 class LoginFragment : Fragment() {
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +35,6 @@ class LoginFragment : Fragment() {
                         color = MaterialTheme.colors.background
                     ) {
                         LoginScreen(
-                            navigation = findNavController(),
                             viewModel = viewModel
                         )
                     }

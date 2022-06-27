@@ -21,14 +21,12 @@ import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTa
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
-import at.tamburi.tamburimontageservice.utils.Constants
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
+import at.tamburi.tamburimontageservice.utils.Utils
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -36,7 +34,7 @@ import javax.inject.Inject
 private const val TAG: String = "MainViewModel"
 
 // TODO: REFACTOR STATE NAMES
-enum class LoginState {
+enum class MainState {
     Loading,
     Error,
     Ready,
@@ -52,13 +50,13 @@ constructor(
     private val authRepo: IAuthenticationRepository,
     private val taskNetworkRepo: INetworkMontageTaskRepository
 ) : ViewModel() {
-    private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState.Ready)
+    private val _mainState: MutableState<MainState> = mutableStateOf(MainState.Ready)
     private val _tasks: MutableState<List<MontageTask>> = mutableStateOf(listOf())
     private val _hasActiveTask: MutableState<Boolean> = mutableStateOf(false)
     private val _activeTask: MutableState<MontageTask?> = mutableStateOf(null)
     private val _filteredTasks: MutableState<List<MontageTask>> = mutableStateOf(_tasks.value)
 
-    val loginState: MutableState<LoginState> = _loginState
+    val mainState: MutableState<MainState> = _mainState
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
     val activeTask: MutableState<MontageTask?> = _activeTask
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
@@ -67,33 +65,9 @@ constructor(
     var errorMessage: String = ""
     var taskDetailId: Int = 0
 
-    fun changeState(state: LoginState, loadingMessage: String? = null) {
+    fun changeState(state: MainState, loadingMessage: String? = null) {
         if (!loadingMessage.isNullOrEmpty()) loadingMessageString = loadingMessage
-        _loginState.value = state
-    }
-
-    fun checkUserState(lifecycle: Lifecycle, context: Context) {
-        changeState(LoginState.Loading, "Get User Data")
-        lifecycle.coroutineScope.launch {
-            val userId = context.dataStore.data.map {
-                it[DataStoreConstants.ACTIVE_USER_ID]
-            }.first() ?: 0
-            val user = databaseUserRepo.getUser(userId)
-            if (!user.hasData) {
-                changeState(LoginState.Ready)
-            } else {
-                val serviceUser = user.data
-                val lastDate = getDate(Date(serviceUser!!.loginDate))
-                val todayDate = getDate()
-
-                if (todayDate == lastDate) {
-                    activeUser = user.data
-                    changeState(LoginState.NEXT)
-                } else {
-                    changeState(LoginState.Ready)
-                }
-            }
-        }
+        _mainState.value = state
     }
 
     fun logout(
@@ -102,7 +76,7 @@ constructor(
         navigation: NavController
     ) {
         activeUser = null
-        changeState(LoginState.Loading)
+        changeState(MainState.Loading)
         lifecycle.coroutineScope.launch{
             context.dataStore.edit {
                 it[DataStoreConstants.ACTIVE_USER_ID] = 0
@@ -113,7 +87,7 @@ constructor(
 
     fun onSubmit(username: String, password: String, lifecycle: Lifecycle, context: Context) {
         val lower = username.lowercase(Locale.getDefault())
-        changeState(LoginState.Loading, "Login...")
+        changeState(MainState.Loading, "Login...")
         lifecycle.coroutineScope.launch {
             try {
                 val networkUser = authRepo.getUser(lower, password)
@@ -121,27 +95,27 @@ constructor(
                     val result = databaseUserRepo.saveUser(networkUser.data!!)
                     if (!result.hasData) {
                         Log.d(TAG, "Login has no data")
-                        changeState(LoginState.Error, result.message)
+                        changeState(MainState.Error, result.message)
                     } else {
                         context.dataStore.edit {
                             it[DataStoreConstants.ACTIVE_USER_ID] = networkUser.data!!.servicemanId
                         }
                         Log.d(TAG, "Got Service User: ${networkUser.data!!.username}")
-                        changeState(LoginState.NEXT)
+                        changeState(MainState.NEXT)
                     }
                 } else {
                     Log.d(TAG, "")
-                    changeState(LoginState.Error, networkUser.message)
+                    changeState(MainState.Error, networkUser.message)
                 }
             } catch (e: Exception) {
                 e.stackTrace
-                changeState(LoginState.Error)
+                changeState(MainState.Error)
             }
         }
     }
 
     fun getTaskList(lifecycle: Lifecycle, context: Context) {
-        changeState(LoginState.Loading, "Hole Aufträge")
+        changeState(MainState.Loading, "Hole Aufträge")
         lifecycle.coroutineScope.launch {
             try {
                 val userId = getUserId(context)
@@ -149,20 +123,20 @@ constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
                 errorMessage = e.message ?: "Empty error message on getTasksList()"
-                changeState(LoginState.Error)
+                changeState(MainState.Error)
             }
         }
     }
 
     fun initializeData(context: Context, lifecycle: Lifecycle) {
-        changeState(LoginState.Loading)
+        changeState(MainState.Loading)
         lifecycle.coroutineScope.launch {
             val userId = getUserId(context)
             fetchAndSaveTasks(userId)
             if (_tasks.value.isNotEmpty()) {
                 getActiveTask(context, userId)
             }
-            changeState(LoginState.Ready)
+            changeState(MainState.Ready)
         }
     }
 
@@ -284,7 +258,7 @@ constructor(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                changeState(LoginState.Error)
+                changeState(MainState.Error)
             }
         }
     }
@@ -293,16 +267,10 @@ constructor(
         return task.lockerList.map { it.gateway }.contains(true)
     }
 
-    @SuppressLint("SimpleDateFormat")
-    fun getDate(mil: Date = Date()): Date {
-        val simple = SimpleDateFormat("MM-dd")
-        return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse date")
-    }
-
     fun isInstallationDate(taskId: Int): Boolean {
         val task = _tasks.value.find { it.montageTaskId == taskId} ?: throw Exception("Task not found")
-        val todaysDate = getDate()
-        val installationDate = getDate(task.scheduledInstallationDate)
+        val todaysDate = Utils.getDate()
+        val installationDate = Utils.getDate(task.scheduledInstallationDate)
         return todaysDate == installationDate
     }
 }

@@ -1,24 +1,24 @@
 package at.tamburi.tamburimontageservice.ui.LoginActivity.LoginScreen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
-import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginState
-import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
+import at.tamburi.tamburimontageservice.ui.ViewModels.LoginState
+import at.tamburi.tamburimontageservice.ui.ViewModels.LoginViewModel
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.theme.White
 
@@ -26,72 +26,101 @@ private const val TAG = "LoginScreen"
 
 @Composable
 fun LoginScreen(
-    navigation: NavController,
-    viewModel: MainViewModel
+    viewModel: LoginViewModel
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
+    var errorDialog by remember { mutableStateOf(false) }
 
-    when (viewModel.loginState.value) {
+    when (viewModel.state.value) {
         LoginState.Loading ->
             CustomLoadingIndicator(if (!viewModel.loadingMessageString.isNullOrEmpty()) viewModel.loadingMessageString else null)
         LoginState.Error -> {
-            //TODO: Error handling
-            Toast.makeText(
-                context,
-                stringResource(id = R.string.login_error, viewModel.errorMessage),
-                Toast.LENGTH_LONG
-            ).show()
             viewModel.changeState(LoginState.Ready)
+            errorDialog = true
         }
         LoginState.NEXT -> {
-            navigation.navigate(R.id.action_loginFragment_to_task_list_fragment)
+            viewModel.next(context)
         }
-        LoginState.Ready -> LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+        LoginState.Ready -> Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            item {
-                var userNameTextField by remember { mutableStateOf("") }
-                var passwordTextField by remember { mutableStateOf("") }
-                OutlinedTextField(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth(),
-                    value = userNameTextField,
-                    onValueChange = { userNameTextField = it },
-                    label = { Text(context.getString(R.string.username)) },
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth(),
-                    value = passwordTextField,
-                    onValueChange = { passwordTextField = it },
-                    label = { Text(context.getString(R.string.password)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = PasswordVisualTransformation()
-                )
-                Button(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth(),
-                    onClick = {
-                        viewModel.onSubmit(
-                            userNameTextField,
-                            passwordTextField,
-                            lifecycle,
-                            context
-                        )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    var userNameTextField by remember { mutableStateOf("") }
+                    var passwordTextField by remember { mutableStateOf("") }
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        value = userNameTextField,
+                        onValueChange = { userNameTextField = it },
+                        label = { Text(context.getString(R.string.username)) },
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        value = passwordTextField,
+                        onValueChange = { passwordTextField = it },
+                        label = { Text(context.getString(R.string.password)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                    Button(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        onClick = {
+                            viewModel.onSubmit(
+                                userNameTextField,
+                                passwordTextField,
+                                lifecycle,
+                                context
+                            )
+                        }
+                    ) {
+                        Text(text = "Login", color = White)
                     }
-                ) {
-                    Text(text = "Login", color = White)
                 }
             }
-
+            if (errorDialog) {
+                AlertDialog(
+                    onDismissRequest = { errorDialog = false },
+                    title = {
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.Error,
+                                contentDescription = "Warning Icon"
+                            )
+                            Text(text = "Error")
+                        }
+                    },
+                    text = {
+                        //TODO: Refactoring
+                        Text(
+                            text = viewModel.errorMessage ?: "Something went wrong"
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            modifier = Modifier.padding(4.dp),
+                            onClick = {
+                                errorDialog = false
+                                viewModel.changeState(LoginState.Ready)
+                            }
+                        ) {
+                            Text("ok")
+                        }
+                    }
+                )
+            }
         }
     }
 }

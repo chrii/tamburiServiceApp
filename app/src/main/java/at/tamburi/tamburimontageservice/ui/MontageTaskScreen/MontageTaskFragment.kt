@@ -31,7 +31,7 @@ import androidx.navigation.fragment.findNavController
 import at.tamburi.tamburimontageservice.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
-import at.tamburi.tamburimontageservice.ui.LoginScreen.LoginState
+import at.tamburi.tamburimontageservice.ui.LoginScreen.MainState
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.composables.MontageTaskListItem
@@ -92,9 +92,9 @@ class MontageTaskFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colors.background
                     ) {
-                        when (viewModel.loginState.value) {
-                            LoginState.Loading -> CustomLoadingIndicator()
-                            LoginState.Error -> {
+                        when (viewModel.mainState.value) {
+                            MainState.Loading -> CustomLoadingIndicator()
+                            MainState.Error -> {
                                 Toast.makeText(
                                     requireContext(),
                                     viewModel.errorMessage,
@@ -102,7 +102,7 @@ class MontageTaskFragment : Fragment() {
                                 )
                                     .show()
                             }
-                            LoginState.Ready -> {
+                            MainState.Ready -> {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
                                     verticalArrangement = Arrangement.SpaceBetween
