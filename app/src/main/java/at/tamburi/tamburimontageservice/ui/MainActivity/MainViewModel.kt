@@ -61,7 +61,7 @@ constructor(
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
     val activeTask: MutableState<MontageTask?> = _activeTask
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
-    var activeUser: ServiceUser? = null
+    val activeUser: MutableState<ServiceUser?> = mutableStateOf(null)
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     var taskDetailId: Int = 0
@@ -74,11 +74,10 @@ constructor(
     fun logout(
         lifecycle: Lifecycle,
         context: Context,
-        navigation: NavController
     ) {
-        activeUser = null
+        activeUser.value = null
         changeState(MainState.Loading)
-        lifecycle.coroutineScope.launch{
+        lifecycle.coroutineScope.launch {
             context.dataStore.edit {
                 it[DataStoreConstants.ACTIVE_USER_ID] = 0
             }
@@ -87,44 +86,22 @@ constructor(
         }
     }
 
-    fun onSubmit(username: String, password: String, lifecycle: Lifecycle, context: Context) {
-        val lower = username.lowercase(Locale.getDefault())
-        changeState(MainState.Loading, "Login...")
-        lifecycle.coroutineScope.launch {
-            try {
-                val networkUser = authRepo.getUser(lower, password)
-                if (networkUser.hasData) {
-                    val result = databaseUserRepo.saveUser(networkUser.data!!)
-                    if (!result.hasData) {
-                        Log.d(TAG, "Login has no data")
-                        changeState(MainState.Error, result.message)
-                    } else {
-                        context.dataStore.edit {
-                            it[DataStoreConstants.ACTIVE_USER_ID] = networkUser.data!!.servicemanId
-                        }
-                        Log.d(TAG, "Got Service User: ${networkUser.data!!.username}")
-                        changeState(MainState.NEXT)
-                    }
-                } else {
-                    Log.d(TAG, "")
-                    changeState(MainState.Error, networkUser.message)
-                }
-            } catch (e: Exception) {
-                e.stackTrace
-                changeState(MainState.Error)
-            }
-        }
-    }
+    fun getActiveUser(context: Context, lifecycle: Lifecycle) {
+        changeState(MainState.Loading)
 
-    fun getTaskList(lifecycle: Lifecycle, context: Context) {
-        changeState(MainState.Loading, "Hole Aufträge")
         lifecycle.coroutineScope.launch {
             try {
                 val userId = getUserId(context)
-                fetchAndSaveTasks(userId)
+                val user = databaseUserRepo.getUser(userId)
+                if (user.hasData) {
+                    activeUser.value = user.data
+                    changeState(MainState.Ready)
+                } else {
+                    errorMessage = user.message ?: "Cannot find error message"
+                    changeState(MainState.Error)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                errorMessage = e.message ?: "Empty error message on getTasksList()"
                 changeState(MainState.Error)
             }
         }
@@ -186,7 +163,7 @@ constructor(
                     val activeTaskId = context.dataStore.data.map {
                         it[DataStoreConstants.ACTIVE_TASK_ID]
                     }.first() ?: -1
-                    if(activeTaskId == -1) {
+                    if (activeTaskId == -1) {
                         context.dataStore.edit {
                             it[DataStoreConstants.ACTIVE_TASK_ID] = task.montageTaskId
                         }
@@ -270,7 +247,8 @@ constructor(
     }
 
     fun isInstallationDate(taskId: Int): Boolean {
-        val task = _tasks.value.find { it.montageTaskId == taskId} ?: throw Exception("Task not found")
+        val task =
+            _tasks.value.find { it.montageTaskId == taskId } ?: throw Exception("Task not found")
         val todaysDate = Utils.getDate()
         val installationDate = Utils.getDate(task.scheduledInstallationDate)
         return todaysDate == installationDate

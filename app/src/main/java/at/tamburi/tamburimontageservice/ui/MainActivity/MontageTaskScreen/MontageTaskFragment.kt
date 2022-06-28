@@ -58,7 +58,7 @@ class MontageTaskFragment : Fragment() {
                 true
             }
             R.id.logout -> {
-                viewModel.logout(lifecycle, requireContext(), findNavController())
+                viewModel.logout(lifecycle, requireContext())
                 true
             }
             else -> super.onOptionsItemSelected(item)

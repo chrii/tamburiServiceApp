@@ -28,6 +28,7 @@
     <!-- Side Navigation -->
     <string name="side_nav_montage_tasks">Montage Aufträge</string>
     <string name="side_nav_service_tasks">Service Aufträge</string>
+    <string name="side_nav_header">Hallo, %s</string>
 
     <!-- Task List Options Menu -->
     <string name="menu_item_doebler">Döblerhof Straße</string>
