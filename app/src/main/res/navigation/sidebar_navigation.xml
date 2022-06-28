@@ -10,7 +10,7 @@
         android:label="@string/tasks" />
     <fragment
         android:id="@+id/fragment_service_list"
-        android:name="at.tamburi.tamburimontageservice.ui.MainActivity.ServiceTaskScreen.ServiceTaskScreen"
+        android:name="at.tamburi.tamburimontageservice.ui.MainActivity.ServiceTaskFragment.ServiceTaskFragment"
         android:label="@string/app_name" />
 
 </navigation>

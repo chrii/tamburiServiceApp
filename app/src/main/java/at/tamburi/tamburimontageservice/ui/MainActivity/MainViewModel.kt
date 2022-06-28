@@ -13,9 +13,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
-import at.tamburi.tamburimontageservice.models.MontageStatus
-import at.tamburi.tamburimontageservice.models.MontageTask
-import at.tamburi.tamburimontageservice.models.ServiceUser
+import at.tamburi.tamburimontageservice.mockdata.serviceMockdata
+import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
 import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
@@ -26,6 +25,7 @@ import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.Utils
 import at.tamburi.tamburimontageservice.utils.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -48,7 +48,6 @@ class MainViewModel
 constructor(
     private val databaseUserRepo: IDatabaseUserRepository,
     private val taskRepoDatabase: IDatabaseMontageTaskRepository,
-    private val authRepo: IAuthenticationRepository,
     private val taskNetworkRepo: INetworkMontageTaskRepository
 ) : ViewModel() {
     private val _mainState: MutableState<MainState> = mutableStateOf(MainState.Ready)
@@ -56,12 +55,17 @@ constructor(
     private val _hasActiveTask: MutableState<Boolean> = mutableStateOf(false)
     private val _activeTask: MutableState<MontageTask?> = mutableStateOf(null)
     private val _filteredTasks: MutableState<List<MontageTask>> = mutableStateOf(_tasks.value)
+    private val _serviceAssignmentList: MutableState<List<ServiceAssignment>> =
+        mutableStateOf(listOf())
+    private val _activeServiceLocation: MutableState<Location?> = mutableStateOf(null)
 
     val mainState: MutableState<MainState> = _mainState
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
     val activeTask: MutableState<MontageTask?> = _activeTask
+    val activeServiceLocation: MutableState<Location?> = _activeServiceLocation
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
     val activeUser: MutableState<ServiceUser?> = mutableStateOf(null)
+    val serviceAssignmentList: MutableState<List<ServiceAssignment>> = _serviceAssignmentList
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     var taskDetailId: Int = 0
@@ -107,7 +111,7 @@ constructor(
         }
     }
 
-    fun initializeData(context: Context, lifecycle: Lifecycle) {
+    fun initializeMontageData(context: Context, lifecycle: Lifecycle) {
         changeState(MainState.Loading)
         lifecycle.coroutineScope.launch {
             val userId = getUserId(context)
@@ -117,6 +121,41 @@ constructor(
             }
             changeState(MainState.Ready)
         }
+    }
+
+    fun initializeServiceData(context: Context, lifecycle: Lifecycle) {
+        changeState(MainState.Loading)
+        lifecycle.coroutineScope.launch {
+            val serviceDateList = serviceMockdata.serviceAssignments
+            delay(1000)
+            _serviceAssignmentList.value = serviceDateList
+            changeState(MainState.Ready)
+        }
+    }
+
+    fun navigateToServiceLocation(
+        locationId: Int,
+        lifecycle: Lifecycle,
+        navigation: NavController
+    ) {
+        changeState(MainState.Loading)
+        lifecycle.coroutineScope.launch {
+            delay(1000)
+            val locationDetails = serviceMockdata.locations.find { it.locationId == locationId }
+            if (locationDetails != null) {
+                navigation.navigate(R.id.action_service_list_to_service_details)
+                changeState(MainState.Ready)
+                _activeServiceLocation.value = locationDetails
+                delay(1000)
+            } else {
+                errorMessage = "Standort wurde nicht gefunden"
+                changeState(MainState.Error)
+            }
+        }
+    }
+
+    private suspend fun getServiceLocation(locationId: Int) {
+
     }
 
     private suspend fun getUserId(context: Context): Int = context.dataStore.data.map {

@@ -74,8 +74,11 @@
     <string name="ds_date_dialog_decline">Zurück</string>
 
     <!-- Service List -->
-    <string name="service_list_address">Adresse: %s</string>
-    <string name="service_list_city">Stadt: %s</string>
+    <string name="service_list_empty">Liste ist leer</string>
+
+    <!-- Service List Item -->
+    <string name="service_list_item_address">Adresse: %s</string>
+    <string name="service_list_item_city">Stadt: %s</string>
 
     <!-- Workflow Landing Page -->
     <string name="wf_title">Auftragsdetails</string>

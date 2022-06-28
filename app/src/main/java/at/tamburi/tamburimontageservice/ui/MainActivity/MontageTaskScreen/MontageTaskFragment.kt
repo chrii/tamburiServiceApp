@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.MontageStatus
 import at.tamburi.tamburimontageservice.ui.LoginScreen.MainState
@@ -38,7 +37,7 @@ class MontageTaskFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.initializeData(requireContext(), lifecycle)
+        viewModel.initializeMontageData(requireContext(), lifecycle)
     }
 
     private fun navigateToActivity(taskId: Int) {
@@ -54,7 +53,7 @@ class MontageTaskFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.refresh -> {
-                viewModel.initializeData(requireContext(), lifecycle)
+                viewModel.initializeMontageData(requireContext(), lifecycle)
                 true
             }
             R.id.logout -> {

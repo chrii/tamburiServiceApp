@@ -21,11 +21,10 @@ fun ServiceListItem(
     serviceAssignment: ServiceAssignment,
     onClick: (locationId: Int) -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.clickable { onClick(serviceAssignment.locationId) }) {
         ListItem(
             modifier = Modifier
-                .padding(bottom = 8.dp)
-                .clickable { onClick(serviceAssignment.locationId) },
+                .padding(bottom = 8.dp),
             text = {
                 Text(serviceAssignment.locationName)
             },
@@ -33,13 +32,13 @@ fun ServiceListItem(
                 Column {
                     Text(
                         stringResource(
-                            R.string.service_list_address,
+                            R.string.service_list_item_address,
                             serviceAssignment.locationAddress
                         )
                     )
                     Text(
                         stringResource(
-                            R.string.service_list_city,
+                            R.string.service_list_item_city,
                             "${serviceAssignment.city}, ${serviceAssignment.zipCode}"
                         )
                     )
