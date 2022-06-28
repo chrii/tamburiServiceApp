@@ -3,7 +3,6 @@ package at.tamburi.tamburimontageservice.services.network
 import android.annotation.SuppressLint
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.services.network.dto.*
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,7 +42,7 @@ fun MontageTaskDto.toMontageTask(): MontageTask {
     )
 }
 
-fun LocationDto.toRemoteLocation(): RemoteLocation = RemoteLocation(
+fun LocationDto.toRemoteLocation(): MontageLocation = MontageLocation(
     locationId = locationId ?: -1,
     locationName = locationName ?: "No location name",
     countryId = countryId ?: -1,

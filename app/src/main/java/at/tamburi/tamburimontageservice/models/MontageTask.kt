@@ -6,7 +6,7 @@ import java.util.*
 data class MontageTask(
     val montageTaskId: Int,
     val creationDate: Date,
-    val location: RemoteLocation,
+    val location: MontageLocation,
     val locationOwner: LocationOwner?,
     val statusId: Int,
     val locationDescription: String,

@@ -73,6 +73,10 @@
     <string name="ds_date_dialog_confirm">Trotzdem annehmen</string>
     <string name="ds_date_dialog_decline">Zurück</string>
 
+    <!-- Service List -->
+    <string name="service_list_address">Adresse: %s</string>
+    <string name="service_list_city">Stadt: %s</string>
+
     <!-- Workflow Landing Page -->
     <string name="wf_title">Auftragsdetails</string>
 

@@ -27,8 +27,8 @@ class DatabaseMontageTaskImpl(
             val taskEntity =
                 montageTaskDao.getTaskByTaskId(id) ?: throw Exception("No Task found in database")
             val owner: LocationOwner? = getOwnerByIdOrNull(taskEntity.ownerId)
-            val location: RemoteLocation =
-                locationDao.getLocationById(taskEntity.locationId)?.toRemoteLocation
+            val location: MontageLocation =
+                locationDao.getLocationById(taskEntity.locationId)?.toMontageLocation
                     ?: throw Exception("No Location found in database")
             val lockerIdList = Locker.lockerIdList(taskEntity.lockerList)
             val lockerList: List<Locker> = lockerIdList.map {
@@ -164,7 +164,7 @@ class DatabaseMontageTaskImpl(
         }
     }
 
-    private suspend fun saveLocation(location: RemoteLocation): DataState<RemoteLocation> {
+    private suspend fun saveLocation(location: MontageLocation): DataState<MontageLocation> {
         return try {
             val result = locationDao.getLocationById(location.locationId)
             if (result != null) {

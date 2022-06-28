@@ -1,0 +1,33 @@
+package at.tamburi.tamburimontageservice.models
+
+data class Location(
+    val active: Boolean,
+    val atsamVersionId: Int,
+    val atsamVersionName: String,
+    val batteryStatus: Int,
+    val cityId: Int,
+    val cityName: String,
+    val colourId: Int,
+    val colourName: String,
+    val companyName: String,
+    val contactPerson: String,
+    val contactPhone: String,
+    val countryId: Int,
+    val countryName: String,
+    val esp32VersionId: Int,
+    val esp32VersionName: String,
+    val hasOwner: Boolean,
+    val latitude: Double,
+    val locationId: Int,
+    val locationName: String,
+    val longitude: Double,
+    val minimumPauseTime: Int,
+    val minimumReservationTime: Int,
+    val newLocation: Boolean,
+    val number: String,
+    val ownerId: Int,
+    val qrCode: String,
+    val street: String,
+    val zipCode: String,
+    val claimList: List<Claim>?
+)

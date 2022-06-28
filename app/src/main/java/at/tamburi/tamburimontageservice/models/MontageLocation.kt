@@ -1,6 +1,6 @@
 package at.tamburi.tamburimontageservice.models
 
-data class RemoteLocation(
+data class MontageLocation(
     val locationId: Int,
     val locationName: String,
     val longitude: Double,

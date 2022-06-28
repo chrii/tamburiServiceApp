@@ -2,7 +2,6 @@ package at.tamburi.tamburimontageservice.services.database
 
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.services.database.entities.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -33,8 +32,8 @@ val LocationOwnerEntity.toLocationOwner: LocationOwner
     )
 
 //
-val RemoteLocationEntity.toRemoteLocation: RemoteLocation
-    get() = RemoteLocation(
+val RemoteLocationEntity.toMontageLocation: MontageLocation
+    get() = MontageLocation(
         locationId = locationId,
         locationName = locationName ?: "",
         countryId = countryId,
@@ -68,7 +67,7 @@ val LockerEntity.toLocker: Locker
 
 fun MontageTaskEntity.toMontageTask(
     owner: LocationOwner?,
-    location: RemoteLocation,
+    location: MontageLocation,
     lockers: List<Locker>,
     serviceUserList: List<ServiceUser>
 ): MontageTask {
