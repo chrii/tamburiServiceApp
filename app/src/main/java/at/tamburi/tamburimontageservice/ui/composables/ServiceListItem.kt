@@ -10,10 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.models.ServiceAssignment
-import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
+import at.tamburi.tamburimontageservice.models.ServiceAssignmentOld
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -21,25 +20,25 @@ fun ServiceListItem(
     serviceAssignment: ServiceAssignment,
     onClick: (locationId: Int) -> Unit
 ) {
-    Column(modifier = Modifier.clickable { onClick(serviceAssignment.locationId) }) {
+    Column(modifier = Modifier.clickable { onClick(serviceAssignment.location.locationId) }) {
         ListItem(
             modifier = Modifier
                 .padding(bottom = 8.dp),
             text = {
-                Text(serviceAssignment.locationName)
+                Text(serviceAssignment.location.locationName)
             },
             secondaryText = {
                 Column {
                     Text(
                         stringResource(
                             R.string.service_list_item_address,
-                            serviceAssignment.locationAddress
+                            "${serviceAssignment.location.street} ${serviceAssignment.location.number}"
                         )
                     )
                     Text(
                         stringResource(
                             R.string.service_list_item_city,
-                            "${serviceAssignment.city}, ${serviceAssignment.zipCode}"
+                            "${serviceAssignment.location.cityName}, ${serviceAssignment.location.zipCode}"
                         )
                     )
                 }

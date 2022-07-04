@@ -1,9 +1,6 @@
 package at.tamburi.tamburimontageservice.services.network.services
 
-import at.tamburi.tamburimontageservice.services.network.dto.LocationRegistrationDto
-import at.tamburi.tamburimontageservice.services.network.dto.LockerRegistrationDto
-import at.tamburi.tamburimontageservice.services.network.dto.MontageTaskDto
-import at.tamburi.tamburimontageservice.services.network.dto.StatusDto
+import at.tamburi.tamburimontageservice.services.network.dto.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -12,6 +9,17 @@ interface INetworkMontageTaskService {
     suspend fun getMontageTaskList(
         @Query("servicemanId") serviceUserId: Int
     ): Response<List<MontageTaskDto>>
+
+    @GET("claim")
+    suspend fun getLocationClaims(
+        @Query("locationId") locationId: Int,
+        @Query("finalized") finalized: Boolean = false
+    ): Response<List<ClaimDto>>
+
+    @GET("claim/assigned_location")
+    suspend fun getClaimLocations(
+        @Query("servicemanId") serviceMan: Int
+    ): Response<List<ClaimListObjectDto>>
 
     @POST("remote_montage/mobile/register_locker")
     suspend fun registerLockers(

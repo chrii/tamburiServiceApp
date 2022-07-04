@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Montage Service</string>
+    <string name="app_name">Tamburi Service</string>
 
     <!-- Permission Fragment -->
     <string name="camera_permission_accepted">Kamera Autorisierung erteilt</string>
@@ -76,9 +76,21 @@
     <!-- Service List -->
     <string name="service_list_empty">Liste ist leer</string>
 
+    <!-- Service List Details -->
+    <string name="service_detail_name">Name</string>
+    <string name="service_detail_address">Adresse</string>
+    <string name="service_detail_city">Stadt</string>
+    <string name="service_detail_contact_person">Ansprechpartner</string>
+    <string name="service_detail_contact_phone">Telefon</string>
+    <string name="service_detail_gps_location">Navigation</string>
+    <string name="service_detail_battery">Battery</string>
+    <string name="service_detail_claims">Claims</string>
+
     <!-- Service List Item -->
     <string name="service_list_item_address">Adresse: %s</string>
     <string name="service_list_item_city">Stadt: %s</string>
+
+
 
     <!-- Workflow Landing Page -->
     <string name="wf_title">Auftragsdetails</string>

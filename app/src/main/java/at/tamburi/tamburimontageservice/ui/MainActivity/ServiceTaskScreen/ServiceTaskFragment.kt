@@ -36,8 +36,8 @@ class ServiceTaskFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        viewModel.initializeServiceData(requireContext(), lifecycle)
-        Log.d(TAG, "got called")
+//        viewModel.initializeServiceData(requireContext(), lifecycle)
+//        Log.d(TAG, "got called")
         return ComposeView(requireContext()).apply {
             setContent {
                 ServiceTaskScreen(viewModel, findNavController())

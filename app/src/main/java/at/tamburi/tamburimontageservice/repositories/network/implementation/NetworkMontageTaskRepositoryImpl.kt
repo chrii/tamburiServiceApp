@@ -1,16 +1,18 @@
 package at.tamburi.tamburimontageservice.repositories.network.implementation
 
-import android.location.Location
 import android.util.Log
+import at.tamburi.tamburimontageservice.models.Claim
+import at.tamburi.tamburimontageservice.models.ServiceAssignment
 import at.tamburi.tamburimontageservice.models.Locker
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
 import at.tamburi.tamburimontageservice.services.network.dto.LocationRegistrationDto
-import at.tamburi.tamburimontageservice.services.network.dto.LockerRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.dto.StatusDto
 import at.tamburi.tamburimontageservice.services.network.services.INetworkMontageTaskService
+import at.tamburi.tamburimontageservice.services.network.toClaim
 import at.tamburi.tamburimontageservice.services.network.toLockerRegistrationDto
 import at.tamburi.tamburimontageservice.services.network.toMontageTask
+import at.tamburi.tamburimontageservice.services.network.toServiceAssignment
 import at.tamburi.tamburimontageservice.utils.DataState
 
 private const val TAG = "NtwMontageTaskRepo"
@@ -18,6 +20,82 @@ private const val TAG = "NtwMontageTaskRepo"
 class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: INetworkMontageTaskService) :
     INetworkMontageTaskRepository {
     var retry = 0
+
+    override suspend fun getClaimLocations(servicemanId: Int): DataState<List<ServiceAssignment>> {
+        return try {
+            val response = networkMontageTaskService.getClaimLocations(servicemanId)
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("Request: Response Body is null")
+                Log.d(TAG, body.toString())
+                when (response.code()) {
+                    200 -> {
+                        try {
+                            val data = DataState(
+                                hasData = true,
+                                data = body.map { it.toServiceAssignment() })
+                            Log.d(TAG, data.data.toString())
+                            data
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            DataState(hasData = false, data = null, message = e.message)
+                        }
+                    }
+                    else -> DataState(
+                        hasData = false,
+                        data = null,
+                        message = "Request error code ${response.code()}"
+                    )
+                }
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "Request: Response is not successful - Code ${response.code()}"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(
+                hasData = false,
+                data = null,
+                message = e.message
+            )
+        }
+    }
+
+    override suspend fun getLocationClaims(locationId: Int): DataState<List<Claim>> {
+        return try {
+            val response = networkMontageTaskService.getLocationClaims(locationId)
+
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("Request Error: Body is null")
+                when (response.code()) {
+                    200 -> DataState(
+                        hasData = true,
+                        data = body.map { it.toClaim() }
+                    )
+                    else -> DataState(
+                        hasData = false,
+                        data = null,
+                        message = "Response code is not okay - Code ${response.code()}"
+                    )
+                }
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "Response was not successful - Code ${response.code()}"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(
+                hasData = false,
+                data = null,
+                message = e.message
+            )
+        }
+    }
 
     override suspend fun getMontageTaskList(serviceUserId: Int): DataState<List<MontageTask>> {
         return try {
@@ -111,7 +189,11 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                 when (response.code()) {
                     200 -> {
                         retry = 0
-                        DataState(hasData = true, data = body, message = "Request successful ${response.code()}")
+                        DataState(
+                            hasData = true,
+                            data = body,
+                            message = "Request successful ${response.code()}"
+                        )
                     }
                     500 -> if (retry <= 2) {
                         retry++
@@ -149,7 +231,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
             Log.d(TAG, "Response: $response")
             Log.d(TAG, "Response: ${response.isSuccessful}")
             if (response.isSuccessful) {
-            Log.d(TAG, "Response: ${response.code()}")
+                Log.d(TAG, "Response: ${response.code()}")
                 val secureBody =
                     response.body() ?: throw Exception("Error - Response Body is empty")
                 when (response.code()) {

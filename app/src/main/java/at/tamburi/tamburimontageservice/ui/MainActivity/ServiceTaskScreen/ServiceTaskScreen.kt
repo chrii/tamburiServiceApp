@@ -55,7 +55,6 @@ fun ServiceTaskScreen(
                                     ServiceListItem(location) {
                                         viewModel.navigateToServiceLocation(
                                             it,
-                                            lifecycle,
                                             navigation
                                         )
                                     }

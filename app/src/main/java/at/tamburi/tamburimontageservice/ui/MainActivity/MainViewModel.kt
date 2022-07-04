@@ -1,36 +1,41 @@
 package at.tamburi.tamburimontageservice.ui.LoginScreen
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color as BitmapColor
+import androidx.compose.ui.graphics.Color
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
-import at.tamburi.tamburimontageservice.mockdata.serviceMockdata
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseUserRepository
-import at.tamburi.tamburimontageservice.repositories.network.IAuthenticationRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
 import at.tamburi.tamburimontageservice.ui.LoginActivity.LoginActivity
 import at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.MontageWorkflowActivity
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.Utils
 import at.tamburi.tamburimontageservice.utils.dataStore
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.stream.IntStream
 import javax.inject.Inject
+
 
 private const val TAG: String = "MainViewModel"
 
@@ -126,36 +131,53 @@ constructor(
     fun initializeServiceData(context: Context, lifecycle: Lifecycle) {
         changeState(MainState.Loading)
         lifecycle.coroutineScope.launch {
-            val serviceDateList = serviceMockdata.serviceAssignments
-            delay(1000)
-            _serviceAssignmentList.value = serviceDateList
-            changeState(MainState.Ready)
-        }
-    }
+            try {
+                val userId = activeUser.value?.servicemanId ?: throw Exception("User not found")
+                val locationList = taskNetworkRepo.getClaimLocations(userId)
 
-    fun navigateToServiceLocation(
-        locationId: Int,
-        lifecycle: Lifecycle,
-        navigation: NavController
-    ) {
-        changeState(MainState.Loading)
-        lifecycle.coroutineScope.launch {
-            delay(1000)
-            val locationDetails = serviceMockdata.locations.find { it.locationId == locationId }
-            if (locationDetails != null) {
-                navigation.navigate(R.id.action_service_list_to_service_details)
-                changeState(MainState.Ready)
-                _activeServiceLocation.value = locationDetails
-                delay(1000)
-            } else {
-                errorMessage = "Standort wurde nicht gefunden"
+                if (locationList.hasData) {
+                    serviceAssignmentList.value = locationList.data!!
+                    changeState(MainState.Ready)
+                } else {
+                    errorMessage = locationList.message ?: "No Error message found"
+                    changeState(MainState.Error)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
                 changeState(MainState.Error)
             }
         }
     }
 
-    private suspend fun getServiceLocation(locationId: Int) {
+    fun navigateToServiceLocation(
+        locationId: Int,
+        navigation: NavController
+    ) {
+        val assignment = serviceAssignmentList.value.find { it.location.locationId == locationId }
+        activeServiceLocation.value = assignment?.location
+        navigation.navigate(R.id.action_service_list_to_service_details)
+    }
 
+    fun getLocationClaims(lifecycle: Lifecycle) {
+        loadingMessageString = "Get Claims"
+        changeState(MainState.Loading)
+        lifecycle.coroutineScope.launch {
+            val locationId = activeServiceLocation.value?.locationId ?: -1
+            if (locationId < 0) {
+                errorMessage = "locationId not found"
+                changeState(MainState.Error)
+            } else {
+                val response = taskNetworkRepo.getLocationClaims(locationId)
+
+                if (response.hasData) {
+                    activeServiceLocation.value?.claimList = response.data!!
+                    changeState(MainState.Ready)
+                } else {
+                    errorMessage = response.message ?: "No message found"
+                    changeState(MainState.Error)
+                }
+            }
+        }
     }
 
     private suspend fun getUserId(context: Context): Int = context.dataStore.data.map {
@@ -291,5 +313,38 @@ constructor(
         val todaysDate = Utils.getDate()
         val installationDate = Utils.getDate(task.scheduledInstallationDate)
         return todaysDate == installationDate
+    }
+
+    fun checkBatteryStatus(battery: Int): Color = when {
+        battery in 20..49 -> Color.Yellow
+        battery < 20 -> Color.Red
+        else -> Color.Green
+    }
+
+    fun openMaps(context: Context, lon: Double, lat: Double) {
+        val uri = Uri.parse("google.navigation:q=$lat,$lon")
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = uri
+            setPackage("com.google.android.apps.maps")
+        }
+        context.startActivity(intent)
+    }
+
+    fun createQrCode(code: String): Bitmap {
+        val qrCode = MultiFormatWriter().encode(
+            code,
+            BarcodeFormat.QR_CODE,
+            300,
+            300
+        )
+        return Bitmap.createBitmap(
+            IntStream.range(0, 300).flatMap { h ->
+                IntStream.range(0, 300).map { w ->
+                    if (qrCode[w, h]
+                    ) BitmapColor.BLACK else BitmapColor.WHITE
+                }
+            }.toArray(),
+            300, 300, Bitmap.Config.ARGB_8888
+        )
     }
 }

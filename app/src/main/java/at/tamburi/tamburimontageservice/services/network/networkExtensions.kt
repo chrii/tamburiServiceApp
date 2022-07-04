@@ -3,6 +3,7 @@ package at.tamburi.tamburimontageservice.services.network
 import android.annotation.SuppressLint
 import at.tamburi.tamburimontageservice.models.*
 import at.tamburi.tamburimontageservice.services.network.dto.*
+import at.tamburi.tamburimontageservice.utils.Utils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,17 +47,17 @@ fun LocationDto.toRemoteLocation(): MontageLocation = MontageLocation(
     locationId = locationId ?: -1,
     locationName = locationName ?: "No location name",
     countryId = countryId ?: -1,
-    cityId = cityId?: -1,
+    cityId = cityId ?: -1,
     zipCode = zipCode ?: "No Zip Code",
     street = street ?: "No street found",
     number = number ?: "No number found",
     qrCode = qrCode ?: "",
     cityName = cityName ?: "No city found",
     countryName = countryName ?: "No Country name",
-    longitude = longitude?: 0.0,
-    latitude = latitude?: 0.0,
+    longitude = longitude ?: 0.0,
+    latitude = latitude ?: 0.0,
     contactPerson = contactPerson ?: "No Contact Person",
-    contactPhone = contactPhone?: "No Phone"
+    contactPhone = contactPhone ?: "No Phone"
 )
 
 fun OwnerDto.toLocationOwner(): LocationOwner = LocationOwner(
@@ -92,4 +93,24 @@ fun Locker.toLockerRegistrationDto(): LockerRegistrationDto = LockerRegistration
     gatewaySerialNumber = gatewaySerialnumber,
     busSlot = busSlot
         ?: throw Exception("Cannot transform Locker to Locker Registration - Bus Slot is null")
+)
+
+fun ClaimDto.toClaim(): Claim = Claim(
+    claimId = claimId ?: throw Exception("Request no Claim Id found"),
+    typeId = typeId ?: throw Exception("Request: No Type Id found"),
+    typeName = typeName ?: throw Exception("Request: Typename not found"),
+    tamburiCode = tamburiCode ?: throw Exception("Request: Tamburi Qr Code not found"),
+    tamburiPin = tamburiPin ?: throw Exception("Request: Tamburi Pin not found"),
+    compartmentWiring = compartmentWiring
+        ?: throw Exception("Request: No compartment wiring found"),
+    compartmentSize = compartmentSize ?: throw Exception("Size not found"),
+    deliveryId = deliveryId ?: throw Exception("Request: No delivery ID found"),
+    deliveryCode = deliveryCode
+)
+
+fun ClaimListObjectDto.toServiceAssignment(): ServiceAssignment = ServiceAssignment(
+    assignmentId = assignmentId ?: throw Exception("Request: No assignment ID found"),
+    location = location ?: throw Exception("Request: No Location information"),
+    scheduledDate = if (scheduledDate != null) Utils.getDateFromString(scheduledDate) else throw Exception("Request: Has no scheduled Date"),
+    servicemanId = servicemanId ?: throw Exception("Request: No Serviceman ID"),
 )

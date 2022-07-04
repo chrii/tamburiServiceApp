@@ -31,5 +31,13 @@
 
     <fragment
         android:id="@+id/fragment_service_details"
-        android:name="at.tamburi.tamburimontageservice.ui.MainActivity.ServiceTaskDetails.ServiceTaskDetailsFragment" />
+        android:name="at.tamburi.tamburimontageservice.ui.MainActivity.ServiceTaskDetails.ServiceTaskDetailsFragment" >
+        <action
+            android:id="@+id/action_service_to_claim"
+            app:destination="@id/fragment_claim_fragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_claim_fragment"
+        android:name="at.tamburi.tamburimontageservice.ui.MainActivity.ClaimScreen.ClaimFragment" />
 </navigation>

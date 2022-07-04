@@ -18,5 +18,10 @@ class Utils {
             val simple = SimpleDateFormat("MM-dd")
             return simple.parse(simple.format(mil)) ?: throw Exception("Cannot parse date")
         }
+
+        fun getDateFromString(dateString: String): Date {
+            val simple = SimpleDateFormat("MM-dd")
+            return simple.parse(dateString) ?: throw Exception("Cannot parse date")
+        }
     }
 }
