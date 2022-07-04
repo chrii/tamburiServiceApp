@@ -114,7 +114,9 @@ fun ServiceTaskDetailsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable { nav.navigate(R.id.action_service_to_claim) },
-                                    icon = { Icons.Default.Delete },
+                                    icon = {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                                    },
                                     text = { Text(it.typeName) }
                                 )
                             }
