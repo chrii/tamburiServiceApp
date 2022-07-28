@@ -16,12 +16,13 @@ import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.composables.ServiceListItem
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 
+private const val TAG = "ServiceTaskScreen"
+
 @Composable
 fun ServiceTaskScreen(
     viewModel: MainViewModel,
     navigation: NavController
 ) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
     var openErrorDialog by remember { mutableStateOf(false) }
     TamburiMontageServiceTheme() {
         Surface(
@@ -47,6 +48,10 @@ fun ServiceTaskScreen(
                 MainState.Ready -> {
                     LazyColumn {
                         val locations = viewModel.serviceAssignmentList.value
+                        Log.d(
+                            TAG,
+                            "serviceAssignmentList: ${viewModel.serviceAssignmentList.value}"
+                        )
                         if (locations.isEmpty()) {
                             item { Text(stringResource(R.string.service_list_empty)) }
                         } else {

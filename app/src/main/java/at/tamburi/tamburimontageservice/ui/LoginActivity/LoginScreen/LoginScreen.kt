@@ -105,9 +105,7 @@ fun LoginScreen(
                     },
                     text = {
                         //TODO: Refactoring
-                        Text(
-                            text = viewModel.errorMessage ?: "Something went wrong"
-                        )
+                        Text(text = viewModel.errorMessage ?: "Something went wrong")
                     },
                     confirmButton = {
                         Button(

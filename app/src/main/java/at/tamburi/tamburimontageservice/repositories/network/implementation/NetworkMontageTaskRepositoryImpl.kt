@@ -97,6 +97,39 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
+    override suspend fun confirmDefectRepaired(claimId: Int): DataState<Boolean> {
+        return try {
+            val result = networkMontageTaskService.confirmDefectRepaired(claimId)
+            val body = result.body() ?: throw Exception("Body was null")
+            if (result.isSuccessful) {
+                when (result.code()) {
+                    200 -> DataState(
+                        hasData = true,
+                        data = body,
+                        message = "Successful"
+                    )
+                    else -> DataState(
+                        hasData = false,
+                        data = null,
+                        message = "Error: Request Code - ${result.code()}"
+                    )
+                }
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "Error: Request was not successful"
+                )
+            }
+        } catch (e: Exception) {
+            DataState(
+                hasData = false,
+                data = null,
+                message = e.message
+            )
+        }
+    }
+
     override suspend fun getMontageTaskList(serviceUserId: Int): DataState<List<MontageTask>> {
         return try {
             Log.d(TAG, "Getting Tasklist for user: $serviceUserId")

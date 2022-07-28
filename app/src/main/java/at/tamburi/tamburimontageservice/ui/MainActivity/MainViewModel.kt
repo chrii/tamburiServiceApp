@@ -9,6 +9,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 
 import androidx.datastore.preferences.core.edit
@@ -63,6 +64,7 @@ constructor(
     private val _serviceAssignmentList: MutableState<List<ServiceAssignment>> =
         mutableStateOf(listOf())
     private val _activeServiceLocation: MutableState<Location?> = mutableStateOf(null)
+    private val _activeClaim: MutableState<Claim?> = mutableStateOf(null)
 
     val mainState: MutableState<MainState> = _mainState
     val filteredTasks: MutableState<List<MontageTask>> = _filteredTasks
@@ -71,6 +73,7 @@ constructor(
     val hasActiveTask: MutableState<Boolean> = _hasActiveTask
     val activeUser: MutableState<ServiceUser?> = mutableStateOf(null)
     val serviceAssignmentList: MutableState<List<ServiceAssignment>> = _serviceAssignmentList
+    val activeClaim: MutableState<Claim?> by mutableStateOf(_activeClaim)
     var loadingMessageString: String? = null
     var errorMessage: String = ""
     var taskDetailId: Int = 0
@@ -136,7 +139,7 @@ constructor(
                 val locationList = taskNetworkRepo.getClaimLocations(userId)
 
                 if (locationList.hasData) {
-                    serviceAssignmentList.value = locationList.data!!
+                    serviceAssignmentList.value = locationList.data!!.sortedBy { it.scheduledDate }
                     changeState(MainState.Ready)
                 } else {
                     errorMessage = locationList.message ?: "No Error message found"
@@ -177,6 +180,19 @@ constructor(
                     changeState(MainState.Error)
                 }
             }
+        }
+    }
+
+    fun navigateToClaim(claimId: Int, navigation: NavController) {
+        try {
+            val claim = activeServiceLocation.value?.claimList?.find { it.claimId == claimId }
+                ?: throw Exception("no claim found")
+            activeClaim.value = claim
+            navigation.navigate(R.id.action_service_to_claim)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            e.message ?: "No message found (navigate to claim)"
+            changeState(MainState.Error)
         }
     }
 
@@ -331,20 +347,36 @@ constructor(
     }
 
     fun createQrCode(code: String): Bitmap {
+        val squareDimen = 600
         val qrCode = MultiFormatWriter().encode(
             code,
             BarcodeFormat.QR_CODE,
-            300,
-            300
+            squareDimen,
+            squareDimen
         )
         return Bitmap.createBitmap(
-            IntStream.range(0, 300).flatMap { h ->
-                IntStream.range(0, 300).map { w ->
+            IntStream.range(0, squareDimen).flatMap { h ->
+                IntStream.range(0, squareDimen).map { w ->
                     if (qrCode[w, h]
                     ) BitmapColor.BLACK else BitmapColor.WHITE
                 }
             }.toArray(),
-            300, 300, Bitmap.Config.ARGB_8888
+            squareDimen, squareDimen, Bitmap.Config.ARGB_8888
         )
+    }
+
+    fun confirmDefectRepaired(
+        claimId: Int,
+        lifecycle: Lifecycle,
+        navigation: NavController
+    ) {
+        changeState(MainState.Loading)
+        lifecycle.coroutineScope.launch {
+            val result = taskNetworkRepo.confirmDefectRepaired(claimId)
+            if (result.hasData) navigation.popBackStack() else {
+                errorMessage = result.message ?: "Defect confirmation failed: No Message"
+                changeState(MainState.Error)
+            }
+        }
     }
 }

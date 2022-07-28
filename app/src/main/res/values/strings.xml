@@ -90,7 +90,13 @@
     <string name="service_list_item_address">Adresse: %s</string>
     <string name="service_list_item_city">Stadt: %s</string>
 
-
+    <!-- Claim screen -->
+    <string name="claim_screen_button_back">Fertig</string>
+    <string name="claim_screen_button_problem">Problem</string>
+    <string name="claim_screen_text_field">Pin: %s</string>
+    <string name="claim_screen_defect_text_field">Einlagecode</string>
+    <string name="claim_screen_defect_text_placeholder">Einlagecode eingeben</string>
+    <string name="claim_screen_defect_button_text">Repariert</string>
 
     <!-- Workflow Landing Page -->
     <string name="wf_title">Auftragsdetails</string>
@@ -104,6 +110,7 @@
     <string name="wf_montage_ground">Art des Untergrunds</string>
     <string name="wf_scheduled_date">Datum der Montage</string>
     <string name="wf_description">Hinweise zum Standort</string>
+    <string name="wf_location_id">Standort ID</string>
     <string name="wf_button">Weiter</string>
 
     <!-- Owner Tab -->

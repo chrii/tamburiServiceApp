@@ -13,4 +13,5 @@ interface INetworkMontageTaskRepository {
     suspend fun setStatus(montageTaskId: Int, statusId: Int): DataState<Boolean>
     suspend fun getClaimLocations(servicemanId: Int): DataState<List<ServiceAssignment>>
     suspend fun getLocationClaims(locationId: Int): DataState<List<Claim>>
+    suspend fun confirmDefectRepaired(claimId: Int): DataState<Boolean>
 }

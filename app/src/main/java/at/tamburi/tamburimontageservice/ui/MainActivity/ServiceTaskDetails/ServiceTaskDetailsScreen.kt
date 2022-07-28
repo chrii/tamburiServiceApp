@@ -1,5 +1,6 @@
 package at.tamburi.tamburimontageservice.ui.MainActivity.ServiceTaskDetails
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +23,8 @@ import at.tamburi.tamburimontageservice.ui.LoginScreen.MainViewModel
 import at.tamburi.tamburimontageservice.ui.composables.ExpandableCard
 import at.tamburi.tamburimontageservice.ui.composables.LineItemWithEllipsis
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
+
+private const val TAG = "ServiceTaskDetailsScreen"
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -108,16 +111,21 @@ fun ServiceTaskDetailsScreen(
                     description = ""
                 ) {
                     LazyColumn {
+                        Log.d(TAG, "claimList: ${location.claimList}")
                         location.claimList?.map {
                             item {
                                 ListItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable { nav.navigate(R.id.action_service_to_claim) },
+                                        .clickable {
+                                            viewModel.navigateToClaim(it.claimId, nav)
+                                        },
                                     icon = {
                                         Icon(Icons.Default.Delete, contentDescription = "Delete")
                                     },
-                                    text = { Text(it.typeName) }
+                                    text = {
+                                        Text("Fachnummer: ${it.compartmentWiring} (${it.typeName})")
+                                    }
                                 )
                             }
                         }

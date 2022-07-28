@@ -74,11 +74,11 @@ constructor(
     }
 
     fun onSubmit(username: String, password: String, lifecycle: Lifecycle, context: Context) {
-        val lower = username.lowercase(Locale.getDefault())
+
         changeState(LoginState.Loading)
         lifecycle.coroutineScope.launch {
             try {
-                val networkUser = authRepo.getUser(lower, password)
+                val networkUser = authRepo.getUser(username, password)
                 if (networkUser.hasData) {
                     val result = databaseUserRepo.saveUser(networkUser.data!!)
                     if (!result.hasData) {

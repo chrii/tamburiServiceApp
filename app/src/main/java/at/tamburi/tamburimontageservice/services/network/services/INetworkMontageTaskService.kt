@@ -35,4 +35,9 @@ interface INetworkMontageTaskService {
     suspend fun setStatus(
         @Body status: StatusDto
     ): Response<Boolean>
+
+    @POST("claim/defect_repaired/{claimId}")
+    suspend fun confirmDefectRepaired(
+    @Path("claimId") claimId: Int
+    ): Response<Boolean>
 }
