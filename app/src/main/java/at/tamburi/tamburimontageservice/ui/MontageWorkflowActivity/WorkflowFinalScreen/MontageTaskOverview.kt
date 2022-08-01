@@ -1,5 +1,7 @@
 package at.tamburi.tamburimontageservice.ui.LocationProposalScreen
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +12,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +30,10 @@ fun MontageTaskOverview(
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val safeTask = viewModel.task.value ?: throw Exception("No active Task found")
+    Log.d(
+        "Overview", safeTask.location.locationId.toString()
+    )
+//    viewModel.registerLocker(lifecycle, safeTask.location.locationId)
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -61,7 +68,21 @@ fun MontageTaskOverview(
                     title = "QR Code",
                     content = safeTask.location.qrCode
                 )
-
+                //TODO: ÜBERSETZUNG
+//                if (viewModel.registrationQrCode.isNotEmpty()) {
+                    DetailExpandable(title = "QR Kasten registrieren") {
+                        LineItemWithEllipsis(
+                            title = "Bitte halten Sie den QR Code an den Scanner des Kasten",
+                            content = ""
+                        )
+                        Image(
+                            bitmap = viewModel
+                                .createQrCode("Hello World")
+                                .asImageBitmap(),
+                            contentDescription = "Bla"
+                        )
+                    }
+//                }
                 safeTask.lockerList.forEachIndexed { index, item ->
                     DetailExpandable(title = "Kasten ${item.busSlot.toString()}") {
                         //TODO: ÜBERSETZUNG

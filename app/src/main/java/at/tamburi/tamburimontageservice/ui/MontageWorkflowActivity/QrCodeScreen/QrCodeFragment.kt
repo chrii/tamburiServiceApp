@@ -138,6 +138,7 @@ class QrCodeFragment : Fragment() {
                                                 .map { it.gatewaySerialnumber }
                                                 .find { it.isNotEmpty() }
                                                 ?: throw Exception("Enter gateway Serial first")
+                                            viewModel.lockerQrCode = code
                                             viewModel.setQrCodeForLocker(
                                                 lifecycle,
                                                 locker.lockerId,

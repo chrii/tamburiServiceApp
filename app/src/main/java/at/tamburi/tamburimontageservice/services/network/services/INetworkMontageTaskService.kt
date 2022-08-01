@@ -38,6 +38,11 @@ interface INetworkMontageTaskService {
 
     @POST("claim/defect_repaired/{claimId}")
     suspend fun confirmDefectRepaired(
-    @Path("claimId") claimId: Int
+        @Path("claimId") claimId: Int
     ): Response<Boolean>
+
+    @POST("remote_montage/set_credentials/{locationId}")
+    suspend fun getRegistrationQrCode(
+        @Path("locationId") locationId: Int
+    ): Response<String>
 }

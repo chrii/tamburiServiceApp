@@ -130,6 +130,41 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
+    override suspend fun getRegistrationQrCode(locationId: Int): DataState<String> {
+        return try {
+            val result = networkMontageTaskService.getRegistrationQrCode(locationId)
+            Log.d(TAG, "getRegistrationQrCode - $result")
+            if (result.isSuccessful) {
+                val body = result.body() ?: throw Exception("Error - Body is empty")
+                when (result.code()) {
+                    200 -> DataState(
+                        hasData = true,
+                        data = body,
+                        message = "Successful!"
+                    )
+                    else -> DataState(
+                        hasData = false,
+                        data = null,
+                        message = "Error - Code ${result.code()}"
+                    )
+                }
+            } else {
+                DataState(
+                    hasData = false,
+                    data = null,
+                    message = "Network Request was not successful - Code: ${result.code()}"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            DataState(
+                hasData = false,
+                data = null,
+                message = e.message
+            )
+        }
+    }
+
     override suspend fun getMontageTaskList(serviceUserId: Int): DataState<List<MontageTask>> {
         return try {
             Log.d(TAG, "Getting Tasklist for user: $serviceUserId")
@@ -258,11 +293,12 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
     }
 
     override suspend fun registerLockers(lockerList: List<Locker>): DataState<Boolean> {
+        Log.d(TAG, "lockers to register: $lockerList")
         val lockerRegistrationList = lockerList.map { it.toLockerRegistrationDto() }
         return try {
             val response = networkMontageTaskService.registerLockers(lockerRegistrationList)
             Log.d(TAG, "Response: $response")
-            Log.d(TAG, "Response: ${response.isSuccessful}")
+            Log.d(TAG, "Response Body: ${response.body()}")
             if (response.isSuccessful) {
                 Log.d(TAG, "Response: ${response.code()}")
                 val secureBody =

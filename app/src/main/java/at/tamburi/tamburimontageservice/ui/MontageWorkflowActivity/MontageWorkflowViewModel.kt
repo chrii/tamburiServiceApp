@@ -3,6 +3,8 @@ package at.tamburi.tamburimontageservice.ui.ViewModels
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.location.Criteria
 import android.location.LocationManager
 import android.net.Uri
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavController
 import at.tamburi.tamburimontageservice.R
+import at.tamburi.tamburimontageservice.models.Locker
 import at.tamburi.tamburimontageservice.models.MontageTask
 import at.tamburi.tamburimontageservice.repositories.database.IDatabaseMontageTaskRepository
 import at.tamburi.tamburimontageservice.repositories.network.INetworkMontageTaskRepository
@@ -26,11 +29,14 @@ import at.tamburi.tamburimontageservice.utils.Constants
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.dataStore
 import com.google.android.gms.location.LocationServices
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.stream.IntStream
 import javax.inject.Inject
 
 enum class State {
@@ -44,6 +50,11 @@ enum class QrCodeScannerState {
     Location,
     Gateway
 }
+
+//enum class WorkflowState {
+//    Scanning,
+//    Finished
+//}
 
 private const val TAG = "MontageWorkflow"
 
@@ -59,6 +70,9 @@ constructor(
     var qrCodeScannerState: QrCodeScannerState = QrCodeScannerState.Locker
     var activeLocker = _task.value?.lockerList?.first()
     var gatewaySerialnumberList: MutableList<String> = mutableListOf()
+    var lockerQrCode: String? = null
+    var registrationQrCode: String = ""
+//    var workflowState: MutableState<WorkflowState> = mutableStateOf(WorkflowState.Scanning)
 
     val state: MutableState<State> = _state
     val task: MutableState<MontageTask?> = _task
@@ -67,6 +81,26 @@ constructor(
     fun changeState(s: State) {
         _state.value = s
     }
+
+//    fun changeWorkflowState(state: WorkflowState) {
+//        workflowState.value = state
+//    }
+//
+//    fun getWorkflowState(lifecycle: Lifecycle, context: Context) {
+//        changeState(State.Loading)
+//        lifecycle.coroutineScope.launch {
+//            val state = context.dataStore.data
+//                .map { it[DataStoreConstants.WORKFLOW_STATE] }
+//                .first()
+//            if (state.isNullOrEmpty()) {
+//                changeWorkflowState(WorkflowState.Scanning)
+//                changeState(State.Ready)
+//            } else {
+//                changeWorkflowState(WorkflowState.Finished)
+//                changeState(State.Ready)
+//            }
+//        }
+//    }
 
     fun setQrCodeForLocker(
         lifecycle: Lifecycle,
@@ -131,7 +165,7 @@ constructor(
                     getTask(context, lifecycle)
                 }
                 addOnFailureListener {
-                    Toast.makeText(context, "Failed to ge GPS Location", Toast.LENGTH_LONG)
+                    Toast.makeText(context, "Failed to get GPS Location", Toast.LENGTH_LONG)
                         .show()
                     it.printStackTrace()
                     changeState(State.Ready)
@@ -169,21 +203,18 @@ constructor(
         }
     }
 
-    fun setLocationQrCode(
+    fun registerLocker(
         lifecycle: Lifecycle,
-        locationId: Int,
-        qrCode: String,
-        navigation: NavController
+        locationId: Int
     ) {
         changeState(State.Loading)
+        Log.d(TAG, "getting locker QR Code")
         lifecycle.coroutineScope.launch {
             try {
-                val result = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
-//                val networkResult =
-//                    networkMontageTaskRepository.registerLocation(locationId, qrCode)
+                val result = networkMontageTaskRepository.getRegistrationQrCode(locationId)
                 if (result.hasData) {
-                    changeState(State.Ready)
-                    navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+                    registrationQrCode = result.data!!
+                    Log.d(TAG, "Registration code: $registrationQrCode")
                 } else {
                     changeState(State.Error)
                 }
@@ -193,6 +224,50 @@ constructor(
             }
         }
     }
+
+    fun createQrCode(code: String): Bitmap {
+        val squareDimen = 600
+        val qrCode = MultiFormatWriter().encode(
+            code,
+            BarcodeFormat.QR_CODE,
+            squareDimen,
+            squareDimen
+        )
+        return Bitmap.createBitmap(
+            IntStream.range(0, squareDimen).flatMap { h ->
+                IntStream.range(0, squareDimen).map { w ->
+                    if (qrCode[w, h]
+                    ) Color.BLACK else Color.WHITE
+                }
+            }.toArray(),
+            squareDimen, squareDimen, Bitmap.Config.ARGB_8888
+        )
+    }
+
+//    fun setLocationQrCode(
+//        lifecycle: Lifecycle,
+//        locationId: Int,
+//        qrCode: String,
+//        navigation: NavController
+//    ) {
+//        changeState(State.Loading)
+//        lifecycle.coroutineScope.launch {
+//            try {
+//                val result = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
+////                val networkResult =
+////                    networkMontageTaskRepository.registerLocation(locationId, qrCode)
+//                if (result.hasData) {
+//                    changeState(State.Ready)
+//                    navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
+//                } else {
+//                    changeState(State.Error)
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                changeState(State.Error)
+//            }
+//        }
+//    }
 
     fun removeLockerQrCode(lifecycle: Lifecycle, context: Context, lockerId: Int) {
         changeState(State.Loading)
@@ -300,17 +375,37 @@ constructor(
                 2
             )
             if (response.hasData) {
+                val emptyLockers: List<Locker>? = task.value?.lockerList?.map { locker ->
+                    Locker(
+                        busSlot = 0,
+                        columnNumber = locker.columnNumber,
+                        gateway = locker.gateway,
+                        gatewaySerialnumber = "",
+                        locationId = locker.locationId,
+                        lockerId = locker.lockerId,
+                        lockerName = locker.lockerName ?: "",
+                        lockerType = locker.lockerType,
+                        montageTaskId = locker.montageTaskId,
+                        qrCode = "",
+                        typeName = locker.typeName ?: ""
+                    )
+                }
+                if (!emptyLockers.isNullOrEmpty()) {
+                    val res = networkMontageTaskRepository.registerLockers(emptyLockers)
+                    if (res.hasData) Log.d(TAG, "registerLockers over revoke: ${res.data}")
+                }
+
                 task.value?.lockerList?.forEach {
                     databaseMontageTaskRepository.setGatewaySerialnumber("", it.lockerId)
                     databaseMontageTaskRepository.setBusSlot(it.lockerId, 0)
-                    databaseMontageTaskRepository.setLocationQrCode(it.locationId, "")
-                    databaseMontageTaskRepository.setGPSCoordinates(0.0, 0.0, it.locationId)
                     databaseMontageTaskRepository.setLockerQrCode("", it.lockerId)
                 }
+
                 context.dataStore.edit {
                     it[DataStoreConstants.ACTIVE_TASK_ID] = -1
                     it[DataStoreConstants.HAS_ACTIVE_TASK] = false
                 }
+
                 val intent = Intent(context, MainActivity::class.java)
                 context.startActivity(intent)
             }
@@ -322,6 +417,7 @@ constructor(
         val lockerListContainsEmptyData =
             safeTask.lockerList.map { it.qrCode.isEmpty() }.contains(true)
         val locationQRCode = safeTask.location.qrCode.isEmpty()
+        Log.d(TAG, "hasEmpty: $safeTask")
         return locationQRCode || lockerListContainsEmptyData
     }
 
@@ -384,12 +480,15 @@ constructor(
                 val lockers =
                     databaseMontageTaskRepository.getLockersByTaskId(safeTask.montageTaskId)
 
-                Log.d(TAG, "Has Data? - ${lockers.hasData}")
-                Log.d(TAG, "Sending lockers: ${safeTask.lockerList}")
                 if (lockers.hasData) {
                     val lockerNetworkResponse =
                         networkMontageTaskRepository.registerLockers(lockers.data!!)
                     if (lockerNetworkResponse.hasData) {
+                        context.dataStore.edit {
+                            it[DataStoreConstants.WORKFLOW_STATE] = "finished"
+                        }
+//                        changeWorkflowState(WorkflowState.Finished)
+
                         changeState(State.Ready)
                         navigation.navigate(R.id.action_landing_fragment_to_final_fragment)
                     } else {

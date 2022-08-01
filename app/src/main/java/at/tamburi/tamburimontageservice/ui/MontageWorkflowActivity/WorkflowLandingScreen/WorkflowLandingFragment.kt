@@ -3,6 +3,7 @@ package at.tamburi.tamburimontageservice.ui.MontageWorkflowActivity.WorkflowLand
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -18,9 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import at.tamburi.tamburimontageservice.R
 import at.tamburi.tamburimontageservice.ui.ViewModels.MontageWorkflowViewModel
 import at.tamburi.tamburimontageservice.ui.ViewModels.State
+import at.tamburi.tamburimontageservice.ui.ViewModels.WorkflowState
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -50,9 +53,13 @@ class WorkflowLandingFragment : Fragment() {
         }
     }
 
+//    override fun onResume() {
+//        super.onResume()
+//        viewModel.getWorkflowState(lifecycle, requireContext())
+//    }
+
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("MissingPermission")
-    @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,6 +67,9 @@ class WorkflowLandingFragment : Fragment() {
     ): View {
         setHasOptionsMenu(true)
         viewModel.getTask(requireContext(), lifecycle)
+//        if(viewModel.workflowState.value == WorkflowState.Finished) {
+//            findNavController().navigate(R.id.action_landing_fragment_to_final_fragment)
+//        }
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -94,7 +104,9 @@ class WorkflowLandingFragment : Fragment() {
                                             navigation = findNavController()
                                         )
                                     }
+                                    Log.d(TAG, viewModel.hasEmptyQrCodes().toString())
                                     if (!viewModel.hasEmptyQrCodes()) {
+                                        x
                                         item {
                                             Button(
                                                 modifier = Modifier
