@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
@@ -26,7 +29,6 @@ import at.tamburi.tamburimontageservice.ui.ViewModels.State
 import at.tamburi.tamburimontageservice.ui.ViewModels.WorkflowState
 import at.tamburi.tamburimontageservice.ui.composables.CustomLoadingIndicator
 import at.tamburi.tamburimontageservice.ui.theme.TamburiMontageServiceTheme
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 private const val TAG = "WorkflowLandingFragment"
 
@@ -67,9 +69,6 @@ class WorkflowLandingFragment : Fragment() {
     ): View {
         setHasOptionsMenu(true)
         viewModel.getTask(requireContext(), lifecycle)
-//        if(viewModel.workflowState.value == WorkflowState.Finished) {
-//            findNavController().navigate(R.id.action_landing_fragment_to_final_fragment)
-//        }
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -81,10 +80,12 @@ class WorkflowLandingFragment : Fragment() {
                         when (viewModel.state.value) {
                             State.Loading -> CustomLoadingIndicator()
                             State.Error -> Text(text = "Error View")
+                            State.Next -> findNavController().navigate(R.id.action_landing_fragment_to_final_fragment)
                             State.Ready -> LazyColumn(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 viewModel.task.value?.let { safeTask ->
+                                    viewModel.checkWorkflowState(lifecycle, requireContext())
                                     item {
                                         CompTaskDetailsExpandable(task = safeTask)
                                     }
@@ -104,9 +105,8 @@ class WorkflowLandingFragment : Fragment() {
                                             navigation = findNavController()
                                         )
                                     }
-                                    Log.d(TAG, viewModel.hasEmptyQrCodes().toString())
-                                    if (!viewModel.hasEmptyQrCodes()) {
-                                        x
+                                    Log.d(TAG, viewModel.hasRequiredQrCodes(safeTask).toString())
+                                    if (viewModel.hasRequiredQrCodes(safeTask)) {
                                         item {
                                             Button(
                                                 modifier = Modifier
@@ -115,8 +115,7 @@ class WorkflowLandingFragment : Fragment() {
                                                 onClick = {
                                                     viewModel.submitTaskData(
                                                         lifecycle,
-                                                        requireContext(),
-                                                        findNavController()
+                                                        requireContext()
                                                     )
                                                 }
                                             ) {

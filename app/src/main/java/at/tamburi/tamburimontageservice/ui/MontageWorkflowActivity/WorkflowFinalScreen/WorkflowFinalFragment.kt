@@ -27,6 +27,7 @@ class WorkflowFinalFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel.changeState(State.Ready)
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme() {

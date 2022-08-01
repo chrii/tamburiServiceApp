@@ -42,6 +42,7 @@ import javax.inject.Inject
 enum class State {
     Ready,
     Loading,
+    Next,
     Error
 }
 
@@ -51,12 +52,12 @@ enum class QrCodeScannerState {
     Gateway
 }
 
-//enum class WorkflowState {
-//    Scanning,
-//    Finished
-//}
-
 private const val TAG = "MontageWorkflow"
+
+enum class WorkflowState {
+    FINISHED,
+    SCANNING
+}
 
 @HiltViewModel
 class MontageWorkflowViewModel
@@ -72,7 +73,7 @@ constructor(
     var gatewaySerialnumberList: MutableList<String> = mutableListOf()
     var lockerQrCode: String? = null
     var registrationQrCode: String = ""
-//    var workflowState: MutableState<WorkflowState> = mutableStateOf(WorkflowState.Scanning)
+    var workflowState: MutableState<WorkflowState> = mutableStateOf(WorkflowState.SCANNING)
 
     val state: MutableState<State> = _state
     val task: MutableState<MontageTask?> = _task
@@ -82,25 +83,36 @@ constructor(
         _state.value = s
     }
 
-//    fun changeWorkflowState(state: WorkflowState) {
-//        workflowState.value = state
-//    }
-//
-//    fun getWorkflowState(lifecycle: Lifecycle, context: Context) {
-//        changeState(State.Loading)
-//        lifecycle.coroutineScope.launch {
-//            val state = context.dataStore.data
-//                .map { it[DataStoreConstants.WORKFLOW_STATE] }
-//                .first()
-//            if (state.isNullOrEmpty()) {
-//                changeWorkflowState(WorkflowState.Scanning)
-//                changeState(State.Ready)
-//            } else {
-//                changeWorkflowState(WorkflowState.Finished)
-//                changeState(State.Ready)
-//            }
-//        }
-//    }
+    fun changeWorkflowState(state: WorkflowState) {
+        workflowState.value = state
+    }
+
+    fun checkWorkflowState(lifecycle: Lifecycle, context: Context) {
+        changeState(State.Loading)
+        lifecycle.coroutineScope.launch {
+            val datastore: String? = context.dataStore.data
+                .map { it[DataStoreConstants.WORKFLOW_STATE] }
+                .first()
+            if (datastore.isNullOrEmpty()) {
+                changeState(State.Ready)
+            } else {
+                if(datastore == "finished") {
+                    changeState(State.Next)
+                }
+            }
+        }
+    }
+
+    fun hasRequiredQrCodes(task: MontageTask): Boolean {
+        val containsGatewayQrCode = task.lockerList
+            .map { it.gatewaySerialnumber.isNotEmpty() }
+            .contains(true)
+        val hasEmptyQrCode = task.lockerList
+            .map { it.qrCode.isEmpty() }
+            .contains(true)
+
+        return containsGatewayQrCode && !hasEmptyQrCode
+    }
 
     fun setQrCodeForLocker(
         lifecycle: Lifecycle,
@@ -125,27 +137,7 @@ constructor(
     @SuppressLint("MissingPermission")
     fun setGPSLocation(context: Context, lifecycle: Lifecycle) {
         changeState(State.Loading)
-//        val locationManager =
-//            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        Log.d(
-//            TAG,
-//            "LocationManager - isLocation enabled: ${locationManager.isLocationEnabled}"
-//        )
-//        Log.d(
-//            TAG,
-//            "LocationManager - isProvider enabled: ${
-//                locationManager.isProviderEnabled(
-//                    LocationManager.GPS_PROVIDER
-//                )
-//            }"
-//        )
-//        Log.d(
-//            TAG,
-//            "LocationManager - Providers found: ${locationManager.getProviders(true)}"
-//        )
-//        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-//
-//        if (location == null) {
+
         val locationService = LocationServices.getFusedLocationProviderClient(context)
         locationService.lastLocation.apply {
             Log.d(TAG, "Trying LocationServices... isSuccessful - $isSuccessful")
@@ -175,7 +167,6 @@ constructor(
                 changeState(State.Ready)
             }
         }
-//        }
     }
 
     fun resetLocationQrCode(
@@ -412,15 +403,6 @@ constructor(
         }
     }
 
-    fun hasEmptyQrCodes(): Boolean {
-        val safeTask = _task.value ?: throw Exception("hasEmptyCode() - No task found")
-        val lockerListContainsEmptyData =
-            safeTask.lockerList.map { it.qrCode.isEmpty() }.contains(true)
-        val locationQRCode = safeTask.location.qrCode.isEmpty()
-        Log.d(TAG, "hasEmpty: $safeTask")
-        return locationQRCode || lockerListContainsEmptyData
-    }
-
     fun submitLocationQrCode(
         lifecycle: Lifecycle,
         context: Context,
@@ -471,7 +453,7 @@ constructor(
         }
     }
 
-    fun submitTaskData(lifecycle: Lifecycle, context: Context, navigation: NavController) {
+    fun submitTaskData(lifecycle: Lifecycle, context: Context) {
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
@@ -487,10 +469,9 @@ constructor(
                         context.dataStore.edit {
                             it[DataStoreConstants.WORKFLOW_STATE] = "finished"
                         }
-//                        changeWorkflowState(WorkflowState.Finished)
+                        changeWorkflowState(WorkflowState.FINISHED)
 
-                        changeState(State.Ready)
-                        navigation.navigate(R.id.action_landing_fragment_to_final_fragment)
+                        changeState(State.Next)
                     } else {
                         Toast.makeText(
                             context,
@@ -557,6 +538,7 @@ constructor(
                         context.dataStore.edit {
                             it[DataStoreConstants.ACTIVE_TASK_ID] = -1
                             it[DataStoreConstants.HAS_ACTIVE_TASK] = false
+                            it[DataStoreConstants.WORKFLOW_STATE] = "scanning"
                         }
                         task.value = null
                         val intent = Intent(context, MainActivity::class.java)

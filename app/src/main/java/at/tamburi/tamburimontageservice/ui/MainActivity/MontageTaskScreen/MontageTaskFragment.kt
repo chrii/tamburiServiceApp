@@ -145,10 +145,6 @@ class MontageTaskFragment : Fragment() {
                                             )
                                         }
                                     }
-                                    Log.d(
-                                        TAG,
-                                        "hasActiveTask: ${viewModel.hasActiveTask.value}"
-                                    )
                                 }
                             }
                         }

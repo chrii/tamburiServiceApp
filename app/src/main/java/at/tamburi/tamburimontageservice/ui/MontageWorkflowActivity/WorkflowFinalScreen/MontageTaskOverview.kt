@@ -70,7 +70,7 @@ fun MontageTaskOverview(
                 )
                 //TODO: ÜBERSETZUNG
 //                if (viewModel.registrationQrCode.isNotEmpty()) {
-                    DetailExpandable(title = "QR Kasten registrieren") {
+                    DetailExpandable(title = "Standort registrieren") {
                         LineItemWithEllipsis(
                             title = "Bitte halten Sie den QR Code an den Scanner des Kasten",
                             content = ""
