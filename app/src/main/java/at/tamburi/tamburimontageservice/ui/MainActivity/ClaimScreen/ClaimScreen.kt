@@ -44,6 +44,7 @@ fun ClaimScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text("Paketnummer: ${claim.deliveryCode}")
                 Image(
                     bitmap = viewModel
                         .createQrCode(claim.tamburiCode)

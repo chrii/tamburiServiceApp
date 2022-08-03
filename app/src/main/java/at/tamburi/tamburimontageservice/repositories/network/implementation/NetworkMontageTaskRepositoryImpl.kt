@@ -23,7 +23,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
 
     override suspend fun getClaimLocations(servicemanId: Int): DataState<List<ServiceAssignment>> {
         return try {
-            val response = networkMontageTaskService.getClaimLocations(servicemanId)
+            val response = networkMontageTaskService.getClaimLocations(servicemanId, false)
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Request: Response Body is null")
                 Log.d(TAG, body.toString())

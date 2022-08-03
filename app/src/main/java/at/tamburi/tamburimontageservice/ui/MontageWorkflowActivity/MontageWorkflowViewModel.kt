@@ -206,6 +206,7 @@ constructor(
                 if (result.hasData) {
                     registrationQrCode = result.data!!
                     Log.d(TAG, "Registration code: $registrationQrCode")
+                    changeState(State.Ready)
                 } else {
                     changeState(State.Error)
                 }
@@ -234,31 +235,6 @@ constructor(
             squareDimen, squareDimen, Bitmap.Config.ARGB_8888
         )
     }
-
-//    fun setLocationQrCode(
-//        lifecycle: Lifecycle,
-//        locationId: Int,
-//        qrCode: String,
-//        navigation: NavController
-//    ) {
-//        changeState(State.Loading)
-//        lifecycle.coroutineScope.launch {
-//            try {
-//                val result = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
-////                val networkResult =
-////                    networkMontageTaskRepository.registerLocation(locationId, qrCode)
-//                if (result.hasData) {
-//                    changeState(State.Ready)
-//                    navigation.navigate(R.id.action_qr_code_fragment_to_landing_fragment)
-//                } else {
-//                    changeState(State.Error)
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                changeState(State.Error)
-//            }
-//        }
-//    }
 
     fun removeLockerQrCode(lifecycle: Lifecycle, context: Context, lockerId: Int) {
         changeState(State.Loading)
@@ -470,7 +446,6 @@ constructor(
                             it[DataStoreConstants.WORKFLOW_STATE] = "finished"
                         }
                         changeWorkflowState(WorkflowState.FINISHED)
-
                         changeState(State.Next)
                     } else {
                         Toast.makeText(

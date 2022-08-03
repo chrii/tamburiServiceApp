@@ -18,7 +18,8 @@ interface INetworkMontageTaskService {
 
     @GET("claim/assigned_location")
     suspend fun getClaimLocations(
-        @Query("servicemanId") serviceMan: Int
+        @Query("servicemanId") serviceMan: Int,
+        @Query("finalized") finalized: Boolean
     ): Response<List<ClaimListObjectDto>>
 
     @POST("remote_montage/mobile/register_locker")

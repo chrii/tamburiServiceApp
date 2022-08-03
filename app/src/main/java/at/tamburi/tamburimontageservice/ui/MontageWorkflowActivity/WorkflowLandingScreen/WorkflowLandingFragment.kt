@@ -69,6 +69,7 @@ class WorkflowLandingFragment : Fragment() {
     ): View {
         setHasOptionsMenu(true)
         viewModel.getTask(requireContext(), lifecycle)
+        viewModel.checkWorkflowState(lifecycle, requireContext())
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -85,7 +86,6 @@ class WorkflowLandingFragment : Fragment() {
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 viewModel.task.value?.let { safeTask ->
-                                    viewModel.checkWorkflowState(lifecycle, requireContext())
                                     item {
                                         CompTaskDetailsExpandable(task = safeTask)
                                     }

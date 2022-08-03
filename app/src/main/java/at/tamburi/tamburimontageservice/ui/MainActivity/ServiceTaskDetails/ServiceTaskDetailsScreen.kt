@@ -124,7 +124,9 @@ fun ServiceTaskDetailsScreen(
                                         Icon(Icons.Default.Delete, contentDescription = "Delete")
                                     },
                                     text = {
-                                        Text("Fachnummer: ${it.compartmentWiring} (${it.typeName})")
+                                        Column {
+                                            Text("Fachnummer: ${it.compartmentWiring} (${it.typeName})")
+                                        }
                                     }
                                 )
                             }

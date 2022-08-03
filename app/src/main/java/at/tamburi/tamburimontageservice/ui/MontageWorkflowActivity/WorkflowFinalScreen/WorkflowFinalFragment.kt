@@ -28,6 +28,8 @@ class WorkflowFinalFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel.changeState(State.Ready)
+        val task = viewModel.task.value ?: throw Exception("Task not found")
+        viewModel.registerLocker(lifecycle, task.location.locationId)
         return ComposeView(requireContext()).apply {
             setContent {
                 TamburiMontageServiceTheme() {

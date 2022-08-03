@@ -33,7 +33,6 @@ fun MontageTaskOverview(
     Log.d(
         "Overview", safeTask.location.locationId.toString()
     )
-//    viewModel.registerLocker(lifecycle, safeTask.location.locationId)
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -69,7 +68,7 @@ fun MontageTaskOverview(
                     content = safeTask.location.qrCode
                 )
                 //TODO: ÜBERSETZUNG
-//                if (viewModel.registrationQrCode.isNotEmpty()) {
+                if (viewModel.registrationQrCode.isNotEmpty()) {
                     DetailExpandable(title = "Standort registrieren") {
                         LineItemWithEllipsis(
                             title = "Bitte halten Sie den QR Code an den Scanner des Kasten",
@@ -77,12 +76,12 @@ fun MontageTaskOverview(
                         )
                         Image(
                             bitmap = viewModel
-                                .createQrCode("Hello World")
+                                .createQrCode("${safeTask.location.locationId}:${viewModel.registrationQrCode}")
                                 .asImageBitmap(),
                             contentDescription = "Bla"
                         )
                     }
-//                }
+                }
                 safeTask.lockerList.forEachIndexed { index, item ->
                     DetailExpandable(title = "Kasten ${item.busSlot.toString()}") {
                         //TODO: ÜBERSETZUNG
