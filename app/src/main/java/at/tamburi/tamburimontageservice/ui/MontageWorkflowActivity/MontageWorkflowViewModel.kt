@@ -97,7 +97,9 @@ constructor(
                 changeState(State.Ready)
             } else {
                 if(datastore == "finished") {
-                    changeState(State.Next)
+                    Log.d(TAG, "Change WorkflowState to finished")
+                    changeWorkflowState(WorkflowState.FINISHED)
+                    changeState(State.Ready)
                 }
             }
         }

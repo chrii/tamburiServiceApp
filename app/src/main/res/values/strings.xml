@@ -149,6 +149,9 @@
     <string name="wf_exp_location_GPS_title">GPS Daten</string>
     <string name="wf_exp_location_GPS_content">Registriert</string>
 
+    <!-- Workflow Dialog -->
+    <string name="wf_dialog">Überprüfen Sie die Richtigkeit der Daten. Mit dem Drücken auf Weiter, wird der Standort registriert. \nDies kann nicht rückgängig gemacht werden!</string>
+
     <!-- LocationProposalScreen -->
     <string name="prop_information_text">Kleben Sie den Standort QR-Code sichtbar auf den Gateway Kasten</string>
     <string name="prop_scan_qr_code">QR-Code Scannen</string>
