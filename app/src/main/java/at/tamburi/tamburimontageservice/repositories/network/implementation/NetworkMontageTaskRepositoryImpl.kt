@@ -21,9 +21,9 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
     INetworkMontageTaskRepository {
     var retry = 0
 
-    override suspend fun getClaimLocations(servicemanId: Int): DataState<List<ServiceAssignment>> {
+    override suspend fun getClaimLocations(servicemanId: Int, token: String): DataState<List<ServiceAssignment>> {
         return try {
-            val response = networkMontageTaskService.getClaimLocations(servicemanId, false)
+            val response = networkMontageTaskService.getClaimLocations(servicemanId, false, token)
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Request: Response Body is null")
                 Log.d(TAG, body.toString())
@@ -63,9 +63,9 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun getLocationClaims(locationId: Int): DataState<List<Claim>> {
+    override suspend fun getLocationClaims(locationId: Int, token: String): DataState<List<Claim>> {
         return try {
-            val response = networkMontageTaskService.getLocationClaims(locationId)
+            val response = networkMontageTaskService.getLocationClaims(locationId, token = token)
 
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Request Error: Body is null")
@@ -97,9 +97,9 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun confirmDefectRepaired(claimId: Int): DataState<Boolean> {
+    override suspend fun confirmDefectRepaired(claimId: Int, token: String): DataState<Boolean> {
         return try {
-            val result = networkMontageTaskService.confirmDefectRepaired(claimId)
+            val result = networkMontageTaskService.confirmDefectRepaired(claimId, token)
             val body = result.body() ?: throw Exception("Body was null")
             if (result.isSuccessful) {
                 when (result.code()) {
@@ -130,9 +130,9 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun getRegistrationQrCode(locationId: Int): DataState<String> {
+    override suspend fun getRegistrationQrCode(locationId: Int, token: String): DataState<String> {
         return try {
-            val result = networkMontageTaskService.getRegistrationQrCode(locationId)
+            val result = networkMontageTaskService.getRegistrationQrCode(locationId, token)
             Log.d(TAG, "getRegistrationQrCode - $result")
             if (result.isSuccessful) {
                 val body = result.body() ?: throw Exception("Error - Body is empty")
@@ -165,10 +165,10 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun getMontageTaskList(serviceUserId: Int): DataState<List<MontageTask>> {
+    override suspend fun getMontageTaskList(serviceUserId: Int, token: String): DataState<List<MontageTask>> {
         return try {
             Log.d(TAG, "Getting Tasklist for user: $serviceUserId")
-            val result = networkMontageTaskService.getMontageTaskList(serviceUserId)
+            val result = networkMontageTaskService.getMontageTaskList(serviceUserId, token)
             if (result.isSuccessful) {
                 Log.d(TAG, "Response is successful: ${result.isSuccessful}")
                 val body = result.body() ?: throw Exception("getMontageTaskList - Body is empty")
@@ -184,7 +184,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                     500 -> {
                         if (retry <= 2) {
                             retry++
-                            getMontageTaskList(serviceUserId)
+                            getMontageTaskList(serviceUserId, token)
                         } else {
                             DataState(false, null, "500 Server Error")
                         }
@@ -201,10 +201,10 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun setStatus(montageTaskId: Int, statusId: Int): DataState<Boolean> {
+    override suspend fun setStatus(montageTaskId: Int, statusId: Int, token: String): DataState<Boolean> {
         val statusDto = StatusDto(montageTaskId, statusId)
         return try {
-            val response = networkMontageTaskService.setStatus(statusDto)
+            val response = networkMontageTaskService.setStatus(statusDto, token)
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("setStatus: Body not found")
                 when (response.code()) {
@@ -216,7 +216,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                     500 -> {
                         if (retry <= 2) {
                             retry++
-                            setStatus(montageTaskId, statusId)
+                            setStatus(montageTaskId, statusId, token)
                         } else {
                             DataState(
                                 hasData = false,
@@ -248,10 +248,10 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun registerLocation(locationId: Int, qrCode: String): DataState<String> {
+    override suspend fun registerLocation(locationId: Int, qrCode: String, token: String): DataState<String> {
         val locationRegistrationObject = LocationRegistrationDto(locationId, qrCode)
         return try {
-            val response = networkMontageTaskService.registerLocation(locationRegistrationObject)
+            val response = networkMontageTaskService.registerLocation(locationRegistrationObject, token)
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Body is null")
                 when (response.code()) {
@@ -265,7 +265,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                     }
                     500 -> if (retry <= 2) {
                         retry++
-                        registerLocation(locationId, qrCode)
+                        registerLocation(locationId, qrCode, token)
                     } else {
                         DataState(
                             hasData = false,
@@ -292,11 +292,11 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
         }
     }
 
-    override suspend fun registerLockers(lockerList: List<Locker>): DataState<Boolean> {
+    override suspend fun registerLockers(lockerList: List<Locker>, token: String): DataState<Boolean> {
         Log.d(TAG, "lockers to register: $lockerList")
         val lockerRegistrationList = lockerList.map { it.toLockerRegistrationDto() }
         return try {
-            val response = networkMontageTaskService.registerLockers(lockerRegistrationList)
+            val response = networkMontageTaskService.registerLockers(lockerRegistrationList, token)
             Log.d(TAG, "Response: $response")
             Log.d(TAG, "Response Body: ${response.body()}")
             if (response.isSuccessful) {
@@ -319,7 +319,7 @@ class NetworkMontageTaskRepositoryImpl(private val networkMontageTaskService: IN
                     }
                     500 -> if (retry <= 2) {
                         retry++
-                        registerLockers(lockerList)
+                        registerLockers(lockerList, token)
                     } else DataState(
                         hasData = false,
                         data = false,

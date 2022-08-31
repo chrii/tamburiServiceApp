@@ -20,13 +20,15 @@ class AuthenticationRepositoryImpl(
             if (result.isSuccessful) {
                 val date = Date().time
                 val body = result.body() ?: throw Exception("Empty Body")
+                val token = result.headers()["Authorization"] ?: throw Exception("No token found")
                 Log.d(TAG, "Got Body: $body")
+                Log.d(TAG, "Got Token: $token")
                 when (result.code()) {
                     200 -> {
                         retryCount = 0
                         DataState(
                             hasData = true,
-                            data = body.toServiceUser(date),
+                            data = body.toServiceUser(date, token),
                             message = "Hello: ${body.name}"
                         )
                     }

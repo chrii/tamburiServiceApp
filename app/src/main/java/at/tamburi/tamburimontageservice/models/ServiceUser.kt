@@ -7,7 +7,8 @@ data class ServiceUser(
     val surname: String,
     val phone: String,
     val email: String,
-    val loginDate: Long
+    val loginDate: Long,
+    val token: String?
 ) {
     companion object {
         fun toIdList(serviceUserList: List<ServiceUser>): String =

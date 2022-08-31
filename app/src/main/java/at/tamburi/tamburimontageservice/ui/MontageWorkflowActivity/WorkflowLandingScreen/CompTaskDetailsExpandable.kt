@@ -58,6 +58,10 @@ fun CompTaskDetailsExpandable(
                 title = stringResource(id = R.string.wf_scheduled_date),
                 content = Utils.getReadableScheduleDate(task)
             )
+            LineItemWithEllipsis(
+                title = stringResource(id = R.string.wf_montage_hint),
+                content = task.montageHint
+            )
         }
     }
 }

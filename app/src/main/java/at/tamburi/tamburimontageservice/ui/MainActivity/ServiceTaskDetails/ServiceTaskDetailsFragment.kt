@@ -20,7 +20,7 @@ class ServiceTaskDetailsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getLocationClaims(lifecycle)
+        viewModel.getLocationClaims(lifecycle, requireContext())
     }
 
     override fun onCreateView(

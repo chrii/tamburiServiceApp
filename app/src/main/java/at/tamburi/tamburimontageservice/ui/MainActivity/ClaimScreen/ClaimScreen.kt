@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,6 +30,7 @@ fun ClaimScreen(
     navController: NavController
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val context = LocalContext.current
     if (viewModel.activeClaim.value != null) {
         val claim = viewModel.activeClaim.value!!
         var deliveryCode by remember { mutableStateOf("") }
@@ -77,7 +79,9 @@ fun ClaimScreen(
                             viewModel.confirmDefectRepaired(
                                 claim.claimId,
                                 lifecycle,
-                                navController
+                                context,
+                                navController,
+
                             )
                         } else navController.popBackStack()
                     }

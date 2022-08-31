@@ -198,13 +198,15 @@ constructor(
 
     fun registerLocker(
         lifecycle: Lifecycle,
+        context: Context,
         locationId: Int
     ) {
         changeState(State.Loading)
         Log.d(TAG, "getting locker QR Code")
         lifecycle.coroutineScope.launch {
             try {
-                val result = networkMontageTaskRepository.getRegistrationQrCode(locationId)
+                val token = DataStoreConstants.getToken(context)
+                val result = networkMontageTaskRepository.getRegistrationQrCode(locationId, token)
                 if (result.hasData) {
                     registrationQrCode = result.data!!
                     Log.d(TAG, "Registration code: $registrationQrCode")
@@ -339,9 +341,11 @@ constructor(
 
     fun revokeTask(context: Context, lifecycle: Lifecycle) {
         lifecycle.coroutineScope.launch {
+            val token = DataStoreConstants.getToken(context)
             val response = networkMontageTaskRepository.setStatus(
                 task.value?.montageTaskId!!,
-                2
+                2,
+                token
             )
             if (response.hasData) {
                 val emptyLockers: List<Locker>? = task.value?.lockerList?.map { locker ->
@@ -360,7 +364,7 @@ constructor(
                     )
                 }
                 if (!emptyLockers.isNullOrEmpty()) {
-                    val res = networkMontageTaskRepository.registerLockers(emptyLockers)
+                    val res = networkMontageTaskRepository.registerLockers(emptyLockers, token)
                     if (res.hasData) Log.d(TAG, "registerLockers over revoke: ${res.data}")
                 }
 
@@ -391,10 +395,11 @@ constructor(
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
+                val token = DataStoreConstants.getToken(context)
                 val dbResponse = databaseMontageTaskRepository.setLocationQrCode(locationId, qrCode)
                 if (dbResponse.hasData) {
                     val networkResponse =
-                        networkMontageTaskRepository.registerLocation(locationId, qrCode)
+                        networkMontageTaskRepository.registerLocation(locationId, qrCode, token)
                     if (networkResponse.hasData) {
                         val locationName: String =
                             networkResponse.data ?: throw Exception("Server sent no location name")
@@ -435,6 +440,7 @@ constructor(
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
+                val token = DataStoreConstants.getToken(context)
                 val safeTask = task.value
                     ?: throw Exception("registerLockers - Location ID not found")
                 val lockers =
@@ -442,7 +448,7 @@ constructor(
 
                 if (lockers.hasData) {
                     val lockerNetworkResponse =
-                        networkMontageTaskRepository.registerLockers(lockers.data!!)
+                        networkMontageTaskRepository.registerLockers(lockers.data!!, token)
                     if (lockerNetworkResponse.hasData) {
                         context.dataStore.edit {
                             it[DataStoreConstants.WORKFLOW_STATE] = "finished"
@@ -505,9 +511,10 @@ constructor(
         changeState(State.Loading)
         lifecycle.coroutineScope.launch {
             try {
+                val token = DataStoreConstants.getToken(context)
                 val safeTask = task.value ?: throw Exception("submitTask - Task is Null")
                 val networkResponse =
-                    networkMontageTaskRepository.setStatus(safeTask.montageTaskId, 4)
+                    networkMontageTaskRepository.setStatus(safeTask.montageTaskId, 4, token)
                 if (networkResponse.hasData) {
                     val databaseResponse =
                         databaseMontageTaskRepository.setStatus(safeTask.montageTaskId, 4)

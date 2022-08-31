@@ -14,7 +14,8 @@ val UserEntity.toServiceUser: ServiceUser
         surname = surname,
         phone = phone,
         email = email,
-        loginDate = loginDate
+        loginDate = loginDate,
+        token = null
     )
 
 val LocationOwnerEntity.toLocationOwner: LocationOwner

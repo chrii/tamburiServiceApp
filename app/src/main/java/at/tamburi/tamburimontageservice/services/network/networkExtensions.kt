@@ -7,14 +7,15 @@ import at.tamburi.tamburimontageservice.utils.Utils
 import java.text.SimpleDateFormat
 import java.util.*
 
-fun ServiceUserDto.toServiceUser(date: Long): ServiceUser = ServiceUser(
+fun ServiceUserDto.toServiceUser(date: Long, token: String? = null): ServiceUser = ServiceUser(
     servicemanId = servicemanId ?: throw Exception("No Service User Id received"),
     username = username ?: throw Exception("No Username received"),
     firstname = name ?: "No Name found",
     surname = surname ?: "No Surname found",
     phone = phone ?: "No Phone",
     email = email ?: "No Email Address",
-    loginDate = date
+    loginDate = date,
+    token = token ?: ""
 )
 
 @SuppressLint("SimpleDateFormat")

@@ -2,9 +2,12 @@ package at.tamburi.tamburimontageservice.ui.ViewModels
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -15,11 +18,14 @@ import at.tamburi.tamburimontageservice.ui.MainActivity.MainActivity
 import at.tamburi.tamburimontageservice.utils.DataStoreConstants
 import at.tamburi.tamburimontageservice.utils.Utils
 import at.tamburi.tamburimontageservice.utils.dataStore
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.*
+import java.util.stream.IntStream
 import javax.inject.Inject
 
 private const val TAG = "LoginViewModel"
@@ -74,7 +80,6 @@ constructor(
     }
 
     fun onSubmit(username: String, password: String, lifecycle: Lifecycle, context: Context) {
-
         changeState(LoginState.Loading)
         lifecycle.coroutineScope.launch {
             try {
@@ -86,8 +91,11 @@ constructor(
                         errorMessage = result.message
                         changeState(LoginState.Error, result.message)
                     } else {
+                        val token = networkUser.data?.token ?: throw Exception("Token not found")
+                        Log.d(TAG, token)
                         context.dataStore.edit {
                             it[DataStoreConstants.ACTIVE_USER_ID] = networkUser.data!!.servicemanId
+                            it[DataStoreConstants.SESSION_TOKEN] = token
                         }
                         Log.d(TAG, "Got Service User: ${networkUser.data!!.username}")
                         changeState(LoginState.NEXT)
@@ -106,5 +114,24 @@ constructor(
     fun next(context: Context) {
         val intent = Intent(context, MainActivity::class.java)
         context.startActivity(intent)
+    }
+
+    fun createQrCode(code: String): Bitmap {
+        val squareDimen = 600
+        val qrCode = MultiFormatWriter().encode(
+            code,
+            BarcodeFormat.QR_CODE,
+            squareDimen,
+            squareDimen
+        )
+        return Bitmap.createBitmap(
+            IntStream.range(0, squareDimen).flatMap { h ->
+                IntStream.range(0, squareDimen).map { w ->
+                    if (qrCode[w, h]
+                    ) Color.BLACK else Color.WHITE
+                }
+            }.toArray(),
+            squareDimen, squareDimen, Bitmap.Config.ARGB_8888
+        )
     }
 }

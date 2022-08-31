@@ -1,5 +1,6 @@
 package at.tamburi.tamburimontageservice.ui.LoginActivity.LoginScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -88,6 +90,12 @@ fun LoginScreen(
                     ) {
                         Text(text = "Login", color = White)
                     }
+//                    Image(
+//                        bitmap = viewModel
+//                                .createQrCode("133:YAJITNNJKLDBVKYY3XLT")
+//                            .asImageBitmap(),
+//                        contentDescription = "Bla"
+//                    )
                 }
             }
             if (errorDialog) {

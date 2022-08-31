@@ -111,6 +111,7 @@
     <string name="wf_scheduled_date">Datum der Montage</string>
     <string name="wf_description">Hinweise zum Standort</string>
     <string name="wf_location_id">Standort ID</string>
+    <string name="wf_montage_hint">Montage Hinweise</string>
     <string name="wf_button">Weiter</string>
 
     <!-- Owner Tab -->

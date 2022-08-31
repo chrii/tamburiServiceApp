@@ -123,7 +123,7 @@ constructor(
         changeState(MainState.Loading)
         lifecycle.coroutineScope.launch {
             val userId = getUserId(context)
-            fetchAndSaveTasks(userId)
+            fetchAndSaveTasks(context, userId)
             if (_tasks.value.isNotEmpty()) {
                 getActiveTask(context, userId)
             }
@@ -135,8 +135,9 @@ constructor(
         changeState(MainState.Loading)
         lifecycle.coroutineScope.launch {
             try {
+                val token = DataStoreConstants.getToken(context)
                 val userId = activeUser.value?.servicemanId ?: throw Exception("User not found")
-                val locationList = taskNetworkRepo.getClaimLocations(userId)
+                val locationList = taskNetworkRepo.getClaimLocations(userId, token)
 
                 if (locationList.hasData) {
                     serviceAssignmentList.value = locationList.data!!.sortedBy { it.scheduledDate }
@@ -161,16 +162,17 @@ constructor(
         navigation.navigate(R.id.action_service_list_to_service_details)
     }
 
-    fun getLocationClaims(lifecycle: Lifecycle) {
+    fun getLocationClaims(lifecycle: Lifecycle, context: Context) {
         loadingMessageString = "Get Claims"
         changeState(MainState.Loading)
         lifecycle.coroutineScope.launch {
+            val token = DataStoreConstants.getToken(context)
             val locationId = activeServiceLocation.value?.locationId ?: -1
             if (locationId < 0) {
                 errorMessage = "locationId not found"
                 changeState(MainState.Error)
             } else {
-                val response = taskNetworkRepo.getLocationClaims(locationId)
+                val response = taskNetworkRepo.getLocationClaims(locationId, token)
 
                 if (response.hasData) {
                     activeServiceLocation.value?.claimList = response.data!!
@@ -201,9 +203,10 @@ constructor(
     }.first() ?: throw Exception("No active user")
 
 
-    private suspend fun fetchAndSaveTasks(userId: Int) {
+    private suspend fun fetchAndSaveTasks(context: Context, userId: Int) {
         try {
-            val t = taskNetworkRepo.getMontageTaskList(userId)
+            val token = DataStoreConstants.getToken(context)
+            val t = taskNetworkRepo.getMontageTaskList(userId, token)
             if (t.hasData) {
                 val dbTasks = taskRepoDatabase.saveTasks(t.data!!)
                 if (dbTasks.hasData) {
@@ -226,9 +229,9 @@ constructor(
             val statsList = _tasks.value.filter { it.statusId == MontageStatus.ACTIVE }
             when {
                 statsList.size > 1 -> {
-                    resetOpenTasks()
+                    resetOpenTasks(context)
                     hasActiveTask.value = false
-                    fetchAndSaveTasks(userId)
+                    fetchAndSaveTasks(context, userId)
                     Toast.makeText(
                         context,
                         "Zuviele aktive Aufträge - es werden alle zurückgesetzt",
@@ -271,17 +274,18 @@ constructor(
         }
     }
 
-    private suspend fun resetOpenTasks() {
+    private suspend fun resetOpenTasks(context: Context) {
         val tasks = _tasks.value.filter { it.statusId == MontageStatus.ACTIVE }
         Log.d(TAG, "resetOpenTasks - Count ${tasks.size}")
         if (tasks.isNotEmpty()) {
+            val token = DataStoreConstants.getToken(context)
             tasks.map {
                 val dbRes = taskRepoDatabase.setStatus(it.montageTaskId, MontageStatus.ASSIGNED)
                 Log.d(
                     TAG,
                     "Updating DB Task Status Response for ID ${it.montageTaskId}: ${dbRes.hasData}"
                 )
-                val ntwRes = taskNetworkRepo.setStatus(it.montageTaskId, MontageStatus.ASSIGNED)
+                val ntwRes = taskNetworkRepo.setStatus(it.montageTaskId, MontageStatus.ASSIGNED, token)
                 Log.d(
                     TAG,
                     "Updating Network Task Status Response for ID ${it.montageTaskId}: ${ntwRes.hasData}"
@@ -293,9 +297,11 @@ constructor(
     private fun setActiveTask(context: Context, lifecycle: Lifecycle) {
         lifecycle.coroutineScope.launch {
             try {
+                val token = DataStoreConstants.getToken(context)
                 val response = taskNetworkRepo.setStatus(
                     taskDetailId,
-                    3
+                    3,
+                    token
                 )
                 if (response.hasData) {
                     val dbResponse = taskRepoDatabase.setStatus(taskDetailId, 3)
@@ -368,11 +374,13 @@ constructor(
     fun confirmDefectRepaired(
         claimId: Int,
         lifecycle: Lifecycle,
+        context: Context,
         navigation: NavController
     ) {
         changeState(MainState.Loading)
         lifecycle.coroutineScope.launch {
-            val result = taskNetworkRepo.confirmDefectRepaired(claimId)
+            val token = DataStoreConstants.getToken(context)
+            val result = taskNetworkRepo.confirmDefectRepaired(claimId, token)
             if (result.hasData) navigation.popBackStack() else {
                 errorMessage = result.message ?: "Defect confirmation failed: No Message"
                 changeState(MainState.Error)
