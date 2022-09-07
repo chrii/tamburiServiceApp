@@ -11,10 +11,9 @@ interface INetworkMontageTaskService {
         @Header("Authorization") token: String
     ): Response<List<MontageTaskDto>>
 
-    @GET("claim")
+    @GET("claim/mobile/{locationId}")
     suspend fun getLocationClaims(
-        @Query("locationId") locationId: Int,
-        @Query("finalized") finalized: Boolean = false,
+        @Path("locationId") locationId: Int,
         @Header("Authorization") token: String
     ): Response<List<ClaimDto>>
 
